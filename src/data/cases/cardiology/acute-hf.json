@@ -1,0 +1,521 @@
+{
+  "id": "acute-hf",
+  "specialty": "Cardiology",
+  "title": "Can't Breathe Lying Down",
+  "subtitle": "Acute Heart Failure",
+  "difficulty": "intermediate",
+  "estimatedMinutes": 18,
+  "patient": {
+    "age": 72,
+    "sex": "F",
+    "presentingComplaint": "Acute dyspnea, orthopnea, and bilateral leg swelling for 1 week",
+    "historyOfPresentingComplaint": "A 72-year-old woman presents to the emergency department with a 1-week history of worsening breathlessness. She reports she can no longer lie flat and has been sleeping upright in a chair for the past 3 nights. Her ankles and calves are markedly swollen bilaterally. She denies chest pain, fever, or productive cough. Her husband reports she has been less compliant with her fluid restriction recently due to hot weather and a family gathering.",
+    "pastMedicalHistory": [
+      "Ischemic cardiomyopathy",
+      "Chronic heart failure with reduced ejection fraction (EF 30%)",
+      "Hypertension",
+      "Type 2 diabetes mellitus",
+      "Previous anterior STEMI (8 years ago)"
+    ],
+    "medications": [
+      "Furosemide 40 mg oral daily",
+      "Bisoprolol 5 mg oral daily",
+      "Ramipril 5 mg oral daily",
+      "Spironolactone 25 mg oral daily",
+      "Aspirin 100 mg oral daily",
+      "Atorvastatin 40 mg oral nocte",
+      "Metformin 500 mg oral BD"
+    ],
+    "allergies": "Nil known",
+    "socialHistory": "Lives with husband. Non-smoker. Occasional alcohol. Retired school teacher.",
+    "vitals": {
+      "bp": "158/96",
+      "hr": 112,
+      "rr": 28,
+      "spo2": 88,
+      "temp": 36.8,
+      "gcs": 15
+    },
+    "examination": "Distressed, diaphoretic, sitting upright. JVP elevated at 6 cm above sternal angle. Bilateral fine crackles to mid-zones. Dual heart sounds with an S3 gallop. Bilateral pitting oedema to the knees. No clubbing or cyanosis peripherally."
+  },
+  "startNodeId": "node-stabilize",
+  "nodes": [
+    {
+      "id": "node-stabilize",
+      "type": "decision",
+      "title": "Immediate Stabilization",
+      "body": "A 72-year-old woman with known ischemic cardiomyopathy (EF 30%) arrives in acute respiratory distress. SpO2 is 88% on room air. RR 28. She is diaphoretic and can only speak in short sentences. She insists on sitting upright.\n\nWhat is your FIRST priority?",
+      "choices": [
+        {
+          "id": "c1-o2-upright",
+          "label": "High-flow O2 via face mask + sit patient upright (legs down)",
+          "isCorrect": true,
+          "feedback": "Correct. Positioning the patient upright reduces venous return and preload, immediately easing pulmonary congestion. High-flow O2 corrects hypoxaemia (target SpO2 94–98%). This is the essential first step before any investigation or pharmacotherapy.",
+          "nextNodeId": "node-history"
+        },
+        {
+          "id": "c1-iv-access",
+          "label": "Establish IV access and draw bloods immediately",
+          "isCorrect": false,
+          "feedback": "IV access is needed urgently, but correcting hypoxaemia and positioning take priority. A patient with SpO2 of 88% and RR 28 can deteriorate rapidly — treat the physiology first, then investigate.",
+          "nextNodeId": "node-stabilize-retry"
+        },
+        {
+          "id": "c1-cxr",
+          "label": "Order an urgent CXR before doing anything else",
+          "isCorrect": false,
+          "feedback": "Imaging is important but should not delay immediate life-saving measures. With SpO2 88% and severe respiratory distress, stabilise the airway and breathing first. CXR can follow within minutes of initiating treatment.",
+          "nextNodeId": "node-stabilize-retry"
+        },
+        {
+          "id": "c1-lie-flat",
+          "label": "Lie the patient flat for a thorough examination",
+          "isCorrect": false,
+          "feedback": "Dangerous. Lying this patient flat will dramatically worsen pulmonary oedema by increasing venous return and preload. Patients in acute left ventricular failure must remain upright. Attempting to lay her flat could precipitate respiratory arrest.",
+          "nextNodeId": "node-stabilize-retry"
+        }
+      ]
+    },
+    {
+      "id": "node-stabilize-retry",
+      "type": "redirect",
+      "title": "Patient Deteriorating",
+      "body": "The patient's SpO2 drops to 85% and she becomes more agitated. The nursing staff look to you for direction.\n\nYou must address the immediate hypoxaemia and positioning now.",
+      "autoAdvanceToNodeId": "node-stabilize"
+    },
+    {
+      "id": "node-history",
+      "type": "decision",
+      "title": "Focused History",
+      "body": "With O2 applied and the patient sitting upright, her SpO2 improves to 93%. She is more comfortable. You have 2 minutes to gather a focused history.\n\nHer husband is present. Which history element is MOST diagnostically and therapeutically important right now?",
+      "choices": [
+        {
+          "id": "c2-compliance",
+          "label": "Ask about medication compliance, fluid intake, and dietary salt",
+          "isCorrect": true,
+          "feedback": "Excellent. Identifying a precipitant for decompensation guides management. Non-compliance with diuretics, fluid or salt restriction, or intercurrent illness (infection, AF) are the most common triggers. Her husband confirms she missed two doses of furosemide this week and consumed significantly more fluid and salt at a family event. This is a classic precipitated decompensation.",
+          "nextNodeId": "node-investigation"
+        },
+        {
+          "id": "c2-family-history",
+          "label": "Take a detailed family history of cardiac disease",
+          "isCorrect": false,
+          "feedback": "Family history has no acute management value here. She has established ischemic cardiomyopathy. Focus on precipitants of acute decompensation and current functional status. Save non-urgent history for after stabilisation.",
+          "nextNodeId": "node-investigation"
+        },
+        {
+          "id": "c2-pain",
+          "label": "Ask specifically about chest pain to rule out ACS",
+          "isCorrect": false,
+          "feedback": "Not wrong to ask, but in a patient with known severe LV dysfunction and a 1-week history of progressive oedema without chest pain, acute coronary syndrome is less likely than precipitated HF decompensation. ACS can trigger HF, so an ECG is warranted, but the history focus should prioritise precipitants. The ECG and troponin will be ordered with investigations.",
+          "nextNodeId": "node-investigation"
+        }
+      ]
+    },
+    {
+      "id": "node-investigation",
+      "type": "decision",
+      "title": "Investigations",
+      "body": "The patient is on O2, sitting upright. SpO2 is 93%. IV access is established. You now order investigations.\n\nWhich combination of investigations is MOST appropriate for immediate management?",
+      "choices": [
+        {
+          "id": "c3-full-workup",
+          "label": "BNP, CXR, ECG, FBC, U&E/Cr, troponin, LFTs, BSL",
+          "isCorrect": true,
+          "feedback": "Correct and comprehensive. BNP confirms HF and severity. CXR shows pulmonary oedema and cardiomegaly. ECG identifies arrhythmia or ischaemia as a precipitant. U&E/Cr is critical before diuretics (baseline renal function). Troponin rules out ACS. FBC identifies anaemia as a precipitant. This panel gives you everything needed to manage and risk-stratify.",
+          "nextNodeId": "node-results"
+        },
+        {
+          "id": "c3-echo-first",
+          "label": "Urgent bedside echocardiogram before anything else",
+          "isCorrect": false,
+          "feedback": "Echo is valuable but not the first investigation in an acute setting. Her EF is known (30%). Bloods and CXR give faster, more immediately actionable information. Request echo after initiating treatment. Delaying diuresis for an echo worsens pulmonary oedema.",
+          "nextNodeId": "node-results"
+        },
+        {
+          "id": "c3-bnp-only",
+          "label": "BNP only — if elevated, confirms HF and you can start treatment",
+          "isCorrect": false,
+          "feedback": "BNP alone is insufficient. You need renal function before IV diuretics, an ECG to exclude arrhythmia or ischaemia, and a CXR to confirm and quantify pulmonary oedema. A single biomarker does not replace a full acute cardiac workup.",
+          "nextNodeId": "node-results"
+        }
+      ]
+    },
+    {
+      "id": "node-results",
+      "type": "results",
+      "title": "Investigation Results",
+      "body": "Results return. Review each carefully.",
+      "results": [
+        {
+          "test": "BNP",
+          "value": ">5000 pg/mL",
+          "referenceRange": "<100 pg/mL",
+          "flag": "CRITICAL HIGH",
+          "interpretation": "Markedly elevated. Strongly supports severe acute decompensated heart failure. Values >1000 pg/mL indicate high mortality risk."
+        },
+        {
+          "test": "Chest X-Ray",
+          "value": "Bilateral perihilar opacification with a 'bat-wing' distribution. Cardiomegaly (cardiothoracic ratio >0.55). Upper lobe venous diversion. Small bilateral pleural effusions. Kerley B lines visible at costophrenic angles.",
+          "flag": "ABNORMAL",
+          "interpretation": "Classic pulmonary oedema pattern consistent with acute decompensated left ventricular failure."
+        },
+        {
+          "test": "ECG",
+          "value": "Sinus tachycardia at 112 bpm. Left bundle branch block (old, unchanged from prior ECG). No new ST changes or acute ischaemic pattern.",
+          "flag": "ABNORMAL — old LBBB, no acute changes",
+          "interpretation": "Tachycardia consistent with sympathetic activation from low cardiac output. No new ischaemia. LBBB is pre-existing."
+        },
+        {
+          "test": "Troponin I (hs)",
+          "value": "42 ng/L",
+          "referenceRange": "<26 ng/L",
+          "flag": "MILDLY ELEVATED",
+          "interpretation": "Mildly elevated troponin is common in acute HF due to myocardial wall stress. Serial troponin in 3–6 hours needed to exclude ACS with dynamic rise."
+        },
+        {
+          "test": "Sodium (Na+)",
+          "value": "132 mmol/L",
+          "referenceRange": "135–145 mmol/L",
+          "flag": "LOW",
+          "interpretation": "Mild hyponatraemia — common in chronic HF due to neurohormonal activation and free water retention. Worsened by high-dose diuretics. Monitor closely."
+        },
+        {
+          "test": "Potassium (K+)",
+          "value": "3.6 mmol/L",
+          "referenceRange": "3.5–5.0 mmol/L",
+          "flag": "NORMAL",
+          "interpretation": "Safe to proceed with IV furosemide. Monitor post-diuresis — loop diuretics cause hypokalaemia."
+        },
+        {
+          "test": "Creatinine",
+          "value": "118 µmol/L",
+          "referenceRange": "45–90 µmol/L",
+          "flag": "ELEVATED",
+          "interpretation": "Mildly elevated baseline creatinine consistent with cardiorenal syndrome in chronic HF. GFR estimated ~38 mL/min/1.73m². Renal function will need monitoring closely during aggressive diuresis."
+        },
+        {
+          "test": "Haemoglobin",
+          "value": "118 g/L",
+          "referenceRange": "115–165 g/L",
+          "flag": "LOW-NORMAL",
+          "interpretation": "Borderline anaemia may be contributing to increased cardiac demand. Not a primary precipitant here."
+        },
+        {
+          "test": "BSL",
+          "value": "9.2 mmol/L",
+          "referenceRange": "4.0–7.8 mmol/L",
+          "flag": "MILDLY ELEVATED",
+          "interpretation": "Expected in a diabetic patient under physiological stress. No immediate intervention required."
+        }
+      ],
+      "nextNodeId": "node-diagnosis"
+    },
+    {
+      "id": "node-diagnosis",
+      "type": "decision",
+      "title": "Diagnosis",
+      "body": "With your history, examination, and results:\n\n- 72F, known ischemic cardiomyopathy EF 30%\n- 1-week progressive dyspnoea, orthopnoea, bilateral oedema\n- SpO2 88% on air → 93% on high-flow O2\n- BNP >5000 pg/mL\n- CXR: bilateral pulmonary oedema + cardiomegaly\n- No new ECG ischaemia\n- Precipitant: dietary indiscretion + missed furosemide doses\n\nWhat is the PRIMARY diagnosis?",
+      "choices": [
+        {
+          "id": "c4-adhf",
+          "label": "Acute decompensated heart failure (ADHF) — precipitated by non-compliance",
+          "isCorrect": true,
+          "feedback": "Correct. This is ADHF on a background of chronic HFrEF (EF 30%). The precipitant is clear: missed diuretic doses plus salt and fluid excess. BNP >5000 pg/mL with classical CXR findings confirms the diagnosis. NYHA Class IV at presentation (symptoms at rest). This is a high-risk presentation requiring urgent treatment and CCU-level monitoring.",
+          "nextNodeId": "node-treatment"
+        },
+        {
+          "id": "c4-pneumonia",
+          "label": "Community-acquired pneumonia with reactive cardiac failure",
+          "isCorrect": false,
+          "feedback": "Pneumonia is a common HF precipitant, but there is no fever, productive cough, or focal consolidation on CXR. The bilateral perihilar 'bat-wing' pattern and cardiomegaly are characteristic of pulmonary oedema, not pneumonia. The 1-week history with clear dietary precipitant strongly favours ADHF.",
+          "nextNodeId": "node-treatment"
+        },
+        {
+          "id": "c4-pe",
+          "label": "Pulmonary embolism causing acute right heart strain",
+          "isCorrect": false,
+          "feedback": "PE is possible but unlikely here. PE typically presents with pleuritic chest pain, haemoptysis, or sudden onset dyspnoea without the bilateral oedema and orthopnoea seen here. The CXR shows pulmonary oedema, not oligaemia or a Hampton's hump. The clinical picture fits ADHF much better. PE should be reconsidered if the patient fails to respond to diuresis.",
+          "nextNodeId": "node-treatment"
+        },
+        {
+          "id": "c4-acs",
+          "label": "NSTEMI precipitating acute pulmonary oedema",
+          "isCorrect": false,
+          "feedback": "ACS must always be on the differential in ischaemic cardiomyopathy, but the ECG shows no new changes and troponin is only mildly and likely chronically elevated in the context of HF wall stress. The 1-week history with dietary precipitant and no chest pain makes primary ACS unlikely. Serial troponins are appropriate, but the working diagnosis is ADHF.",
+          "nextNodeId": "node-treatment"
+        }
+      ]
+    },
+    {
+      "id": "node-treatment",
+      "type": "decision",
+      "title": "Acute Treatment",
+      "body": "Diagnosis confirmed: Acute Decompensated Heart Failure. SpO2 93% on 8L O2 via face mask. BP 158/96 mmHg. HR 112. The patient is distressed but conversant.\n\nWhat is the most appropriate IMMEDIATE pharmacological management?",
+      "choices": [
+        {
+          "id": "c5-correct",
+          "label": "IV furosemide 80 mg stat + GTN infusion (titrate to BP) + continue O2",
+          "isCorrect": true,
+          "feedback": "Correct first-line treatment for ADHF with pulmonary oedema and hypertension. IV furosemide (at 1–2x the oral daily dose — she is on 40 mg oral, so 40–80 mg IV is appropriate) promotes rapid diuresis and early venodilation. GTN infusion reduces preload and afterload and is indicated with BP >110 mmHg systolic. Continue supplemental O2 to maintain SpO2 94–98%. Monitor urine output, BP, and electrolytes closely.",
+          "nextNodeId": "node-cpap"
+        },
+        {
+          "id": "c5-oral-diuretic",
+          "label": "Double her oral furosemide dose to 80 mg orally",
+          "isCorrect": false,
+          "feedback": "Oral diuretics are inadequate in acute decompensation. In pulmonary oedema, gut oedema reduces GI absorption, making oral furosemide unreliable and slow. IV furosemide achieves faster, more predictable diuresis and has an immediate venodilatory effect within minutes. Switch to IV.",
+          "nextNodeId": "node-cpap"
+        },
+        {
+          "id": "c5-beta-blocker",
+          "label": "Increase bisoprolol dose to reduce heart rate and improve diastolic filling",
+          "isCorrect": false,
+          "feedback": "Dangerous. Never initiate or increase beta-blockers during acute decompensated heart failure. Beta-blockers suppress the sympathetic compensation keeping cardiac output up. In a patient with EF 30% and acute pulmonary oedema, an acute increase in bisoprolol dose can precipitate cardiogenic shock. If the patient is on a stable beta-blocker dose, continue it cautiously — but do not increase it.",
+          "nextNodeId": "node-cpap"
+        },
+        {
+          "id": "c5-fluids",
+          "label": "Give 500 mL normal saline to maintain perfusion and renal function",
+          "isCorrect": false,
+          "feedback": "Catastrophic error. Fluid loading a patient with pulmonary oedema and elevated filling pressures will worsen pulmonary congestion dramatically and can cause rapid deterioration to respiratory arrest. The problem is volume overload — the treatment is volume removal (diuresis) and vasodilation, not volume addition. Never give IV fluids to a fluid-overloaded HF patient without specific indication (e.g., concurrent septic shock or haemodynamic collapse).",
+          "nextNodeId": "node-cpap"
+        }
+      ]
+    },
+    {
+      "id": "node-cpap",
+      "type": "decision",
+      "title": "Respiratory Support — CPAP Consideration",
+      "body": "Thirty minutes after IV furosemide and GTN infusion:\n- SpO2 92% on 8L O2 (not improving adequately)\n- RR 30 (worsening)\n- BP 148/90 mmHg\n- Patient increasingly fatigued and using accessory muscles\n- Urine output: 80 mL in the last 30 minutes (diuresis has commenced)\n\nWhat do you do regarding respiratory support?",
+      "choices": [
+        {
+          "id": "c6-cpap",
+          "label": "Escalate to CPAP (non-invasive positive pressure ventilation)",
+          "isCorrect": true,
+          "feedback": "Correct. CPAP is indicated for persistent respiratory failure (SpO2 <94%, RR >25, increased work of breathing) despite optimal medical therapy in acute cardiogenic pulmonary oedema. CPAP reduces preload by increasing intrathoracic pressure, improves oxygenation by recruiting collapsed alveoli, and reduces the work of breathing. Strong evidence (3CPO trial) shows CPAP reduces need for intubation and improves early dyspnoea. It does not reduce mortality but significantly reduces intubation rates. Contraindications: haemodynamic instability, inability to protect airway, facial trauma.",
+          "nextNodeId": "node-monitoring"
+        },
+        {
+          "id": "c6-intubate",
+          "label": "Intubate immediately — she is tiring and will arrest",
+          "isCorrect": false,
+          "feedback": "Premature. Intubation carries significant risk in haemodynamically compromised patients (hypotension post-induction, arrhythmia, laryngoscopy stress). CPAP should be trialled first in alert patients who can protect their airway. Intubation is reserved for CPAP failure, GCS decline, apnoea, or haemodynamic collapse. She is GCS 15 and has commenced diuresis.",
+          "nextNodeId": "node-monitoring"
+        },
+        {
+          "id": "c6-high-flow",
+          "label": "Increase O2 to 15L via non-rebreather mask and wait 20 more minutes",
+          "isCorrect": false,
+          "feedback": "Simply increasing O2 flow does not address the underlying problem of alveolar flooding and high work of breathing. With rising RR and fatigue, waiting risks respiratory muscle exhaustion and arrest. CPAP provides positive pressure that mechanically supports breathing and reduces pulmonary oedema — high-flow O2 does not. Escalate to CPAP now.",
+          "nextNodeId": "node-monitoring"
+        }
+      ]
+    },
+    {
+      "id": "node-monitoring",
+      "type": "decision",
+      "title": "Monitoring and Ongoing Assessment",
+      "body": "The patient is on CPAP. Over the next 2 hours:\n- SpO2 improves to 96%\n- RR falls to 20\n- Urine output: 800 mL total (excellent diuresis)\n- Repeat BP: 138/84 mmHg\n- HR: 98 bpm\n- She feels significantly better. CPAP removed after 90 minutes.\n\nWhat monitoring is ESSENTIAL over the next 12 hours?",
+      "choices": [
+        {
+          "id": "c7-full-monitoring",
+          "label": "Continuous ECG + SpO2, hourly urine output, 4-hourly U&E/Cr, daily weight, strict fluid balance",
+          "isCorrect": true,
+          "feedback": "Correct comprehensive monitoring for ADHF. Continuous cardiac monitoring detects arrhythmias (common in severe HF). Hourly urine output guides diuresis adequacy. Serial U&E/Cr detects diuresis-related hypokalaemia and worsening renal function (cardiorenal syndrome). Daily weight is the single best surrogate for fluid balance — target 0.5–1 kg/day weight loss. Strict fluid balance (input/output chart) guides further diuretic dosing.",
+          "nextNodeId": "node-disposition"
+        },
+        {
+          "id": "c7-minimal",
+          "label": "Routine obs every 4 hours — she is clinically improving",
+          "isCorrect": false,
+          "feedback": "Insufficient for ADHF. Routine observations miss critical early deterioration. Arrhythmias, worsening renal function (AKI from aggressive diuresis), and electrolyte disturbances (hypokalaemia causing VT) can develop silently. ADHF carries significant in-hospital mortality — continuous monitoring is mandatory, especially in the first 12–24 hours.",
+          "nextNodeId": "node-disposition"
+        },
+        {
+          "id": "c7-echo-only",
+          "label": "Urgent echocardiogram to reassess EF and guide further treatment",
+          "isCorrect": false,
+          "feedback": "Echo is useful and should be performed within 24 hours if no recent study is available, but it does not replace continuous physiological monitoring. EF is already known (30%). Echo findings rarely change acute management when the diagnosis and haemodynamics are already established. Monitoring of urine output, electrolytes, and haemodynamics is more immediately actionable.",
+          "nextNodeId": "node-disposition"
+        }
+      ]
+    },
+    {
+      "id": "node-disposition",
+      "type": "decision",
+      "title": "Disposition Decision",
+      "body": "After 3 hours of treatment:\n- SpO2 96% on 2L nasal prongs\n- RR 18, BP 136/82 mmHg, HR 94 bpm\n- Total urine output: 1.2 L\n- Patient markedly more comfortable, oedema slightly reduced\n- BNP still >5000 pg/mL (expected — lags clinical improvement)\n- Creatinine: 132 µmol/L (mild rise from 118 at presentation)\n- Potassium: 3.3 mmol/L (falling — needs replacement)\n\nWhere should this patient be admitted?",
+      "choices": [
+        {
+          "id": "c8-ccu",
+          "label": "Coronary Care Unit (CCU) / High Dependency Unit for IV diuresis and close monitoring",
+          "isCorrect": true,
+          "feedback": "Correct. This patient has severe ADHF (BNP >5000, NYHA IV at presentation, EF 30%), required CPAP, and has ongoing IV diuresis with monitoring needs. CCU or HDU level care is appropriate for: IV vasoactive therapy, 1:2 or 1:3 nursing ratio for fluid balance monitoring, continuous cardiac monitoring, and rapid response to deterioration. She should remain on IV furosemide until clinical euvolaemia is achieved, then transition to optimised oral therapy before discharge. Potassium replacement must be initiated now (K+ 3.3 mmol/L).",
+          "nextNodeId": "node-outcome"
+        },
+        {
+          "id": "c8-ward",
+          "label": "General medical ward — she has responded well and is stable",
+          "isCorrect": false,
+          "feedback": "Premature. While she has improved, she remains on IV diuresis, has a mildly rising creatinine, hypokalaemia, and a severely reduced EF (30%). She required CPAP earlier this shift. The first 12–24 hours of IV diuresis carry highest risk of electrolyte disturbances and haemodynamic shifts. CCU or HDU is required until she is clearly on a stable trajectory with transition to oral therapy commenced.",
+          "nextNodeId": "node-outcome"
+        },
+        {
+          "id": "c8-discharge",
+          "label": "Discharge home with doubled oral furosemide and GP review in 2 days",
+          "isCorrect": false,
+          "feedback": "Unsafe. This patient presented with SpO2 88%, required CPAP, has BNP >5000 pg/mL, ongoing renal dysfunction, and hypokalaemia after only 3 hours of treatment. She is far from clinical euvolaemia. Early discharge from acute HF is associated with very high 30-day readmission rates. She requires inpatient IV diuresis, electrolyte management, medication optimisation, and heart failure education before any discharge consideration.",
+          "nextNodeId": "node-outcome"
+        }
+      ]
+    },
+    {
+      "id": "node-outcome",
+      "type": "outcome",
+      "title": "Case Summary",
+      "body": "Well managed. The patient is admitted to CCU for ongoing IV furosemide, continuous cardiac monitoring, and electrolyte management. Potassium replacement is commenced. Bisoprolol is continued at the same dose. Ramipril is temporarily held given the mild creatinine rise and will be restarted once renal function stabilises.\n\nOver 48 hours:\n- Total fluid removed: 4.2 L\n- Weight down 3.8 kg\n- SpO2 97% on room air\n- Creatinine stabilises at 126 µmol/L\n- Potassium normalises to 4.1 mmol/L\n- Transitioned to oral furosemide 80 mg daily\n\nOn day 3, HF nurse education is provided covering fluid restriction (1.5 L/day), daily weight monitoring (present to ED if >2 kg gain in 2 days), salt restriction, and medication compliance. A repeat echocardiogram confirms EF 28–30% with no new wall motion abnormality.\n\nDischarge planning includes outpatient cardiology review in 2 weeks and consideration of device therapy (ICD/CRT-D) given persistently low EF on optimised medical therapy.\n\nKey learning points:\n1. ADHF management begins with O2 + positioning — before any drugs or investigations\n2. IV furosemide is superior to oral in acute decompensation due to guaranteed absorption and immediate venodilation\n3. Never give beta-blockers acutely in decompensated HF, and never give IV fluids to a volume-overloaded patient\n4. CPAP should be escalated early in persistent respiratory failure — it reduces intubation rates\n5. Identify and treat the precipitant (non-compliance, dietary excess, infection, arrhythmia)\n6. Serial electrolytes and renal function are mandatory during aggressive IV diuresis",
+      "isTerminal": true
+    }
+  ],
+  "diseaseMap": {
+    "presenting": [
+      "Acute dyspnoea / breathlessness at rest",
+      "Orthopnoea (cannot lie flat)",
+      "Paroxysmal nocturnal dyspnoea",
+      "Bilateral peripheral oedema",
+      "Elevated JVP",
+      "S3 gallop on auscultation",
+      "Bilateral basal crackles",
+      "Tachycardia",
+      "Diaphoresis"
+    ],
+    "bestFirstStep": "O2 supplementation + sit patient upright + IV furosemide",
+    "keyInvestigations": [
+      "BNP or NT-proBNP (diagnosis and severity)",
+      "Chest X-ray (pulmonary oedema pattern, cardiomegaly)",
+      "ECG (arrhythmia, ischaemia as precipitant)",
+      "U&E / Creatinine (renal function before diuretics)",
+      "Troponin (exclude ACS as precipitant)",
+      "FBC (anaemia as precipitant)"
+    ],
+    "treatment": {
+      "firstLine": [
+        "IV loop diuretic (furosemide) — 1–2x oral daily dose IV",
+        "Supplemental O2 to maintain SpO2 94–98%",
+        "Upright positioning / legs dependent",
+        "GTN infusion if BP ≥110 mmHg systolic (vasodilation, preload reduction)"
+      ],
+      "escalation": [
+        "CPAP for persistent respiratory failure (SpO2 <94%, RR >25, increased work of breathing) despite medical therapy",
+        "Intubation and mechanical ventilation for CPAP failure, GCS decline, or haemodynamic collapse",
+        "Inotropes (dobutamine) if low cardiac output / cardiogenic shock develops"
+      ],
+      "avoid": [
+        "IV fluids in volume-overloaded patient",
+        "Initiating or increasing beta-blockers during acute decompensation",
+        "Oral diuretics when IV access is available in acute pulmonary oedema",
+        "Lying patient flat"
+      ]
+    },
+    "complications": [
+      "Cardiogenic shock (inadequate cardiac output → end-organ hypoperfusion)",
+      "Acute kidney injury / cardiorenal syndrome (from low perfusion pressure + aggressive diuresis)",
+      "Life-threatening arrhythmia (VT/VF — especially with hypokalaemia)",
+      "Respiratory failure requiring intubation",
+      "Electrolyte disturbances: hypokalaemia, hyponatraemia, hypomagnesaemia"
+    ],
+    "commonPrecipitants": [
+      "Medication non-compliance (diuretics, ACEi)",
+      "Dietary excess (salt, fluid)",
+      "New arrhythmia (atrial fibrillation most common)",
+      "Acute coronary syndrome",
+      "Infection / sepsis",
+      "Anaemia",
+      "Thyroid disease",
+      "NSAID use (fluid retention, renal impairment)"
+    ]
+  },
+  "guideline": {
+    "name": "Heart Failure Classification and Management",
+    "source": "ESC Guidelines for the Diagnosis and Treatment of Acute and Chronic Heart Failure 2021",
+    "nyhaClassification": {
+      "description": "The New York Heart Association (NYHA) Functional Classification categorises heart failure severity based on symptoms and functional limitation. It is a clinical assessment tool — not a calculator — based on the clinician's interpretation of the patient's reported symptoms and exercise tolerance.",
+      "classes": [
+        {
+          "class": "NYHA Class I",
+          "description": "No limitation of physical activity. Ordinary physical activity does not cause undue fatigue, palpitation, or dyspnoea.",
+          "example": "Patient walks long distances and climbs stairs without symptoms."
+        },
+        {
+          "class": "NYHA Class II",
+          "description": "Slight limitation of physical activity. Comfortable at rest. Ordinary physical activity results in fatigue, palpitation, or dyspnoea.",
+          "example": "Patient is breathless when walking briskly on the flat or climbing stairs."
+        },
+        {
+          "class": "NYHA Class III",
+          "description": "Marked limitation of physical activity. Comfortable at rest. Less than ordinary activity causes fatigue, palpitation, or dyspnoea.",
+          "example": "Patient is breathless walking from room to room or dressing themselves."
+        },
+        {
+          "class": "NYHA Class IV",
+          "description": "Unable to carry on any physical activity without discomfort. Symptoms of heart failure at rest. Discomfort increases with any physical activity.",
+          "example": "Patient is breathless at rest, unable to lie flat. This patient at presentation."
+        }
+      ],
+      "clinicalNote": "NYHA class guides prognosis, treatment intensity, and device therapy eligibility. This patient presented as NYHA Class IV (symptoms at rest, orthopnoea). The goal of hospitalisation is to achieve at least NYHA Class II–III at discharge on optimised therapy. Patients with persistently low EF (<35%) and NYHA Class II–III despite optimal medical therapy should be referred for ICD and/or CRT-D consideration."
+    },
+    "keyRecommendations": [
+      "IV loop diuretics are first-line for congestion relief in acute HF with fluid overload (ESC Class I, Level B)",
+      "IV vasodilators (nitrates) reduce symptoms and haemodynamic congestion in acute HF with SBP >110 mmHg (ESC Class IIa, Level B)",
+      "Non-invasive ventilation (CPAP/BiPAP) reduces respiratory distress and intubation need in acute cardiogenic pulmonary oedema (ESC Class IIa, Level A)",
+      "Beta-blockers should be continued cautiously in stable patients admitted with decompensated HF; dose reduction or temporary withdrawal considered only in haemodynamic instability (ESC Class IIa, Level C)",
+      "Routine use of opiates in acute HF is not recommended (ESC Class III, Level B)"
+    ]
+  },
+  "availableBadges": [
+    {
+      "id": "badge-stabilizer",
+      "label": "First Responder",
+      "description": "Correctly prioritised O2 and positioning as the first intervention",
+      "icon": "oxygen"
+    },
+    {
+      "id": "badge-diagnostician",
+      "label": "Pattern Recognition",
+      "description": "Correctly identified ADHF from the clinical and investigation picture",
+      "icon": "stethoscope"
+    },
+    {
+      "id": "badge-diuresis",
+      "label": "Fluid Control",
+      "description": "Correctly selected IV furosemide and avoided IV fluids in volume overload",
+      "icon": "droplet"
+    },
+    {
+      "id": "badge-cpap",
+      "label": "Non-Invasive Hero",
+      "description": "Escalated to CPAP appropriately before considering intubation",
+      "icon": "mask"
+    },
+    {
+      "id": "badge-no-bblocker",
+      "label": "Do No Harm",
+      "description": "Avoided the trap of increasing beta-blockers in acute decompensated HF",
+      "icon": "shield"
+    },
+    {
+      "id": "badge-disposition",
+      "label": "Right Place, Right Time",
+      "description": "Correctly admitted the patient to CCU-level care for ongoing management",
+      "icon": "hospital"
+    },
+    {
+      "id": "badge-perfect-run",
+      "label": "Sharp As A Tack",
+      "description": "Completed the case with all correct decisions — no harm caused",
+      "icon": "star"
+    }
+  ],
+  "disclaimer": "This clinical case is created for educational purposes only. It is designed to simulate clinical reasoning in a game environment and does not constitute medical advice. Management decisions in real clinical practice must be made by qualified healthcare professionals based on individual patient assessment, local guidelines, and institutional protocols. Drug doses, investigation reference ranges, and treatment thresholds may vary by jurisdiction and clinical context. Always consult current local guidelines and senior clinical colleagues when managing real patients."
+}

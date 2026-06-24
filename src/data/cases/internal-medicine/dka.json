@@ -1,0 +1,409 @@
+{
+  "id": "dka",
+  "specialty": "Internal Medicine",
+  "title": "Fruity Breath and Confusion",
+  "subtitle": "Diabetic Ketoacidosis",
+  "difficulty": "advanced",
+  "estimatedMinutes": 20,
+  "patient": {
+    "age": 22,
+    "sex": "F",
+    "chiefComplaint": "Confusion and vomiting with fruity-smelling breath",
+    "history": "22-year-old female with known Type 1 Diabetes Mellitus brought in by her flatmate after 24 hours of vomiting, increasing confusion, and fast breathing. Flatmate reports the patient has been stressed about exams and may have reduced her insulin doses over the past 3 days.",
+    "initialVitals": {
+      "bp": "105/70",
+      "hr": 122,
+      "rr": 28,
+      "spo2": 97,
+      "temp": 37.6,
+      "gcs": 12
+    },
+    "symptoms": [
+      "Confusion",
+      "Vomiting",
+      "Kussmaul breathing (deep, laboured respirations)",
+      "Fruity/acetone breath",
+      "Abdominal pain",
+      "Polyuria and polydipsia for 3 days",
+      "Weakness and lethargy"
+    ],
+    "redFlags": [
+      "GCS 12 — reduced consciousness",
+      "Kussmaul breathing — severe acidosis",
+      "HR 122 — tachycardia indicating dehydration/shock",
+      "BP 105/70 — borderline hypotension"
+    ],
+    "backgroundHistory": "Type 1 DM diagnosed age 8. On basal-bolus insulin (glargine + aspart). No other medications. No known allergies. Non-smoker. Student."
+  },
+  "startNodeId": "initial-assessment",
+  "nodes": [
+    {
+      "id": "initial-assessment",
+      "category": "Assessment",
+      "prompt": "A 22-year-old woman with Type 1 DM is brought in confused and vomiting. She has deep, laboured breathing and her breath smells sweet/fruity. GCS is 12. What is your FIRST priority?",
+      "context": "Vitals: BP 105/70, HR 122, RR 28, SpO2 97%, Temp 37.6°C, GCS 12. She is visibly dehydrated — sunken eyes, dry mucous membranes, reduced skin turgor.",
+      "choices": [
+        {
+          "id": "iv-access-fluids",
+          "text": "Establish IV access (two large-bore cannulae), draw bloods, and begin immediate fluid resuscitation with 0.9% saline",
+          "correct": true,
+          "feedback": "Correct. DKA management begins with IV access and fluid resuscitation. This patient is significantly dehydrated and hypotensive. Two large-bore cannulae allow simultaneous fluid delivery and blood sampling. This is the correct first step — before insulin.",
+          "nextNodeId": "bloods-investigation",
+          "timeAdvanceMin": 10,
+          "vitalsDelta": { "hr": -5, "bp": "108/72" },
+          "scoreDelta": 15,
+          "educationalNote": "In DKA, fluids come before insulin. Fluid resuscitation corrects dehydration, improves renal perfusion, and begins to lower glucose. Rushing to give insulin before adequate fluid resuscitation can precipitate dangerous hypokalaemia."
+        },
+        {
+          "id": "insulin-bolus-immediately",
+          "text": "Give an IV insulin bolus of 10 units immediately to bring down the glucose",
+          "correct": false,
+          "feedback": "Incorrect. IV insulin boluses are NOT recommended in DKA management. A fixed-rate insulin infusion (FRIII) is started at 0.1 units/kg/hr — but only AFTER IV fluids have been commenced and potassium has been checked. An insulin bolus risks precipitating life-threatening hypokalaemia.",
+          "nextNodeId": "bloods-investigation",
+          "timeAdvanceMin": 15,
+          "vitalsDelta": { "hr": 5 },
+          "scoreDelta": -15,
+          "educationalNote": "Insulin boluses in DKA are associated with increased risk of hypokalaemia and cerebral oedema. Current UK DKA guidelines (JBDS 2023) recommend a fixed-rate IV insulin infusion at 0.1 units/kg/hr, commenced only after IV fluids are running."
+        },
+        {
+          "id": "oral-glucose",
+          "text": "Check a fingerprick glucose. If low, give oral glucose",
+          "correct": false,
+          "feedback": "Incorrect. While a fingerprick glucose is appropriate, this patient has DKA — glucose will be very HIGH, not low. More importantly, this patient has GCS 12 and is vomiting — oral intake is contraindicated. The priority is IV access and fluids.",
+          "nextNodeId": "bloods-investigation",
+          "timeAdvanceMin": 8,
+          "scoreDelta": -10,
+          "educationalNote": "DKA is characterised by hyperglycaemia (usually >11mmol/L), ketonaemia (≥3mmol/L or urine ketones ≥2+), and metabolic acidosis (pH <7.3 or bicarbonate <15). Never give oral fluids to a confused or vomiting patient."
+        }
+      ]
+    },
+    {
+      "id": "bloods-investigation",
+      "category": "Investigation",
+      "prompt": "IV access is established. Bloods are drawn and sent. A bedside VBG is available. What do the results show and what is your diagnosis?",
+      "context": "VBG: pH 7.12, pCO2 2.1 kPa (low — compensatory), HCO3 8 mmol/L, Glucose 28 mmol/L, Ketones 4.8 mmol/L. Na+ 132, K+ 5.8 mmol/L, Cl- 98. Urea 9.2, Creatinine 105. Fingerprick glucose: 28.4 mmol/L. Urine dip: ketones +++, glucose +++.",
+      "choices": [
+        {
+          "id": "diagnose-dka",
+          "text": "Diagnose DKA: glucose >11mmol/L + ketonaemia ≥3mmol/L + pH <7.3. Note K+ 5.8 — will need close monitoring as it will fall with insulin and fluid treatment",
+          "correct": true,
+          "feedback": "Excellent. This meets the diagnostic criteria for DKA: hyperglycaemia (28mmol/L), significant ketonaemia (4.8mmol/L), and severe metabolic acidosis (pH 7.12). The K+ of 5.8mmol/L looks high but total body potassium is actually depleted — as acidosis corrects and insulin is given, K+ will drop rapidly.",
+          "nextNodeId": "fluid-resuscitation",
+          "timeAdvanceMin": 5,
+          "scoreDelta": 15,
+          "educationalNote": "DKA diagnostic triad: Blood glucose >11mmol/L (or known DM) + Blood ketones ≥3mmol/L or urine ketones ≥2+ + pH <7.3 or bicarbonate <15mmol/L. The apparent hyperkalaemia in DKA is due to acidosis driving K+ out of cells — total body K+ is always depleted."
+        },
+        {
+          "id": "diagnose-hhs",
+          "text": "This is likely HHS given the high glucose. Correct sodium slowly over 48 hours",
+          "correct": false,
+          "feedback": "Incorrect. This is DKA, not HHS. Key distinguishing features: significant ketonaemia (4.8mmol/L), severe acidosis (pH 7.12), young patient with Type 1 DM, and glucose is high but not in the extreme range typical of HHS (>35mmol/L with osmolality >320). HHS typically lacks significant ketonaemia and acidosis.",
+          "nextNodeId": "fluid-resuscitation",
+          "timeAdvanceMin": 10,
+          "scoreDelta": -10,
+          "educationalNote": "DKA vs HHS: DKA has significant ketonaemia and acidosis; HHS has extreme hyperglycaemia (often >35mmol/L), hyperosmolality (>320 mOsm/kg), minimal/no ketonaemia, and no significant acidosis. They can occasionally co-exist (mixed DKA/HHS)."
+        },
+        {
+          "id": "dismiss-potassium",
+          "text": "Diagnose DKA. K+ is 5.8 so no need to worry about potassium — start insulin immediately",
+          "correct": false,
+          "feedback": "Dangerous. While K+ is currently 5.8mmol/L, this is deceptively high due to acidosis. As insulin is given and acidosis corrects, K+ will shift back into cells and fall rapidly — potentially to dangerously low levels. K+ must be monitored hourly and replaced proactively once it drops below 5.5mmol/L.",
+          "nextNodeId": "fluid-resuscitation",
+          "timeAdvanceMin": 5,
+          "scoreDelta": -20,
+          "educationalNote": "CRITICAL: K+ in DKA. The elevated K+ on admission is due to transcellular shift from acidosis. Insulin drives K+ back into cells. Failure to monitor and replace potassium is a leading cause of DKA-related mortality. Do NOT give insulin if K+ <3.5mmol/L until corrected."
+        }
+      ]
+    },
+    {
+      "id": "fluid-resuscitation",
+      "category": "Treatment",
+      "prompt": "DKA confirmed. Fluids are running. 1L of 0.9% saline has been given over the first hour. What is your fluid strategy going forward?",
+      "context": "After 1L 0.9% saline: BP 112/74, HR 115, still tachycardic. Glucose now 26mmol/L. K+ on repeat is 5.4mmol/L. The patient is still confused.",
+      "choices": [
+        {
+          "id": "correct-fluid-strategy",
+          "text": "Continue 0.9% saline at 500mL/hr for next 2 hours, then reduce to 250mL/hr. Switch to 0.45% saline + 5% glucose when blood glucose falls to ≤14mmol/L",
+          "correct": true,
+          "feedback": "Correct fluid strategy. The initial phase uses 0.9% saline to restore circulating volume. Once glucose falls to ≤14mmol/L, switch to 0.45% saline with 5% glucose (to prevent hypoglycaemia while continuing insulin). Continue insulin until ketones <0.6mmol/L and pH >7.3 — NOT just until glucose normalises.",
+          "nextNodeId": "insulin-strategy",
+          "timeAdvanceMin": 120,
+          "vitalsDelta": { "hr": -8, "bp": "118/76" },
+          "scoreDelta": 15,
+          "educationalNote": "DKA fluid replacement: 1L over 1hr → 1L over 2hrs → 1L over 4hrs → 1L over 4hrs → 1L over 8hrs (adjust for patient weight and comorbidities). The goal is to clear ketones — the glucose/ketone targets are: glucose ≤14mmol/L, ketones falling by ≥0.5mmol/L/hr, bicarbonate rising by ≥3mmol/L/2hrs."
+        },
+        {
+          "id": "give-5-percent-dextrose-early",
+          "text": "Switch to 5% dextrose now to prevent hypoglycaemia",
+          "correct": false,
+          "feedback": "Too early. 5% dextrose is only introduced once glucose falls to ≤14mmol/L — this allows continued insulin infusion to clear ketones without causing hypoglycaemia. Switching to glucose now when glucose is still 26mmol/L would delay ketone clearance and worsen the acidosis.",
+          "nextNodeId": "insulin-strategy",
+          "timeAdvanceMin": 30,
+          "scoreDelta": -10,
+          "educationalNote": "The treatment goal in DKA is ketone clearance, not just glucose normalisation. Glucose falls faster than ketones. Adding dextrose too early just to target glucose will keep the patient in metabolic acidosis for longer."
+        },
+        {
+          "id": "stop-fluids-glucose-high",
+          "text": "Hold fluids — glucose is still high, fluids will make it worse",
+          "correct": false,
+          "feedback": "Incorrect. Fluids are essential in DKA. They restore circulating volume, improve renal perfusion (which aids glucose excretion), dilute the acidaemia, and without adequate fluids, insulin cannot be effective. Hyperglycaemia in DKA is treated with insulin — but fluids must continue.",
+          "nextNodeId": "insulin-strategy",
+          "timeAdvanceMin": 20,
+          "vitalsDelta": { "hr": 8 },
+          "scoreDelta": -15,
+          "educationalNote": "Dehydration in DKA is typically 5-10 litres. Fluid replacement is the cornerstone of treatment. It reduces glucose, improves acidosis, and restores renal function."
+        }
+      ]
+    },
+    {
+      "id": "insulin-strategy",
+      "category": "Treatment",
+      "prompt": "Fluid resuscitation is underway. Now you need to address insulin. K+ on latest check is 4.2mmol/L. What is the correct insulin strategy?",
+      "context": "Current: Glucose 24mmol/L, Ketones 4.2mmol/L, K+ 4.2mmol/L, pH 7.17. The patient's regular insulin doses are not available as she ran out 3 days ago.",
+      "choices": [
+        {
+          "id": "correct-insulin-friii",
+          "text": "Start a Fixed-Rate IV Insulin Infusion (FRIII) at 0.1 units/kg/hr (approximately 5-6 units/hr for this patient). Do NOT give a bolus. Continue her long-acting insulin if she normally takes it",
+          "correct": true,
+          "feedback": "Correct. The FRIII at 0.1 units/kg/hr is the standard approach. Avoid boluses. Continue any background long-acting insulin (e.g. glargine) if the patient normally takes it — this prevents rebound ketosis. K+ is 4.2 so safe to start insulin — begin potassium replacement in the fluids.",
+          "nextNodeId": "potassium-management",
+          "timeAdvanceMin": 10,
+          "scoreDelta": 20,
+          "triggerBadge": "insulin-master",
+          "educationalNote": "FRIII = 50 units soluble insulin in 50mL 0.9% saline at 0.1 units/kg/hr. Targets: ketones falling ≥0.5mmol/L/hr, glucose falling ≥3mmol/L/hr, bicarbonate rising ≥3mmol/L/2hrs. If not hitting targets, increase FRIII rate. If glucose falls faster than ketones, add glucose — don't reduce insulin."
+        },
+        {
+          "id": "insulin-bolus-repeat",
+          "text": "Give a 10 unit IV insulin bolus now to rapidly reduce glucose, then start a maintenance infusion",
+          "correct": false,
+          "feedback": "Incorrect and potentially dangerous. Insulin boluses are not recommended in DKA. They cause rapid glucose and potassium shifts that are difficult to control. The FRIII at 0.1 units/kg/hr provides predictable, controllable insulin delivery. An IV bolus risks precipitous hypokalaemia.",
+          "nextNodeId": "potassium-management",
+          "timeAdvanceMin": 15,
+          "vitalsDelta": { "hr": 10 },
+          "scoreDelta": -20,
+          "educationalNote": "The JBDS 2023 DKA guidelines explicitly recommend against IV insulin boluses. FRIII provides a steady, predictable reduction in ketones and glucose."
+        },
+        {
+          "id": "subcutaneous-insulin-only",
+          "text": "Restart her usual subcutaneous insulin regimen — she just needs her regular doses",
+          "correct": false,
+          "feedback": "Incorrect in the acute setting. Subcutaneous insulin has unreliable absorption in a shocked, dehydrated patient with poor peripheral perfusion. IV insulin is required until DKA has resolved. SC insulin is only restarted at transition, once the patient is eating and ketones have cleared.",
+          "nextNodeId": "potassium-management",
+          "timeAdvanceMin": 10,
+          "scoreDelta": -15,
+          "educationalNote": "SC insulin absorption is impaired in haemodynamically compromised patients. IV insulin ensures reliable delivery and allows rapid titration during the acute phase of DKA."
+        }
+      ]
+    },
+    {
+      "id": "potassium-management",
+      "category": "Treatment",
+      "prompt": "FRIII is running. K+ was 4.2mmol/L an hour ago. Two hours later, repeat K+ comes back as 3.1mmol/L. The patient is now showing U-waves on the monitor. What do you do?",
+      "context": "Current: Glucose 19mmol/L, Ketones 3.6mmol/L, K+ 3.1mmol/L (fell from 4.2 with insulin). ECG: sinus tachycardia, U-waves visible. BP 120/78, HR 110.",
+      "choices": [
+        {
+          "id": "correct-k-replacement",
+          "text": "Increase the rate of potassium replacement in IV fluids. Do NOT stop the insulin. Add 40mmol KCl per litre of IV fluid. Monitor K+ every hour.",
+          "correct": true,
+          "feedback": "Correct. K+ is falling due to insulin driving it into cells. You must replace it aggressively. Do NOT stop insulin — this would allow ketoacidosis to worsen. Add KCl to IV fluids. The target K+ range is 4.0–5.0mmol/L. Hourly monitoring is essential.",
+          "nextNodeId": "monitoring-targets",
+          "timeAdvanceMin": 60,
+          "vitalsDelta": { "hr": -5 },
+          "scoreDelta": 20,
+          "educationalNote": "DKA potassium replacement protocol: K+ >5.5 = no KCl; K+ 3.5–5.5 = 40mmol KCl per litre; K+ <3.5 = STOP INSULIN, replace K+ urgently, recheck before restarting insulin. Hypokalaemia in DKA is the leading cause of cardiac arrest."
+        },
+        {
+          "id": "stop-insulin-k-low",
+          "text": "Stop the insulin infusion immediately — K+ is too low to continue",
+          "correct": false,
+          "feedback": "Partially correct thinking but wrong action for K+ of 3.1mmol/L. Insulin should only be stopped if K+ falls BELOW 3.5mmol/L. At 3.1mmol/L you should pause insulin AND aggressively replace K+ until it rises above 3.5mmol/L. However, if K+ were 3.2 and falling, stopping insulin temporarily while replacing K+ is appropriate.",
+          "nextNodeId": "monitoring-targets",
+          "timeAdvanceMin": 30,
+          "scoreDelta": -5,
+          "educationalNote": "Threshold for stopping insulin: K+ <3.5mmol/L. At 3.1mmol/L you should stop insulin temporarily, give 40mmol KCl over 1 hour IV, recheck K+, and restart insulin once K+ >3.5mmol/L."
+        },
+        {
+          "id": "ignore-k-minor-drop",
+          "text": "K+ of 3.1 is only mildly low — continue as is and recheck in 4 hours",
+          "correct": false,
+          "feedback": "Dangerous. In DKA, K+ can fall rapidly with insulin treatment. A K+ of 3.1mmol/L with U-waves on ECG indicates significant hypokalaemia. Waiting 4 hours risks further falls to life-threatening levels. Hypokalaemia-induced ventricular arrhythmias are a leading cause of DKA mortality.",
+          "nextNodeId": "monitoring-targets",
+          "timeAdvanceMin": 30,
+          "vitalsDelta": { "hr": 15 },
+          "scoreDelta": -25,
+          "educationalNote": "Hypokalaemia in DKA is potentially fatal. K+ can drop from 5.8 to 2.5 within hours of starting insulin. Hourly K+ monitoring is mandatory in the first 6 hours of DKA treatment."
+        }
+      ]
+    },
+    {
+      "id": "monitoring-targets",
+      "category": "Monitoring",
+      "prompt": "K+ is now being replaced. The team asks you to set the monitoring targets. What are the correct biochemical targets for DKA resolution?",
+      "context": "Current (4 hours into treatment): Glucose 15mmol/L, Ketones 2.8mmol/L, K+ 3.9mmol/L, pH 7.22, HCO3 12. Patient is more alert — GCS now 14.",
+      "choices": [
+        {
+          "id": "correct-targets",
+          "text": "Resolution targets: Blood ketones <0.6mmol/L AND pH >7.3 AND bicarbonate >18mmol/L. Glucose target ≤14mmol/L (to switch fluid). Check VBG 2-hourly, glucose hourly, K+ hourly for first 6 hours",
+          "correct": true,
+          "feedback": "Correct. DKA is resolved when ketones clear and acidosis corrects — NOT just when glucose normalises. The glucose falls faster than ketones; this is why the 0.45% saline + 5% glucose is added when glucose reaches ≤14mmol/L while insulin continues to clear ketones.",
+          "nextNodeId": "transition-to-sc",
+          "timeAdvanceMin": 120,
+          "vitalsDelta": { "hr": -10, "bp": "125/80" },
+          "scoreDelta": 15,
+          "educationalNote": "DKA resolution criteria (JBDS 2023): blood ketones <0.6mmol/L + venous pH >7.3 + bicarbonate >18mmol/L. Do NOT use glucose normalisation alone as the endpoint. Insulin must continue until these metabolic targets are met."
+        },
+        {
+          "id": "wrong-targets-glucose-only",
+          "text": "Once glucose is below 10mmol/L and the patient feels better, DKA is resolved — stop insulin",
+          "correct": false,
+          "feedback": "Incorrect and dangerous. Glucose normalises much faster than ketones and acidosis. Stopping insulin when glucose is normal but ketones are still elevated will allow the DKA to re-establish. Patients can still be in DKA with a normal glucose ('euglycaemic DKA') — the acidosis and ketones define DKA, not the glucose.",
+          "nextNodeId": "transition-to-sc",
+          "timeAdvanceMin": 30,
+          "scoreDelta": -20,
+          "educationalNote": "Euglycaemic DKA can occur in patients who have received fluids/insulin but in whom ketone clearance is incomplete. NEVER stop insulin based on glucose alone. Check pH, bicarbonate, and ketones."
+        },
+        {
+          "id": "check-vbg-only-once",
+          "text": "Recheck VBG once in 6 hours — no need for hourly glucose monitoring",
+          "correct": false,
+          "feedback": "Insufficient monitoring. In the first 6 hours of DKA, glucose should be checked hourly and VBG every 2 hours. This allows rapid detection of hypoglycaemia, worsening acidosis, or failure to hit ketone clearance targets — all of which require immediate management changes.",
+          "nextNodeId": "transition-to-sc",
+          "timeAdvanceMin": 20,
+          "scoreDelta": -10,
+          "educationalNote": "DKA monitoring schedule: glucose hourly, VBG 2-hourly, U&E at 0, 2, 6, 12, 24 hours, K+ hourly for first 6 hours. Failure to monitor adequately is a significant contributor to DKA-related adverse outcomes."
+        }
+      ]
+    },
+    {
+      "id": "transition-to-sc",
+      "category": "Disposition",
+      "prompt": "After 14 hours, DKA has resolved: ketones 0.4mmol/L, pH 7.34, HCO3 20, glucose 9mmol/L. The patient is alert, GCS 15, asking for food. How do you transition from IV to SC insulin?",
+      "context": "Patient is now fully alert, tolerating sips. She wants to know when she can eat. Her usual regime is glargine 20 units at night + aspart with meals.",
+      "choices": [
+        {
+          "id": "correct-transition",
+          "text": "Wait until the patient has eaten a meal, then give her usual SC insulin (aspart with the meal). Give her usual long-acting insulin (glargine) and stop the FRIII 1 hour AFTER the first SC dose to allow overlap",
+          "correct": true,
+          "feedback": "Perfect transition. The 1-hour overlap prevents rebound ketosis — IV insulin has a very short half-life (minutes) so stopping it before SC insulin is fully absorbed risks ketone reaccumulation. Give SC insulin with food, then stop IV 1 hour later. Ensure she has DKA sick-day rules and follow-up arranged.",
+          "nextNodeId": "final-disposition",
+          "timeAdvanceMin": 30,
+          "scoreDelta": 20,
+          "triggerBadge": "dka-resolved",
+          "educationalNote": "Transition from IV to SC insulin: ensure patient is eating + ketones <0.6mmol/L + pH >7.3. Give SC dose with meal, continue FRIII for 1 hour after first SC injection. If long-acting insulin was omitted, restart it now. Provide sick-day rules at discharge."
+        },
+        {
+          "id": "stop-iv-restart-sc-immediately",
+          "text": "DKA has resolved — stop the IV insulin now and restart her usual SC insulin straight away",
+          "correct": false,
+          "feedback": "Nearly correct but misses a critical step. Stopping IV insulin immediately without a 1-hour overlap risks rebound ketosis because IV insulin has a very short half-life. Always overlap SC and IV insulin for 1 hour at transition.",
+          "nextNodeId": "final-disposition",
+          "timeAdvanceMin": 20,
+          "scoreDelta": -10,
+          "educationalNote": "IV insulin half-life is approximately 4-5 minutes. Without SC insulin on board, stopping IV abruptly leaves the patient with no insulin coverage within 15-20 minutes — enough time for ketogenesis to restart."
+        },
+        {
+          "id": "keep-iv-insulin-overnight",
+          "text": "Keep the IV insulin running overnight and convert to SC tomorrow morning when the team reviews her",
+          "correct": false,
+          "feedback": "Unnecessarily prolonged. DKA has fully resolved and she is eating. Keeping IV insulin unnecessarily risks hypoglycaemia and prolonged hospitalisation. The transition criteria have been met — transition now with appropriate SC overlap.",
+          "nextNodeId": "final-disposition",
+          "timeAdvanceMin": 60,
+          "scoreDelta": -5,
+          "educationalNote": "Prolonged IV insulin without indication increases hypoglycaemia risk and ties up HDU/level 2 resources. Once resolution criteria are met and the patient is tolerating oral intake, transition promptly."
+        }
+      ]
+    },
+    {
+      "id": "final-disposition",
+      "category": "Disposition",
+      "prompt": "The patient has been transitioned to SC insulin and has eaten a meal. What is the most important thing to ensure before discharge?",
+      "context": "She is now well, GCS 15, eating and drinking. Glucose 8.2mmol/L on her normal regime. She admits she stopped her insulin because she felt it 'wasn't working' when she was stressed.",
+      "isTerminal": true,
+      "choices": [
+        {
+          "id": "sick-day-rules-education",
+          "text": "Provide sick-day rules: never stop insulin when unwell, increase monitoring, know when to seek help. Arrange urgent diabetes nurse follow-up and review her insulin regime",
+          "correct": true,
+          "feedback": "Correct and crucial. Most DKA admissions are preventable. Sick-day rules (NEVER stop insulin, increase monitoring, check ketones, seek help if ketones >1.5mmol/L or persistent vomiting) can prevent re-admission. This patient needs education about insulin omission being the most common precipitant of DKA.",
+          "nextNodeId": null,
+          "timeAdvanceMin": 30,
+          "scoreDelta": 20,
+          "triggerBadge": "educator",
+          "educationalNote": "DKA is preventable in most cases. Sick-day rules: (1) Never stop insulin when ill — may need MORE. (2) Monitor glucose 4-hourly. (3) Check ketones if glucose >15mmol/L. (4) Seek help if unable to eat/drink, ketones >3mmol/L, or vomiting persists. (5) Know emergency contacts."
+        },
+        {
+          "id": "discharge-no-education",
+          "text": "Discharge her with a clinic letter. She is medically fit.",
+          "correct": false,
+          "feedback": "Medically she may be fit for discharge, but missing the educational intervention is a significant omission. Without sick-day rule education, this patient is at high risk of re-admission — possibly with a more severe episode. Education is a core part of DKA management.",
+          "nextNodeId": null,
+          "timeAdvanceMin": 10,
+          "scoreDelta": -15,
+          "educationalNote": "Re-admission rates for DKA are high (20-30% within 12 months) and largely preventable. Every DKA admission is an opportunity to provide life-saving education about sick-day management and insulin continuation."
+        }
+      ]
+    }
+  ],
+  "diseaseMap": {
+    "presenting": [
+      "Hyperglycaemia (glucose >11mmol/L)",
+      "Ketonaemia (≥3mmol/L) or ketonuria (≥2+)",
+      "Metabolic acidosis (pH <7.3 or bicarbonate <15mmol/L)",
+      "Kussmaul breathing",
+      "Fruity/acetone breath",
+      "Vomiting and abdominal pain",
+      "Reduced consciousness (GCS may be impaired)"
+    ],
+    "redFlags": [
+      "GCS <12",
+      "K+ <3.5mmol/L (risk of cardiac arrhythmia)",
+      "pH <7.1 (severe acidosis)",
+      "SpO2 <94% (consider aspiration)",
+      "Systolic BP <90mmHg",
+      "Persistent vomiting preventing fluid intake"
+    ],
+    "bestFirstStep": "IV access + fluid resuscitation with 0.9% saline (before insulin)",
+    "bestInvestigation": "VBG — gives pH, bicarbonate, glucose, ketones, and electrolytes rapidly at bedside",
+    "diagnosis": "Diabetic Ketoacidosis (DKA)",
+    "treatment": "0.9% saline IV + Fixed-Rate IV Insulin Infusion (0.1 units/kg/hr) + Potassium replacement + Switch to 0.45% saline/5% dextrose when glucose ≤14mmol/L",
+    "followUp": "Diabetes nurse review, sick-day rules education, insulin regime optimisation, HbA1c check",
+    "complications": [
+      "Hypokalaemia (life-threatening — leading cause of DKA cardiac arrest)",
+      "Hypoglycaemia (from excessive insulin)",
+      "Cerebral oedema (especially if glucose corrected too rapidly — more common in children)",
+      "Aspiration pneumonia (reduced GCS + vomiting)",
+      "AKI (from dehydration)",
+      "Thromboembolism"
+    ],
+    "guidelineRef": "JBDS (Joint British Diabetes Societies) DKA Guidelines 2023"
+  },
+  "guideline": {
+    "title": "DKA Management — JBDS 2023 Summary",
+    "body": "DIAGNOSTIC CRITERIA\n• Blood glucose >11mmol/L (or known DM)\n• Blood ketones ≥3mmol/L OR urine ketones ≥2+\n• Venous pH <7.3 OR bicarbonate <15mmol/L\n\nFLUID PROTOCOL\n1L 0.9% saline over 1hr → 1L over 2hrs → 1L over 4hrs → 1L over 4hrs → 1L over 8hrs\nSwitch to 0.45% saline + 5% dextrose when glucose ≤14mmol/L (continue insulin)\n\nINSULIN\n• Fixed-Rate IV Insulin Infusion (FRIII): 50 units soluble insulin in 50mL 0.9% saline at 0.1 units/kg/hr\n• NO boluses\n• Continue long-acting insulin if patient normally takes it\n\nPOTASSIUM REPLACEMENT\n• K+ >5.5: no KCl\n• K+ 3.5–5.5: 40mmol KCl per litre IV fluid\n• K+ <3.5: STOP INSULIN. Replace K+ urgently. Restart insulin when K+ >3.5\n\nRESPONSE TARGETS (check 2-hourly)\n• Ketones falling ≥0.5mmol/L/hr\n• Glucose falling ≥3mmol/L/hr\n• Bicarbonate rising ≥3mmol/L/2hrs\nIf not meeting targets → increase FRIII rate by 1 unit/hr\n\nRESOLUTION CRITERIA\n• Ketones <0.6mmol/L AND pH >7.3 AND bicarbonate >18mmol/L\n\nTRANSITION TO SC\n• Give SC insulin with meal\n• Stop FRIII 1 hour AFTER first SC dose\n• Provide sick-day rules before discharge",
+    "calculators": []
+  },
+  "availableBadges": [
+    {
+      "id": "insulin-master",
+      "label": "Insulin Master",
+      "icon": "💉",
+      "description": "Correctly selected FRIII and avoided the insulin bolus trap",
+      "positive": true
+    },
+    {
+      "id": "dka-resolved",
+      "label": "Acid Neutralised",
+      "icon": "⚗️",
+      "description": "Successfully resolved DKA and transitioned the patient to SC insulin",
+      "positive": true
+    },
+    {
+      "id": "educator",
+      "label": "Preventive Champion",
+      "icon": "🎓",
+      "description": "Provided sick-day rules education — preventing future DKA admissions",
+      "positive": true
+    }
+  ],
+  "disclaimer": "This game is for educational and entertainment purposes only. It does not constitute medical advice. Always follow local guidelines and senior supervision in clinical practice."
+}

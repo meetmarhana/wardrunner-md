@@ -1,0 +1,668 @@
+{
+  "id": "aortic-dissection",
+  "specialty": "Cardiology",
+  "title": "Tearing Pain Through the Back",
+  "subtitle": "Aortic Dissection",
+  "difficulty": "advanced",
+  "estimatedMinutes": 25,
+  "patient": {
+    "age": 52,
+    "sex": "M",
+    "chiefComplaint": "Sudden onset severe chest pain radiating to the back",
+    "history": "52-year-old male presents to the ED via ambulance with sudden onset of severe chest pain described as 'tearing' or 'ripping', radiating to the interscapular region. Pain was maximal at onset. He reports no preceding exertion. Wife states he clutched his chest suddenly while sitting and could not speak for a moment. He has a history of poorly controlled hypertension and Marfan syndrome.",
+    "initialVitals": {
+      "bp": "185/110",
+      "hr": 108,
+      "rr": 22,
+      "spo2": 96,
+      "temp": 37.0,
+      "gcs": 15
+    },
+    "symptoms": [
+      "Sudden onset severe tearing chest pain",
+      "Pain radiating to interscapular region",
+      "Pain maximal at onset",
+      "Mild dyspnoea",
+      "Diaphoresis",
+      "Anxiety and sense of impending doom"
+    ],
+    "redFlags": [
+      "Tearing/ripping quality of pain",
+      "Maximal at onset",
+      "Interscapular radiation",
+      "BP differential between arms: R arm 185/110, L arm 145/90",
+      "Known Marfan syndrome",
+      "Poorly controlled hypertension",
+      "Tachycardia with elevated BP"
+    ],
+    "backgroundHistory": "PMH: Hypertension (poorly controlled, on amlodipine 5mg — often forgets doses), Marfan syndrome (diagnosed age 22, tall habitus, arachnodactyly, lens dislocation history). No prior cardiac events. No diabetes. Ex-smoker (10 pack-years, quit 8 years ago). Allergies: NKDA. Medications: Amlodipine 5mg OD."
+  },
+  "startNodeId": "node-stabilize",
+  "nodes": [
+    {
+      "id": "node-stabilize",
+      "category": "stabilization",
+      "prompt": "A 52-year-old male with Marfan syndrome arrives in resus. He is pale and diaphoretic, clutching his chest. He describes the pain as 'like something is tearing inside my chest going through to my back.' Pain was maximal the moment it started. BP right arm 185/110, left arm 145/90. HR 108, RR 22, SpO2 96% on air. What is your immediate management priority?",
+      "context": "The patient is sitting upright, clearly distressed. He is GCS 15 but anxious. The triage nurse has flagged this as a possible ACS. The resus bay is ready.",
+      "choices": [
+        {
+          "id": "c1-correct-stabilize",
+          "text": "Insert two large-bore IV cannulas, apply cardiac monitoring, obtain 12-lead ECG, and commence IV morphine for analgesia. Do NOT administer thrombolysis.",
+          "correct": true,
+          "feedback": "Correct approach. This patient's presentation — tearing pain maximal at onset with a BP differential between arms and Marfan syndrome — is highly suspicious for aortic dissection. Establishing IV access, monitoring, and analgesia are appropriate first steps. Critically, thrombolysis is absolutely contraindicated as it would be catastrophic in aortic dissection.",
+          "nextNodeId": "node-history",
+          "timeAdvanceMin": 8,
+          "vitalsDelta": {
+            "hr": -5
+          },
+          "scoreDelta": {
+            "diagnostic": 3,
+            "safety": 4,
+            "guideline": 3
+          },
+          "educationalNote": "The BP differential (>20 mmHg systolic between arms) in the context of tearing chest pain is a key clinical sign of aortic dissection. Marfan syndrome is a major risk factor due to cystic medial necrosis of the aortic wall. Immediate priorities: IV access, monitoring, analgesia, ECG (to exclude STEMI), CXR."
+        },
+        {
+          "id": "c1-trap-thrombolysis",
+          "text": "Administer IV thrombolysis (alteplase) immediately — this could be a STEMI equivalent given the severity of presentation.",
+          "correct": false,
+          "feedback": "CATASTROPHIC ERROR. Thrombolysis in aortic dissection causes uncontrolled haemorrhage into the false lumen, pericardium, and mediastinum. The patient deteriorates rapidly. This is one of the most dangerous misdiagnoses in emergency medicine. The tearing quality, maximal-at-onset pain, BP differential, and Marfan syndrome history should have raised strong suspicion for dissection BEFORE any thrombolytic was considered.",
+          "nextNodeId": "node-thrombolysis-disaster",
+          "timeAdvanceMin": 12,
+          "vitalsDelta": {
+            "bp": "75/40",
+            "hr": 138,
+            "rr": 30,
+            "spo2": 82,
+            "gcs": 10
+          },
+          "scoreDelta": {
+            "diagnostic": -10,
+            "safety": -10,
+            "guideline": -10,
+            "time": -5
+          },
+          "triggerBadge": "badge-thrombolysis-trap",
+          "educationalNote": "Tearing or ripping chest pain that is maximal at onset, radiates to the back, and is associated with a BP differential between arms must be treated as aortic dissection until proven otherwise. NEVER give thrombolysis before this diagnosis is excluded."
+        },
+        {
+          "id": "c1-suboptimal-wait",
+          "text": "Call cardiology immediately and wait for their review before doing anything else.",
+          "correct": false,
+          "feedback": "Waiting passively is dangerous. While cardiology input is vital, the immediate priority is stabilisation: IV access, monitoring, analgesia, and an ECG. Delay increases the risk of rupture, tamponade, or haemodynamic collapse. Begin resuscitation in parallel with your call for help.",
+          "nextNodeId": "node-stabilize",
+          "timeAdvanceMin": 5,
+          "vitalsDelta": {
+            "hr": 5
+          },
+          "scoreDelta": {
+            "diagnostic": -2,
+            "safety": -3,
+            "time": -3
+          },
+          "educationalNote": "In time-critical emergencies, the emergency physician initiates stabilisation immediately while activating specialist support. 'Call and wait' is never appropriate in haemodynamically significant presentations."
+        }
+      ]
+    },
+    {
+      "id": "node-thrombolysis-disaster",
+      "category": "stabilization",
+      "prompt": "Within minutes of thrombolysis, the patient becomes profoundly hypotensive (BP 75/40), tachycardic (HR 138), agitated and confused (GCS 10), and his SpO2 drops to 82% on high-flow O2. He is mottled. The team is requesting immediate direction.",
+      "context": "The patient is in haemorrhagic shock. The false lumen has expanded catastrophically. Pericardial tamponade and haemothorax are likely. Cardiac surgery has been called but OR will take 20+ minutes to set up. This outcome was preventable.",
+      "choices": [
+        {
+          "id": "c-disaster-damage-control",
+          "text": "Call for immediate cardiac surgical support, activate massive haemorrhage protocol, insert bilateral chest drains if haemothorax suspected, and prepare for emergency thoracotomy if available.",
+          "correct": false,
+          "feedback": "Damage control is attempted but the patient's prognosis is now extremely poor. Thrombolysis in aortic dissection carries near-100% mortality once haemorrhagic complications occur. This case has reached a non-survivable outcome due to the initial decision to thrombolyse. The case ends here.",
+          "nextNodeId": "node-end-fatal",
+          "timeAdvanceMin": 30,
+          "vitalsDelta": {
+            "bp": "50/20",
+            "hr": 155,
+            "spo2": 68,
+            "gcs": 3
+          },
+          "scoreDelta": {
+            "safety": -5
+          },
+          "isTerminal": true
+        }
+      ],
+      "isTerminal": false
+    },
+    {
+      "id": "node-end-fatal",
+      "category": "disposition",
+      "prompt": "Despite heroic resuscitative efforts, the patient cannot be stabilised. Cardiac surgery arrives but determines no surgical salvage is possible given the extent of haemorrhage and tamponade. The patient dies 47 minutes after thrombolysis was administered.",
+      "context": "This outcome is entirely preventable. Aortic dissection must be excluded before any thrombolytic therapy is given in chest pain presentations with atypical features.",
+      "choices": [
+        {
+          "id": "c-end-reflect",
+          "text": "Reflect on this outcome and review the key learning points.",
+          "correct": false,
+          "feedback": "Key learning: (1) Tearing pain maximal at onset + BP differential = dissection until proven otherwise. (2) NEVER thrombolyse without excluding dissection. (3) The ADD-RS score (Aortic Dissection Detection Risk Score) helps stratify risk. (4) CT aortogram is the gold-standard investigation. (5) Type A dissection requires emergent surgery — not thrombolysis, not angioplasty.",
+          "nextNodeId": "node-end-fatal",
+          "timeAdvanceMin": 0,
+          "scoreDelta": {},
+          "isTerminal": true
+        }
+      ],
+      "isTerminal": true
+    },
+    {
+      "id": "node-history",
+      "category": "history",
+      "prompt": "IV access is established. The patient is on a monitor. A 12-lead ECG shows sinus tachycardia with no ST elevation or depression. You have 3 minutes to take a focused history. What is the single most diagnostically important question to ask?",
+      "context": "The patient is alert and cooperative but clearly in severe pain. His wife is present and anxious. Pain score 9/10. The nurse has placed two 16G cannulas and drawn bloods.",
+      "choices": [
+        {
+          "id": "c2-correct-quality",
+          "text": "Ask about the quality and onset of the pain: 'Can you describe exactly how the pain started — was it sudden or gradual? Does it feel like tearing, ripping, or pressure?'",
+          "correct": true,
+          "feedback": "Excellent. The quality and onset of pain are the most diagnostically powerful features in differentiating aortic dissection from other causes of chest pain. A tearing or ripping quality that was maximal at onset is the cardinal symptom of dissection. This patient confirms: 'It was immediate — like something ripped open inside me. It started in my chest and moved through to between my shoulder blades.'",
+          "nextNodeId": "node-investigation",
+          "timeAdvanceMin": 5,
+          "scoreDelta": {
+            "diagnostic": 4,
+            "guideline": 2
+          },
+          "educationalNote": "The ADD-RS includes 'aortic pain features' (tearing, ripping, or radiating to back) as a high-risk marker. Maximal-at-onset pain is key — in STEMI, pain typically builds; in dissection, it is instantaneous and severe from the very first moment."
+        },
+        {
+          "id": "c2-suboptimal-cardiac",
+          "text": "Ask about cardiac risk factors: 'Do you have diabetes, high cholesterol, or a family history of heart attacks?'",
+          "correct": false,
+          "feedback": "Cardiac risk factors are relevant but not the highest-yield question here. Given the presentation — tearing pain radiating to the back with a BP differential — the priority history question should target dissection features specifically. You are losing critical diagnostic time.",
+          "nextNodeId": "node-investigation",
+          "timeAdvanceMin": 7,
+          "scoreDelta": {
+            "diagnostic": -1,
+            "time": -2
+          }
+        },
+        {
+          "id": "c2-suboptimal-medication",
+          "text": "Ask about current medications and allergies.",
+          "correct": false,
+          "feedback": "Medication reconciliation is important but not the most diagnostically urgent question at this moment. The nurse should gather this in parallel. The physician's focus should be on confirming or excluding dissection through targeted history.",
+          "nextNodeId": "node-investigation",
+          "timeAdvanceMin": 6,
+          "scoreDelta": {
+            "diagnostic": -1,
+            "time": -1
+          }
+        },
+        {
+          "id": "c2-suboptimal-family",
+          "text": "Ask whether anyone in his family has had a sudden cardiac death or aortic problem.",
+          "correct": false,
+          "feedback": "Family history of connective tissue disorders or aortic events is relevant in Marfan syndrome — however, the diagnosis is already known. The immediate priority is characterising the current pain to guide investigation choice. This question adds moderate diagnostic value but is not the highest-yield first question.",
+          "nextNodeId": "node-investigation",
+          "timeAdvanceMin": 5,
+          "scoreDelta": {
+            "diagnostic": 1,
+            "time": -1
+          }
+        }
+      ]
+    },
+    {
+      "id": "node-investigation",
+      "category": "investigation",
+      "prompt": "Bloods are being processed. The ECG shows sinus tachycardia — no STEMI, no ischaemic changes. You need to select the most appropriate next investigation to confirm or exclude your leading diagnosis of aortic dissection.",
+      "context": "BP re-checked: Right arm 188/112, Left arm 147/92 (differential confirmed at 41 mmHg systolic). The patient is asking 'what is wrong with me, doctor?' His pain is partially controlled with IV morphine 4mg. Radiology is available. Echo tech is on site. BP differential is now documented formally.",
+      "choices": [
+        {
+          "id": "c3-correct-ct",
+          "text": "Request urgent CT aortogram (CT angiography of the aorta from the arch to the iliac bifurcation).",
+          "correct": true,
+          "feedback": "CT aortogram is the gold standard investigation for aortic dissection. It has >95% sensitivity and specificity, defines the extent of dissection, identifies the intimal flap, classifies the type (Stanford A vs B), and guides surgical planning. This is the correct choice.",
+          "nextNodeId": "node-ct-result",
+          "timeAdvanceMin": 20,
+          "scoreDelta": {
+            "diagnostic": 5,
+            "guideline": 4,
+            "time": 2
+          },
+          "investigations": [
+            {
+              "name": "CT Aortogram",
+              "value": "Type A aortic dissection. Intimal flap identified from the aortic root (2cm above the aortic valve) extending through the ascending aorta, arch, and into the descending thoracic aorta. True lumen compressed by false lumen in the ascending aorta. No haemopericardium. Aortic root diameter 4.8cm. Celiac and SMA arise from the true lumen.",
+              "normal": "No intimal flap. Normal aortic calibre.",
+              "flagged": true
+            }
+          ],
+          "educationalNote": "CT aortogram is preferred over transoesophageal echocardiography (TOE) as first-line because it is faster, non-operator-dependent, and images the entire aorta. TOE is reserved for haemodynamically unstable patients where CT is not feasible."
+        },
+        {
+          "id": "c3-wrong-angiogram",
+          "text": "Arrange urgent coronary angiogram — the ECG may not show ischaemia but a coronary event cannot be excluded.",
+          "correct": false,
+          "feedback": "This is a dangerous choice. In aortic dissection, coronary angiography delays definitive surgery and introduces the risk of catheter-induced extension of the dissection flap into the coronary ostia. If the presentation had features more consistent with ACS and dissection was not being considered, angiogram might be appropriate — but with a BP differential of >40 mmHg and Marfan syndrome, dissection must be excluded first with CT aortogram.",
+          "nextNodeId": "node-ct-result",
+          "timeAdvanceMin": 45,
+          "vitalsDelta": {
+            "hr": 8,
+            "spo2": -1
+          },
+          "scoreDelta": {
+            "diagnostic": -4,
+            "safety": -5,
+            "time": -5,
+            "guideline": -4
+          },
+          "triggerBadge": "badge-angiogram-delay",
+          "educationalNote": "Coronary angiogram in aortic dissection: (1) Delays surgery by 45-90 minutes minimum. (2) Risk of catheter extending the dissection. (3) Contrast injection into a false lumen can be catastrophic. CT aortogram first — always."
+        },
+        {
+          "id": "c3-suboptimal-cxr",
+          "text": "Request a chest X-ray first — a widened mediastinum would support dissection.",
+          "correct": false,
+          "feedback": "CXR has limited sensitivity (~60-70%) for aortic dissection and a normal CXR does not exclude it. It is a useful adjunct but should not delay the definitive investigation (CT aortogram). In a time-critical presentation, proceeding directly to CT is more appropriate — CXR can be obtained in parallel or as a quick bedside view, but not as your primary investigation strategy.",
+          "nextNodeId": "node-cxr-then-ct",
+          "timeAdvanceMin": 12,
+          "scoreDelta": {
+            "diagnostic": 1,
+            "time": -2,
+            "guideline": -1
+          },
+          "investigations": [
+            {
+              "name": "Chest X-Ray (PA)",
+              "value": "Widened mediastinum (>8cm). Left-sided pleural effusion. Aortic knuckle obscured. Tracheal deviation to the right. Cardiomegaly query.",
+              "normal": "Mediastinal width <8cm. Clear lung fields.",
+              "flagged": true
+            }
+          ]
+        },
+        {
+          "id": "c3-suboptimal-echo",
+          "text": "Perform bedside transthoracic echocardiography (TTE) — this will confirm dissection and assess for tamponade.",
+          "correct": false,
+          "feedback": "Bedside TTE has low sensitivity (~60%) for aortic dissection as it cannot adequately image the ascending aorta and arch. While it can detect pericardial effusion and aortic regurgitation, it is not sufficient to confirm or exclude dissection definitively. TOE is more sensitive but requires specialist availability. CT aortogram remains the gold standard and should not be replaced by TTE alone.",
+          "nextNodeId": "node-ct-result",
+          "timeAdvanceMin": 18,
+          "scoreDelta": {
+            "diagnostic": 0,
+            "time": -3,
+            "guideline": -2
+          },
+          "investigations": [
+            {
+              "name": "Bedside TTE",
+              "value": "Aortic root appears mildly dilated (~4.7cm). No definitive intimal flap seen on TTE. No pericardial effusion. Mild aortic regurgitation. LV function preserved. Limited acoustic windows.",
+              "normal": "Aortic root <4.0cm. No intimal flap. No pericardial effusion.",
+              "flagged": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "node-cxr-then-ct",
+      "category": "investigation",
+      "prompt": "The CXR demonstrates a widened mediastinum (>8cm), obscured aortic knuckle, and a left pleural effusion. This strongly supports your clinical suspicion. What do you do next?",
+      "context": "Radiology registrar calls to report the CXR findings and confirms this is consistent with aortic dissection or mediastinal haematoma. The patient's pain is 8/10 despite morphine. BP has risen slightly on re-check.",
+      "choices": [
+        {
+          "id": "c-cxr-ct-correct",
+          "text": "Proceed immediately to CT aortogram — this is now the definitive investigation required.",
+          "correct": true,
+          "feedback": "Correct. The CXR findings raise concern but CT aortogram is required to confirm the diagnosis, classify the dissection (Stanford A or B), and plan definitive treatment. Move immediately to CT.",
+          "nextNodeId": "node-ct-result",
+          "timeAdvanceMin": 20,
+          "scoreDelta": {
+            "diagnostic": 4,
+            "guideline": 3
+          },
+          "investigations": [
+            {
+              "name": "CT Aortogram",
+              "value": "Type A aortic dissection. Intimal flap identified from the aortic root (2cm above the aortic valve) extending through the ascending aorta, arch, and into the descending thoracic aorta. True lumen compressed by false lumen in the ascending aorta. No haemopericardium. Aortic root diameter 4.8cm. Celiac and SMA arise from the true lumen.",
+              "normal": "No intimal flap. Normal aortic calibre.",
+              "flagged": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "node-ct-result",
+      "category": "diagnosis",
+      "prompt": "CT aortogram confirms: Type A aortic dissection. Intimal flap from the aortic root extending through the ascending aorta, arch, and into the descending aorta. The ascending aorta is involved. No haemopericardium. Aortic root 4.8cm. Celiac and SMA arise from the true lumen. What is the correct classification and the immediate clinical implication?",
+      "context": "The radiology consultant has called directly. The CT images show a dramatic intimal flap with a compressed true lumen. The cardiothoracic surgeon has been paged and is en route.",
+      "choices": [
+        {
+          "id": "c4-correct-type-a",
+          "text": "This is Stanford Type A dissection (involves the ascending aorta). This requires emergent cardiothoracic surgical intervention — medical management alone is insufficient.",
+          "correct": true,
+          "feedback": "Correct. Stanford Type A dissection involves the ascending aorta and carries a mortality of 1-2% per hour without surgical repair. It is a surgical emergency. The definitive treatment is open surgical repair of the ascending aorta and aortic root. Immediate surgical consultation and transfer to operating theatre is mandatory.",
+          "nextNodeId": "node-bp-control",
+          "timeAdvanceMin": 5,
+          "scoreDelta": {
+            "diagnostic": 5,
+            "guideline": 4
+          },
+          "educationalNote": "Stanford Classification: Type A = involves ascending aorta (regardless of site of tear) → surgical emergency. Type B = confined to descending aorta (distal to left subclavian) → medical management unless complicated (ischaemia, rupture, refractory pain, rapid expansion). DeBakey classification: I (ascending + descending), II (ascending only), III (descending only)."
+        },
+        {
+          "id": "c4-wrong-type-b",
+          "text": "This is Stanford Type B dissection — the tear is in the descending aorta, so medical management with blood pressure control is appropriate.",
+          "correct": false,
+          "feedback": "Incorrect classification. The CT clearly shows the intimal flap extends from the aortic root — the ascending aorta is involved. This is Type A by Stanford classification, regardless of how far distally the dissection extends. Type B is confined entirely distal to the left subclavian artery. Type A always requires emergent surgery.",
+          "nextNodeId": "node-bp-control",
+          "timeAdvanceMin": 8,
+          "scoreDelta": {
+            "diagnostic": -5,
+            "safety": -3,
+            "guideline": -4
+          }
+        },
+        {
+          "id": "c4-suboptimal-medical",
+          "text": "Begin medical management with aggressive blood pressure reduction and admit to ICU for observation — surgery may not be necessary.",
+          "correct": false,
+          "feedback": "This is a dangerous approach for Type A dissection. Without surgical repair, Type A dissection carries 50% mortality at 48 hours and up to 90% at 2 weeks. Medical management alone is not an acceptable definitive strategy for Type A. ICU and BP control are important temporising measures while preparing for the OR — not as definitive treatment.",
+          "nextNodeId": "node-bp-control",
+          "timeAdvanceMin": 10,
+          "scoreDelta": {
+            "diagnostic": -3,
+            "safety": -5,
+            "guideline": -5,
+            "time": -3
+          }
+        }
+      ]
+    },
+    {
+      "id": "node-bp-control",
+      "category": "treatment",
+      "prompt": "While the cardiothoracic surgical team prepares the operating theatre, you need to control the patient's blood pressure. His current BP is 188/112 (right arm). HR 110. What is the target BP and the correct agent to use?",
+      "context": "The patient is awake and anxious. He understands an operation is needed. His pain is 7/10. IV access is secure. The anaesthetic team are being briefed. Time is critical — OR is 25 minutes away from being ready.",
+      "choices": [
+        {
+          "id": "c5-correct-labetalol",
+          "text": "Target SBP 100-120 mmHg and HR <60 bpm. Start IV labetalol infusion (or IV esmolol) — a beta-blocker reduces both BP and the rate of pressure change (dP/dt) in the aorta.",
+          "correct": true,
+          "feedback": "Correct. The treatment target in aortic dissection is SBP 100-120 mmHg AND HR <60 bpm. Beta-blockers (labetalol, esmolol) are first-line because they reduce both blood pressure and aortic wall stress (dP/dt = rate of pressure change). Reducing dP/dt is as important as reducing absolute BP in preventing extension of the dissection. Labetalol 20mg IV bolus followed by infusion, or esmolol infusion, are standard.",
+          "nextNodeId": "node-surgical-consult",
+          "timeAdvanceMin": 10,
+          "vitalsDelta": {
+            "bp": "112/74",
+            "hr": -18
+          },
+          "scoreDelta": {
+            "diagnostic": 3,
+            "safety": 4,
+            "guideline": 5
+          },
+          "educationalNote": "In aortic dissection, the two haemodynamic targets are: (1) SBP 100-120 mmHg, (2) HR 50-60 bpm. Both reduce aortic wall stress. Beta-blockers achieve both. If a pure vasodilator (e.g. nitroprusside) is used without a beta-blocker, reflex tachycardia can increase dP/dt and worsen the dissection. Never use a vasodilator alone without first achieving rate control."
+        },
+        {
+          "id": "c5-wrong-aggressive-bp",
+          "text": "Lower BP aggressively to SBP <80 mmHg to minimise aortic pressure as much as possible.",
+          "correct": false,
+          "feedback": "Too aggressive. Targeting SBP <80 mmHg risks end-organ ischaemia — particularly to the kidneys, brain, spinal cord, and mesenteric circulation. The celiac and SMA branches in this patient arise from the true lumen, which is already partially compressed. Excessive BP reduction collapses the true lumen further and may cause mesenteric or renal ischaemia, stroke, or spinal cord infarction. Target SBP 100-120 mmHg.",
+          "nextNodeId": "node-surgical-consult",
+          "timeAdvanceMin": 10,
+          "vitalsDelta": {
+            "bp": "78/48",
+            "hr": 5,
+            "spo2": -2
+          },
+          "scoreDelta": {
+            "safety": -5,
+            "guideline": -4
+          },
+          "triggerBadge": "badge-excessive-bp-reduction",
+          "educationalNote": "The target SBP in aortic dissection is 100-120 mmHg, not the lowest possible. End-organ perfusion must be maintained. Over-aggressive hypotension causes: AKI, mesenteric ischaemia, spinal cord infarction, and stroke — all of which worsen surgical outcomes."
+        },
+        {
+          "id": "c5-wrong-ccb-alone",
+          "text": "Give IV nicardipine (calcium channel blocker) to lower blood pressure rapidly.",
+          "correct": false,
+          "feedback": "Calcium channel blockers such as nicardipine can lower BP but do not reduce HR. In aortic dissection, a pure vasodilator without rate control is problematic: the resulting reflex tachycardia increases dP/dt and can propagate the dissection. If a CCB is used, it must be in combination with a beta-blocker — and a beta-blocker should be started first. Labetalol or esmolol alone is a more appropriate single-agent choice here.",
+          "nextNodeId": "node-surgical-consult",
+          "timeAdvanceMin": 12,
+          "vitalsDelta": {
+            "bp": "145/88",
+            "hr": 12
+          },
+          "scoreDelta": {
+            "safety": -2,
+            "guideline": -3
+          }
+        },
+        {
+          "id": "c5-wrong-no-bp",
+          "text": "Do not give antihypertensives — wait until after surgery so the BP supports end-organ perfusion.",
+          "correct": false,
+          "feedback": "Uncontrolled hypertension in aortic dissection dramatically increases the risk of dissection propagation, aortic rupture, and haemopericardium before the patient reaches the operating theatre. Aggressive BP control is a critical temporising measure that bridges the patient to surgery. Not treating is dangerous.",
+          "nextNodeId": "node-surgical-consult",
+          "timeAdvanceMin": 8,
+          "vitalsDelta": {
+            "hr": 5
+          },
+          "scoreDelta": {
+            "safety": -4,
+            "guideline": -4
+          }
+        }
+      ]
+    },
+    {
+      "id": "node-surgical-consult",
+      "category": "treatment",
+      "prompt": "BP is now 112/74 mmHg. HR 92 bpm. The cardiothoracic surgical consultant is on the phone. He confirms Type A dissection requires emergent operative repair. He asks: 'Has anticoagulation been started? Have you given anything to thin the blood?' What is your answer and why does it matter?",
+      "context": "The surgical team is scrubbing in. The patient has been counselled and consented for emergency surgery. His wife is with him. The anaesthetist is reviewing the patient at the bedside.",
+      "choices": [
+        {
+          "id": "c6-correct-no-anticoag",
+          "text": "No anticoagulation has been given. This is correct — anticoagulation is contraindicated in aortic dissection pre-operatively as it increases the risk of haemopericardium and haemorrhagic extension of the false lumen.",
+          "correct": true,
+          "feedback": "Correct. Anticoagulation is contraindicated in acute aortic dissection unless there is a specific indication (e.g. concurrent confirmed coronary occlusion requiring stenting — an extremely rare and complex scenario). Pre-operative heparinisation risks catastrophic bleeding into the false lumen, pericardial space, and pleural cavities. The surgical team will administer heparin on the operating table under controlled conditions.",
+          "nextNodeId": "node-disposition",
+          "timeAdvanceMin": 3,
+          "scoreDelta": {
+            "safety": 4,
+            "guideline": 3
+          }
+        },
+        {
+          "id": "c6-wrong-heparin",
+          "text": "I started IV heparin as a precaution — I was worried about thrombus in the false lumen causing end-organ ischaemia.",
+          "correct": false,
+          "feedback": "Giving heparin in aortic dissection pre-operatively is dangerous. The false lumen contains non-occlusive thrombus that helps tamponade the tear — anticoagulating removes this protective mechanism and promotes bleeding. Haemopericardium and pleural haemorrhage are both worsened by heparin. The surgical team will give controlled heparin on cardiopulmonary bypass in theatre.",
+          "nextNodeId": "node-disposition",
+          "timeAdvanceMin": 3,
+          "vitalsDelta": {
+            "spo2": -2
+          },
+          "scoreDelta": {
+            "safety": -6,
+            "guideline": -4
+          }
+        }
+      ]
+    },
+    {
+      "id": "node-disposition",
+      "category": "disposition",
+      "prompt": "The operating theatre is ready. The patient has been stabilised with BP 110/70, HR 88. The surgical team is ready for transfer. What is the correct disposition and what must you communicate to the surgical team in handover?",
+      "context": "The patient is alert. His wife has been briefed by the surgical consultant. The porter and theatre nurse are at the bedside. Time from door to OR decision: 42 minutes.",
+      "choices": [
+        {
+          "id": "c7-correct-or",
+          "text": "Transfer immediately to the operating theatre for emergency surgical repair of the ascending aorta. Handover includes: diagnosis (Type A dissection), current medications given, BP targets achieved, allergies, last vitals, and the CT imaging on the system.",
+          "correct": true,
+          "feedback": "Correct and complete. Type A dissection requires emergent surgical repair — typically involving replacement of the ascending aorta and may include aortic valve repair or replacement and coronary reimplantation if the root is affected. A structured handover (SBAR or similar) ensures nothing is missed in the OR team briefing. Excellent management throughout.",
+          "nextNodeId": "node-monitoring",
+          "timeAdvanceMin": 5,
+          "scoreDelta": {
+            "diagnostic": 3,
+            "safety": 3,
+            "guideline": 3,
+            "time": 3
+          },
+          "triggerBadge": "badge-dissection-master"
+        },
+        {
+          "id": "c7-suboptimal-icu-first",
+          "text": "Transfer to ICU for overnight stabilisation — surgery can happen in the morning when a fresh team is available.",
+          "correct": false,
+          "feedback": "Unacceptable delay. Type A dissection without surgical repair carries mortality of 1-2% per hour. Waiting until morning would increase mortality risk by 15-30% or more. The surgery is time-critical. Emergency operations for Type A dissection are performed at any time of day — this is what 'emergent' means.",
+          "nextNodeId": "node-monitoring",
+          "timeAdvanceMin": 20,
+          "vitalsDelta": {
+            "hr": 8,
+            "spo2": -1
+          },
+          "scoreDelta": {
+            "safety": -6,
+            "time": -5,
+            "guideline": -5
+          }
+        }
+      ]
+    },
+    {
+      "id": "node-monitoring",
+      "category": "monitoring",
+      "prompt": "The patient has been transferred to theatre. While awaiting surgical outcome, a junior colleague asks you what monitoring parameters are most important for a patient with aortic dissection in the pre-operative period. What do you teach them?",
+      "context": "Teaching moment. The resus bay is being reset. The junior doctor looks shaken by the case.",
+      "choices": [
+        {
+          "id": "c8-correct-monitoring",
+          "text": "Key monitoring includes: continuous arterial line BP (bilateral if possible), continuous cardiac monitoring for arrhythmias, urine output (end-organ perfusion marker), neurological observations (GCS, limb weakness — spinal cord ischaemia), limb pulses bilaterally (limb malperfusion), and repeat lactate (mesenteric/systemic ischaemia).",
+          "correct": true,
+          "feedback": "Comprehensive answer. In aortic dissection, monitoring must detect: (1) BP breakthrough requiring medication adjustment, (2) extension of dissection causing new end-organ compromise, (3) haemodynamic collapse from tamponade or rupture, (4) limb or visceral malperfusion from true lumen collapse. An arterial line is mandatory — cuff BP is unreliable when there is a BP differential and may alternate between arms depending on which subclavian is compromised.",
+          "nextNodeId": "node-end-success",
+          "timeAdvanceMin": 5,
+          "scoreDelta": {
+            "diagnostic": 2,
+            "guideline": 2
+          },
+          "isTerminal": false
+        },
+        {
+          "id": "c8-suboptimal-monitoring",
+          "text": "Standard monitoring — ECG, SpO2, and non-invasive BP every 15 minutes is sufficient.",
+          "correct": false,
+          "feedback": "Standard monitoring is inadequate for aortic dissection. Non-invasive BP is unreliable when there is a BP differential between arms, and 15-minute intervals are too long in a rapidly evolving condition. An arterial line is mandatory. Neurological obs, limb pulses, and urine output are essential to detect extension of the dissection and malperfusion syndromes.",
+          "nextNodeId": "node-end-success",
+          "timeAdvanceMin": 5,
+          "scoreDelta": {
+            "guideline": -2,
+            "diagnostic": -1
+          }
+        }
+      ]
+    },
+    {
+      "id": "node-end-success",
+      "category": "disposition",
+      "prompt": "Four hours later, you receive a call from the cardiothoracic surgeon. The patient has been successfully repaired — ascending aorta replacement with a Dacron graft. He is in the cardiac ICU on a ventilator but haemodynamically stable. 'Good pick-up,' the surgeon says. 'If he'd been thrombolysed or delayed further, he wouldn't have made it.' Case complete.",
+      "context": "You recognise the satisfaction of a correct, timely diagnosis and resuscitation in a life-threatening emergency. The key decisions that saved this patient's life: recognising the BP differential, not thrombolysing, obtaining CT aortogram promptly, controlling BP with a beta-blocker, and transferring urgently to surgery.",
+      "choices": [
+        {
+          "id": "c9-end-review",
+          "text": "Review the key learning points for this case.",
+          "correct": true,
+          "feedback": "Outstanding performance. Key learning: (1) Tearing pain maximal at onset + BP differential + Marfan syndrome = dissection until proven otherwise. (2) Never thrombolyse without excluding dissection. (3) CT aortogram is gold standard. (4) Stanford Type A = emergent surgery. (5) Beta-blockers first for BP control — target SBP 100-120, HR <60. (6) No anticoagulation pre-op. (7) Time from door to OR matters — every hour without surgery increases mortality.",
+          "nextNodeId": "node-end-success",
+          "timeAdvanceMin": 0,
+          "scoreDelta": {
+            "diagnostic": 2
+          },
+          "triggerBadge": "badge-time-critical",
+          "isTerminal": true
+        }
+      ],
+      "isTerminal": true
+    }
+  ],
+  "diseaseMap": {
+    "presenting": [
+      "Sudden onset severe chest pain with tearing or ripping quality",
+      "Pain maximal at onset",
+      "Radiation to interscapular region or back",
+      "BP differential between arms (>20 mmHg systolic)",
+      "Pulse deficits",
+      "Aortic regurgitation murmur (in Type A with root involvement)",
+      "Neurological deficits (if carotid or spinal involvement)",
+      "Syncope",
+      "Diaphoresis and haemodynamic instability"
+    ],
+    "redFlags": [
+      "Tearing/ripping chest pain maximal at onset",
+      "BP differential >20 mmHg between arms",
+      "Marfan syndrome or other connective tissue disorder",
+      "Poorly controlled hypertension",
+      "Pulse deficit or limb ischaemia",
+      "Aortic regurgitation murmur",
+      "Widened mediastinum on CXR",
+      "Neurological deficits",
+      "Haemodynamic collapse"
+    ],
+    "bestFirstStep": "Establish IV access, cardiac monitoring, 12-lead ECG, and analgesia. Document BP in BOTH arms. Do NOT administer thrombolysis.",
+    "bestInvestigation": "CT aortogram (CT angiography from the aortic root to the iliac bifurcation) — gold standard with >95% sensitivity and specificity for aortic dissection.",
+    "diagnosis": "Stanford Type A aortic dissection — intimal tear with dissection involving the ascending aorta, with propagation into the arch and descending aorta.",
+    "treatment": "Emergent cardiothoracic surgical repair of the ascending aorta. Temporising: IV beta-blocker (labetalol or esmolol) to target SBP 100-120 mmHg and HR <60 bpm. No anticoagulation pre-operatively. No thrombolysis.",
+    "followUp": "Post-operative cardiac ICU care. Long-term antihypertensive therapy (beta-blocker preferred). Surveillance CT imaging of the aorta at 1, 3, 6, and 12 months, then annually. Genetic counselling for Marfan syndrome. Family screening.",
+    "complications": [
+      "Aortic rupture with haemopericardium and tamponade",
+      "Acute aortic regurgitation and heart failure",
+      "Coronary ostial occlusion causing STEMI",
+      "Stroke (carotid or vertebral involvement)",
+      "Spinal cord ischaemia and paraplegia",
+      "Mesenteric ischaemia",
+      "Renal failure (renal artery malperfusion)",
+      "Limb ischaemia",
+      "Death (untreated Type A: ~1-2% per hour, 50% at 48h, 90% at 2 weeks)"
+    ],
+    "guidelineRef": "ESC Guidelines on the diagnosis and treatment of aortic diseases 2014; AHA/ACC 2022 Guideline for the Diagnosis and Management of Aortic Disease"
+  },
+  "guideline": {
+    "title": "Aortic Dissection — Clinical Guidelines & Risk Stratification",
+    "body": "## Stanford Classification\n\n**Type A** — involves the ascending aorta (regardless of origin of tear)\n- Mortality without surgery: ~1-2% per hour; 50% at 48 hours\n- Treatment: **Emergent surgical repair**\n- Do NOT manage medically unless surgery is absolutely contraindicated\n\n**Type B** — confined to the descending aorta (distal to left subclavian artery)\n- Uncomplicated: Medical management (BP control) in specialist unit\n- Complicated (ischaemia, rupture, refractory pain, rapid expansion): TEVAR (endovascular) or surgery\n\n---\n\n## ADD-RS — Aortic Dissection Detection Risk Score\n\nUsed to stratify pre-test probability. Score 0–3:\n\n**High-risk conditions (1 point each):**\n- Marfan syndrome or connective tissue disorder\n- Family history of aortic disease\n- Known aortic valve disease\n- Recent aortic manipulation or surgery\n- Thoracic aortic aneurysm\n\n**High-risk pain features (1 point if any):**\n- Abrupt onset\n- Severe/worst-ever\n- Tearing, ripping, or sharp quality\n\n**High-risk exam findings (1 point if any):**\n- BP differential >20 mmHg between arms\n- Pulse deficit\n- Focal neurological deficit\n- Aortic regurgitation murmur\n- Hypotension or shock\n\n**Score 0:** Low risk — D-dimer may help; CT if clinical concern remains\n**Score 1:** Intermediate risk — CT aortogram recommended\n**Score ≥2:** High risk — CT aortogram immediately; do not delay for other investigations\n\nThis patient scores 3 (Marfan syndrome + tearing pain + BP differential).\n\n---\n\n## Blood Pressure Targets\n\n- **Target SBP: 100–120 mmHg**\n- **Target HR: 50–60 bpm**\n- First-line agent: IV labetalol (combined alpha/beta-blocker) or IV esmolol (short-acting beta-blocker)\n- If SBP remains elevated after rate control: add IV sodium nitroprusside or IV glyceryl trinitrate\n- **Never use a vasodilator alone** — reflex tachycardia increases dP/dt and propagates dissection\n- Over-aggressive BP reduction (SBP <80) risks end-organ ischaemia via true lumen collapse\n\n---\n\n## Investigation of Choice\n\n**CT Aortogram:** Sensitivity >95%, specificity >95%. Images entire aorta. Defines extent, type, and involvement of branch vessels. Guides surgical and endovascular planning. First-line in haemodynamically stable patients.\n\n**TOE (Transoesophageal Echo):** Used in haemodynamically unstable patients unable to go to CT. Sensitivity ~95% for ascending aorta. Operator-dependent.\n\n**TTE (Transthoracic Echo):** Sensitivity ~60%. Not sufficient to exclude dissection. Useful for detecting tamponade, AR, and LV function.\n\n**CXR:** Sensitivity ~60-70%. Widened mediastinum, obscured aortic knuckle, pleural effusion. Normal CXR does NOT exclude dissection.\n\n**D-dimer:** A negative D-dimer (<500 ng/mL) has high sensitivity to exclude dissection in low-risk patients (ADD-RS 0) but is NOT used in isolation.\n\n---\n\n## Contraindications in Acute Aortic Dissection\n\n- **Thrombolysis** — absolutely contraindicated; causes catastrophic haemorrhage into the false lumen\n- **Coronary angiogram first** — delays surgery; risk of catheter propagating dissection\n- **Pre-operative anticoagulation** — increases haemorrhagic complications; surgery team gives heparin on bypass\n- **Excessive BP reduction** — end-organ ischaemia from true lumen collapse\n- **Inotropes** — increase dP/dt; worsen dissection propagation\n\n---\n\n## Surgical Principles (Type A)\n\nEmergency median sternotomy and cardiopulmonary bypass. Resection of the primary intimal tear with replacement of the ascending aorta using a Dacron tube graft. May include:\n- Aortic valve resuspension or replacement\n- Coronary artery reimplantation (Bentall procedure if root involved)\n- Arch replacement if arch involved (total arch or hemi-arch)\n\nPost-operative 30-day mortality in specialist centres: 15–25%."
+  },
+  "availableBadges": [
+    {
+      "id": "badge-thrombolysis-trap",
+      "label": "Lysis Catastrophe",
+      "icon": "💉",
+      "description": "Administered thrombolysis to a patient with aortic dissection — one of the most dangerous errors in emergency medicine.",
+      "positive": false
+    },
+    {
+      "id": "badge-angiogram-delay",
+      "label": "Delayed by Angiogram",
+      "icon": "🕐",
+      "description": "Ordered coronary angiography before excluding aortic dissection, delaying definitive CT imaging and surgical referral.",
+      "positive": false
+    },
+    {
+      "id": "badge-excessive-bp-reduction",
+      "label": "Hypotension Hazard",
+      "icon": "📉",
+      "description": "Set blood pressure targets too low, risking end-organ ischaemia from true lumen collapse in aortic dissection.",
+      "positive": false
+    },
+    {
+      "id": "badge-dissection-master",
+      "label": "Dissection Master",
+      "icon": "🏅",
+      "description": "Correctly identified aortic dissection, avoided all major traps, performed appropriate investigations, and achieved timely surgical transfer.",
+      "positive": true
+    },
+    {
+      "id": "badge-time-critical",
+      "label": "Time-Critical Response",
+      "icon": "⏱️",
+      "description": "Completed the full aortic dissection pathway efficiently, reflecting the life-saving importance of door-to-OR time.",
+      "positive": true
+    }
+  ],
+  "disclaimer": "This clinical case is designed for educational purposes only. It is a simulation intended to develop clinical reasoning skills. It does not constitute medical advice and should not be used as a substitute for clinical training, supervision, or evidence-based guidelines. Management of real patients must always be guided by current local protocols, specialist expertise, and individual clinical judgement."
+}

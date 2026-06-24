@@ -1,0 +1,361 @@
+{
+  "id": "asthma-acute",
+  "specialty": "Internal Medicine",
+  "title": "Can't Complete a Sentence",
+  "subtitle": "Acute Severe Asthma",
+  "difficulty": "intermediate",
+  "estimatedMinutes": 16,
+  "patient": {
+    "age": 19,
+    "sex": "F",
+    "chiefComplaint": "4 hours of severe wheeze, unable to complete sentences, used salbutamol 10 times",
+    "history": "19-year-old woman with known asthma since childhood. On clenil modulite (beclometasone 200mcg BD) and salbutamol PRN. Brought in by her housemate after 4 hours of progressive wheeze and breathlessness. Used her salbutamol inhaler approximately 10 times with minimal relief. Had a viral upper respiratory tract infection 3 days ago. Poor inhaler compliance reported.",
+    "initialVitals": {
+      "bp": "125/80",
+      "hr": 118,
+      "rr": 30,
+      "spo2": 91,
+      "temp": 37.0,
+      "gcs": 15
+    },
+    "symptoms": [
+      "Severe wheeze — audible at end of bed",
+      "Unable to complete sentences (speaks in 3-4 word bursts)",
+      "Using accessory muscles — sternocleidomastoid, intercostals",
+      "Prolonged expiratory phase",
+      "Anxious and distressed appearance",
+      "PEFR: 38% of predicted"
+    ],
+    "redFlags": [
+      "SpO2 91% — life-threatening threshold is <92%",
+      "Unable to complete sentences — acute severe marker",
+      "RR 30 — significant tachypnoea",
+      "PEFR 38% — above life-threatening threshold (<33%) but in acute severe range (33-50%)",
+      "10 salbutamol doses without relief — severe attack"
+    ],
+    "backgroundHistory": "Asthma since age 7. On beclometasone 200mcg BD + salbutamol PRN. No other medications. No allergies documented. Non-smoker. University student, first year. Had 2 previous A&E attendances for asthma but no previous ITU or intubation."
+  },
+  "startNodeId": "severity-assessment",
+  "nodes": [
+    {
+      "id": "severity-assessment",
+      "category": "Assessment",
+      "prompt": "A 19-year-old with asthma is unable to complete sentences, wheeze audible at the door, PEFR 38% of predicted, SpO2 91%, HR 118, RR 30. How do you classify this attack?",
+      "context": "She can say '...need... help... can't... breathe...' Her PEFR measured at triage was 38% predicted. No cyanosis yet. Chest: diffuse wheeze bilaterally. No silent chest.",
+      "choices": [
+        {
+          "id": "correct-acute-severe",
+          "text": "Acute SEVERE asthma: PEFR 33-50% predicted + any one of: HR ≥110, RR ≥25, or unable to complete sentences. SpO2 91% is at the lower limit — this is approaching life-threatening territory",
+          "correct": true,
+          "feedback": "Correct classification. This is acute SEVERE asthma based on PEFR 38% (in 33-50% range) and unable to complete sentences. SpO2 91% is at the threshold for life-threatening (<92%). This patient needs immediate and aggressive treatment — any deterioration crosses into life-threatening territory.",
+          "nextNodeId": "oxygen-treatment",
+          "timeAdvanceMin": 2,
+          "scoreDelta": 15,
+          "educationalNote": "BTS asthma severity classification:\nMODERATE: PEFR 50-75% + able to talk + HR <110 + RR <25\nACUTE SEVERE: PEFR 33-50% OR HR ≥110 OR RR ≥25 OR unable to complete sentences\nLIFE-THREATENING: PEFR <33% OR SpO2 <92% OR silent chest OR cyanosis OR poor resp effort OR altered consciousness OR hypotension\nNEAR-FATAL: raised pCO2 OR requiring mechanical ventilation"
+        },
+        {
+          "id": "moderate-asthma-classification",
+          "text": "Moderate asthma — she is alert and talking, no cyanosis, PEFR is 38%, not the worst",
+          "correct": false,
+          "feedback": "Dangerous under-classification. The inability to complete sentences alone classifies this as ACUTE SEVERE, regardless of other factors. PEFR 38% is also in the acute severe range (33-50%). SpO2 91% is a LIFE-THREATENING criterion (<92%). This patient is on the boundary between severe and life-threatening — treat urgently.",
+          "nextNodeId": "oxygen-treatment",
+          "timeAdvanceMin": 5,
+          "scoreDelta": -20,
+          "educationalNote": "Never be reassured by an alert patient with asthma — deterioration can be rapid. A silent chest (no wheeze audible) in asthma is a CATASTROPHIC sign meaning airflow has reduced so severely no wheeze is generated. SpO2 <92% is life-threatening."
+        },
+        {
+          "id": "life-threatening-correct",
+          "text": "Life-threatening asthma — SpO2 91% is below the 92% threshold",
+          "correct": false,
+          "feedback": "Close but slightly over-classified. SpO2 91% is at the life-threatening boundary (<92%). However, the current PEFR (38%) and clinical picture best fit acute severe. The key point is that this patient is borderline life-threatening — treat as SEVERE with life-threatening precautions. Recheck PEFR and SpO2 after first treatment.",
+          "nextNodeId": "oxygen-treatment",
+          "timeAdvanceMin": 2,
+          "scoreDelta": 5,
+          "educationalNote": "BTS life-threatening threshold for SpO2 is <92%. At 91%, this patient technically meets life-threatening criteria. The distinction between severe and life-threatening determines whether IV magnesium is given immediately (life-threatening) or only if poor response at 15-30 minutes (severe)."
+        }
+      ]
+    },
+    {
+      "id": "oxygen-treatment",
+      "category": "Treatment",
+      "prompt": "Asthma severity classified. What is your immediate oxygen and bronchodilator strategy?",
+      "context": "SpO2 91%, RR 30. She is using accessory muscles. Salbutamol puffer used 10 times without relief.",
+      "choices": [
+        {
+          "id": "correct-o2-salbutamol",
+          "text": "High-flow oxygen via non-rebreathe mask to maintain SpO2 >94%. Salbutamol 5mg nebulised back-to-back (continuously, or every 15-20 minutes). Oxygen-driven nebuliser is APPROPRIATE here (asthma, not COPD)",
+          "correct": true,
+          "feedback": "Correct. UNLIKE COPD, in asthma the target SpO2 is >94% — high-flow oxygen is safe and appropriate. Oxygen-driven nebulisers are preferred in asthma (oxygen titration is not required). Back-to-back (continuous) salbutamol 5mg nebulised is the standard for acute severe/life-threatening asthma. No CO2 retention risk in asthma.",
+          "nextNodeId": "ipratropium-addition",
+          "timeAdvanceMin": 15,
+          "vitalsDelta": { "spo2": 4, "rr": -2, "hr": -5 },
+          "scoreDelta": 20,
+          "educationalNote": "Asthma vs COPD oxygen: In asthma, target SpO2 is >94% (or >98% in severe/life-threatening). High-flow O2 via non-rebreathe is appropriate. Oxygen-driven nebulisers are fine in asthma. This is the OPPOSITE of COPD management — a critical distinction."
+        },
+        {
+          "id": "controlled-oxygen-asthma",
+          "text": "Use 28% Venturi mask — this patient might retain CO2 like COPD patients",
+          "correct": false,
+          "feedback": "Incorrect. Asthma is NOT COPD. In acute severe asthma, there is no chronic hypercapnia or hypoxic drive mechanism. The target SpO2 is >94% and high-flow oxygen is appropriate and safe. Controlled oxygen via Venturi mask is inappropriate — it may inadequately treat the hypoxia.",
+          "nextNodeId": "ipratropium-addition",
+          "timeAdvanceMin": 10,
+          "vitalsDelta": { "spo2": 1 },
+          "scoreDelta": -15,
+          "educationalNote": "CO2 retention in asthma: unlike COPD, asthmatic patients without chronic disease do not have CO2 retention as a baseline. Hypercapnia in acute asthma is a LATE sign indicating near-fatal attack (respiratory muscle fatigue). Treat urgently. Normal or rising pCO2 in acute severe asthma is alarming."
+        },
+        {
+          "id": "repeat-puffer-salbutamol",
+          "text": "Give more salbutamol via MDI — nebulisers take too long to set up",
+          "correct": false,
+          "feedback": "Suboptimal. She has already used her puffer 10 times without effect. MDI technique in an acutely breathless patient is unreliable. Nebulised salbutamol delivers a much higher, more consistent dose. Setting up a nebuliser takes 2 minutes — well worth it for the superior drug delivery.",
+          "nextNodeId": "ipratropium-addition",
+          "timeAdvanceMin": 10,
+          "scoreDelta": -10,
+          "educationalNote": "MDI vs nebuliser in acute asthma: In acute attacks, nebulised salbutamol (5mg) delivers 10-20× the dose per actuation of MDI. Poor breath coordination in breathless patients makes MDI unreliable. Continuous nebulisation (back-to-back doses) is used for acute severe/life-threatening asthma."
+        }
+      ]
+    },
+    {
+      "id": "ipratropium-addition",
+      "category": "Treatment",
+      "prompt": "Salbutamol 5mg nebulised given. SpO2 now 95%. RR 27. What do you add next for this severity of asthma attack?",
+      "context": "15 minutes in: SpO2 95%, HR 115, RR 27, still audible wheeze, still using accessory muscles. PEFR repeat: 40% predicted. Improving slowly but not adequately.",
+      "choices": [
+        {
+          "id": "add-ipratropium",
+          "text": "Add ipratropium bromide 500mcg to the nebuliser (combined with next salbutamol dose). Ipratropium is indicated in acute severe asthma for additive bronchodilation",
+          "correct": true,
+          "feedback": "Correct. In acute severe (and life-threatening) asthma, ipratropium bromide is added to salbutamol for additive bronchodilation. Evidence shows combined therapy reduces need for hospital admission. Give with each salbutamol nebuliser for first 2 hours or until improvement. Also start IV access and systemic steroids now.",
+          "nextNodeId": "steroids-asthma",
+          "timeAdvanceMin": 5,
+          "vitalsDelta": { "hr": -5, "rr": -2 },
+          "scoreDelta": 15,
+          "educationalNote": "Ipratropium in asthma: indicated in acute SEVERE and LIFE-THREATENING asthma (not needed for mild-moderate). Dose: 500mcg nebulised, mixed with salbutamol, every 4-6 hours (or with every salbutamol for first 2 hours in severe). Adds anticholinergic bronchodilation via different mechanism to beta-2 agonist."
+        },
+        {
+          "id": "salbutamol-only",
+          "text": "Continue salbutamol only — ipratropium is only for COPD",
+          "correct": false,
+          "feedback": "Incorrect. Ipratropium is used in both COPD and acute severe/life-threatening asthma. In asthma, it provides additional bronchodilation via anticholinergic pathways. For mild-moderate asthma, salbutamol alone is sufficient. For acute severe and life-threatening asthma, combined salbutamol + ipratropium is the standard of care.",
+          "nextNodeId": "steroids-asthma",
+          "timeAdvanceMin": 5,
+          "scoreDelta": -10,
+          "educationalNote": "Ipratropium in asthma is NOT just for COPD. BTS guidelines recommend ipratropium 500mcg 4-6 hourly in acute SEVERE asthma and added to every nebuliser in life-threatening attacks. Evidence: Rodrigo et al. meta-analysis showed significant reduction in hospital admissions with combined therapy."
+        },
+        {
+          "id": "theophylline-add",
+          "text": "Add IV aminophylline — she is not responding adequately to salbutamol",
+          "correct": false,
+          "feedback": "Premature and potentially harmful. Aminophylline is a third-line agent in asthma with a narrow therapeutic window and significant side effects (arrhythmias, seizures). Before jumping to aminophylline: ensure ipratropium has been added, steroids given, and magnesium sulfate tried first. IV aminophylline is rarely used now due to adverse profile.",
+          "nextNodeId": "steroids-asthma",
+          "timeAdvanceMin": 5,
+          "scoreDelta": -5,
+          "educationalNote": "Escalation in acute severe asthma: salbutamol → + ipratropium → + steroids → + IV magnesium sulfate → consider IV salbutamol → consider aminophylline (rarely). Aminophylline has been largely replaced by IV magnesium in most UK centres due to better safety profile."
+        }
+      ]
+    },
+    {
+      "id": "steroids-asthma",
+      "category": "Treatment",
+      "prompt": "Salbutamol + ipratropium given. IV access established. What systemic treatment is essential now?",
+      "context": "IV access in situ. She can now say 'I feel slightly better'. SpO2 96%, HR 112, RR 24. PEFR 42% predicted.",
+      "choices": [
+        {
+          "id": "correct-steroids-asthma",
+          "text": "Prednisolone 40-50mg orally (or IV hydrocortisone 100mg if unable to take orally). Steroids are essential in all but the mildest asthma attacks — give immediately",
+          "correct": true,
+          "feedback": "Correct. Systemic corticosteroids reduce airway inflammation, reduce relapse rate, and shorten hospital stay. They must be given in all moderate, severe, and life-threatening asthma attacks. Onset is 4-6 hours — early administration is critical. Oral is as effective as IV if the patient can swallow.",
+          "nextNodeId": "magnesium-decision",
+          "timeAdvanceMin": 5,
+          "scoreDelta": 15,
+          "educationalNote": "Steroids in acute asthma: prednisolone 40-50mg PO OD for 5-7 days (or until discharge + 3 days). IV hydrocortisone 100mg 6-hourly if unable to take oral. Steroids work by reducing eosinophilic airway inflammation — onset 4-6 hours. Do not delay for investigations."
+        },
+        {
+          "id": "inhaled-steroids-only",
+          "text": "She is already on inhaled beclometasone — that is sufficient steroid treatment",
+          "correct": false,
+          "feedback": "Incorrect. Inhaled steroids are maintenance therapy — they do not provide adequate anti-inflammatory effect during an acute attack. Systemic (oral or IV) corticosteroids are required to treat the acute airway inflammation in any moderate or above asthma attack.",
+          "nextNodeId": "magnesium-decision",
+          "timeAdvanceMin": 5,
+          "scoreDelta": -15,
+          "educationalNote": "Inhaled vs systemic steroids in acute asthma: inhaled steroids cannot penetrate inflamed, obstructed airways adequately during an acute attack. Systemic steroids (oral prednisolone or IV hydrocortisone) are required and should be given within the first hour of attendance."
+        },
+        {
+          "id": "delay-steroids-improving",
+          "text": "She is improving — hold steroids and see if she responds to bronchodilators alone",
+          "correct": false,
+          "feedback": "Incorrect. Steroids should be given in ALL acute severe asthma attacks, regardless of apparent initial improvement. Bronchodilators treat bronchospasm immediately but the underlying airway inflammation persists. Without steroids, relapse is very likely within hours. Early steroids prevent deterioration and re-admission.",
+          "nextNodeId": "magnesium-decision",
+          "timeAdvanceMin": 5,
+          "scoreDelta": -10,
+          "educationalNote": "Steroid initiation in asthma: do not be falsely reassured by early bronchodilator response. The inflammatory component of asthma (eosinophilic infiltrate, mucus plugging) only responds to steroids with a 4-6 hour lag. Early steroids prevent the 'late phase' deterioration that typically occurs 4-8 hours after initial bronchospasm."
+        }
+      ]
+    },
+    {
+      "id": "magnesium-decision",
+      "category": "Treatment",
+      "prompt": "30 minutes after initial treatment: repeat assessment shows PEFR 44% predicted, SpO2 94%, HR 115, RR 26. She is not improving adequately. What do you consider next?",
+      "context": "30 minutes in, after 2 doses salbutamol + ipratropium + prednisolone: PEFR 44%, SpO2 94%, still using accessory muscles, HR 115, RR 26. Not improving to expected degree.",
+      "choices": [
+        {
+          "id": "iv-magnesium-correct",
+          "text": "IV magnesium sulfate 1.2-2g over 20 minutes — indicated for life-threatening asthma OR acute severe not responding to initial treatment at 15-30 minutes",
+          "correct": true,
+          "feedback": "Correct. IV magnesium sulfate is indicated in acute severe asthma not responding to initial treatment within 15-30 minutes, and in all life-threatening asthma. It works by inhibiting calcium-mediated smooth muscle contraction → bronchodilation. It is safe and well-tolerated. PEFR 44% after 30 minutes of treatment indicates inadequate response.",
+          "nextNodeId": "reassessment-asthma",
+          "timeAdvanceMin": 30,
+          "vitalsDelta": { "hr": -8, "rr": -4, "spo2": 2 },
+          "scoreDelta": 20,
+          "triggerBadge": "magnesium-master",
+          "educationalNote": "IV magnesium sulfate in asthma: 1.2-2g IV over 20 minutes. Indications: (1) Life-threatening asthma (immediate), (2) Acute severe not responding to initial treatment at 15-30 min. Mechanism: smooth muscle relaxation via calcium channel inhibition. Side effects: flushing, hypotension (give slowly). Relatively safe."
+        },
+        {
+          "id": "wait-longer-no-magnesium",
+          "text": "She is showing some improvement — give it another 2 hours before considering escalation",
+          "correct": false,
+          "feedback": "Too slow. In acute severe asthma with inadequate response at 30 minutes, waiting 2 hours risks rapid deterioration to near-fatal status. IV magnesium sulfate should be considered at 15-30 minutes in patients not responding adequately. Asthma can deteriorate rapidly — act proactively.",
+          "nextNodeId": "reassessment-asthma",
+          "timeAdvanceMin": 120,
+          "vitalsDelta": { "rr": 5, "hr": 8, "spo2": -3 },
+          "scoreDelta": -15,
+          "educationalNote": "Asthma deterioration can be rapid and unpredictable. Near-fatal asthma often occurs in young people who seemed to be 'just managing'. Do not wait if response at 30 minutes is inadequate — escalate promptly."
+        },
+        {
+          "id": "intubate-now-asthma",
+          "text": "She is not responding — intubate immediately",
+          "correct": false,
+          "feedback": "Premature. Intubation in asthma is a LAST RESORT due to high risk — dynamic hyperinflation, auto-PEEP, and the extreme difficulty of ventilating bronchospastic airways. IV magnesium sulfate and (if necessary) IV salbutamol should be tried first. Call anaesthetics/ITU for awareness, but do not intubate before exhausting medical options.",
+          "nextNodeId": "reassessment-asthma",
+          "timeAdvanceMin": 15,
+          "scoreDelta": -20,
+          "educationalNote": "Intubation in asthma: extremely high risk. Auto-PEEP from air trapping causes haemodynamic collapse at intubation. Ventilating asthma requires specialised ventilator settings (low rate, long expiratory time). Call ITU early as a precaution but exhaust all medical options first: IV magnesium, IV salbutamol, and in extremis heliox."
+        }
+      ]
+    },
+    {
+      "id": "reassessment-asthma",
+      "category": "Monitoring",
+      "prompt": "After magnesium sulfate: PEFR 58%, SpO2 97%, HR 106, RR 20. She is clearly improving. What is the threshold for ITU referral and what ongoing monitoring do you arrange?",
+      "context": "1 hour post-magnesium: Significant improvement. PEFR 58% (was 38%). SpO2 97%. HR 106. RR 20. Can now complete full sentences. Wheeze audible but reduced.",
+      "choices": [
+        {
+          "id": "correct-monitoring-asthma",
+          "text": "Continue monitoring: PEFR, SpO2, RR every 15-30 min. ITU criteria: PEFR <33%, SpO2 <92%, silent chest, altered consciousness, respiratory fatigue, pCO2 normal or rising in acute attack. She is improving — continue bronchodilators and steroids on the ward",
+          "correct": true,
+          "feedback": "Correct. She is responding well. Continue regular PEFR monitoring (target >75% or returning to personal best before discharge). ITU referral criteria: silent chest (catastrophic), pCO2 rising (near-fatal), SpO2 <92% despite treatment, or physical exhaustion. Normal pCO2 in acute severe asthma is actually a WARNING SIGN — it should be low due to hyperventilation.",
+          "nextNodeId": "discharge-asthma",
+          "timeAdvanceMin": 180,
+          "vitalsDelta": { "hr": -8, "rr": -2, "spo2": 1 },
+          "scoreDelta": 15,
+          "educationalNote": "Rising pCO2 in acute asthma is a near-fatal sign. Expected in severe acute asthma: low pCO2 (hyperventilation). A 'normal' pCO2 of 5kPa in acute severe asthma = respiratory muscle fatigue, unable to maintain hyperventilation = imminent respiratory arrest. Call ITU immediately."
+        },
+        {
+          "id": "discharge-too-early",
+          "text": "PEFR 58% and she feels better — discharge home with a salbutamol prescription",
+          "correct": false,
+          "feedback": "Dangerous. PEFR 58% is still in the acute severe range (33-50% of predicted). Discharge should only be considered when PEFR ≥75% predicted, SpO2 ≥94% on air, symptoms well controlled, and at least 1 hour of stability after last nebuliser. Premature discharge from acute severe asthma is associated with re-admission and death.",
+          "nextNodeId": "discharge-asthma",
+          "timeAdvanceMin": 10,
+          "scoreDelta": -25,
+          "educationalNote": "Asthma discharge criteria: PEFR ≥75% predicted (or personal best), SpO2 ≥94% on air, no nocturnal symptoms, on regular inhaled steroids, salbutamol required ≤4-hourly, patient has written action plan, follow-up arranged within 2-7 days."
+        },
+        {
+          "id": "itu-referral-now",
+          "text": "Refer to ITU immediately — this was a serious attack",
+          "correct": false,
+          "feedback": "Unnecessary at this stage. She is now improving rapidly: PEFR 58%, SpO2 97%, completing sentences. ITU referral is warranted for deteriorating or life-threatening features — not for a patient who is responding well to treatment. Continue monitoring on the ward with a low threshold for ITU review if she deteriorates.",
+          "nextNodeId": "discharge-asthma",
+          "timeAdvanceMin": 20,
+          "scoreDelta": -5,
+          "educationalNote": "ITU escalation in asthma: required for near-fatal features (rising pCO2, silent chest, altered consciousness, haemodynamic instability) or failure to respond to full medical therapy. Early communication with ITU is wise — but formal referral is based on clinical deterioration, not a precaution when the patient is improving."
+        }
+      ]
+    },
+    {
+      "id": "discharge-asthma",
+      "category": "Disposition",
+      "prompt": "After 6 hours: PEFR 78% predicted, SpO2 97% on air, RR 16, HR 92, comfortable, completing full sentences. She is suitable for discharge. What MUST be done before she leaves?",
+      "context": "She is clinically well now. Keen to go home for a university exam tomorrow. Admits she 'often forgets' her preventer inhaler.",
+      "isTerminal": true,
+      "choices": [
+        {
+          "id": "correct-discharge-asthma",
+          "text": "Before discharge: check inhaler technique, step up maintenance therapy (increase ICS or add LABA), provide written asthma action plan, 5-day prednisolone course to complete, GP follow-up within 2 working days, self-management education",
+          "correct": true,
+          "feedback": "Excellent. This attack was precipitated by poor ICS compliance. The discharge bundle must include: (1) Inhaler technique demonstration (poor technique is common), (2) Step-up of preventer therapy, (3) Written action plan (when to increase reliever, when to seek help), (4) Complete steroid course, (5) GP review in 2 working days. This attendance was preventable.",
+          "nextNodeId": null,
+          "timeAdvanceMin": 30,
+          "scoreDelta": 15,
+          "triggerBadge": "asthma-educator",
+          "educationalNote": "Asthma discharge bundle: (1) Written personal asthma action plan. (2) Preventer therapy optimised/stepped up. (3) Inhaler technique checked. (4) 5-7 day prednisolone course. (5) Salbutamol (reliever) prescription. (6) GP follow-up 2 working days (all acute severe) or 2-7 days (moderate). (7) Smoking cessation if applicable. (8) Allergen/trigger avoidance advice."
+        },
+        {
+          "id": "discharge-no-plan",
+          "text": "Discharge with a salbutamol prescription and tell her to see GP when convenient",
+          "correct": false,
+          "feedback": "Inadequate. A near-life-threatening asthma attack in a 19-year-old with poor ICS compliance requires a structured discharge intervention. Without addressing the root cause (poor compliance, inadequate preventer), re-attendance is extremely likely — potentially with a fatal outcome. Urgent GP follow-up (2 working days), action plan, and inhaler review are mandatory.",
+          "nextNodeId": null,
+          "timeAdvanceMin": 5,
+          "scoreDelta": -20,
+          "educationalNote": "Asthma mortality is largely preventable. Risk factors for fatal asthma: previous near-fatal attack, poor ICS compliance, lack of written action plan, repeated A&E attendances, psychosocial factors. This patient has several risk factors — structured follow-up is essential."
+        }
+      ]
+    }
+  ],
+  "diseaseMap": {
+    "presenting": [
+      "Acute wheeze (audible)",
+      "Dyspnoea — cannot complete sentences",
+      "Use of accessory muscles",
+      "PEFR significantly reduced from personal best",
+      "Known asthma with previous attendances",
+      "Trigger: URTI, allergen, exercise, non-compliance with preventer"
+    ],
+    "redFlags": [
+      "Silent chest — CATASTROPHIC (no airflow)",
+      "SpO2 <92%",
+      "PEFR <33% predicted",
+      "Altered consciousness / confusion",
+      "Exhaustion / poor respiratory effort",
+      "Cyanosis",
+      "Rising or normal pCO2 in acute attack",
+      "Hypotension"
+    ],
+    "bestFirstStep": "High-flow oxygen to maintain SpO2 >94% + salbutamol 5mg nebulised (oxygen-driven, back-to-back doses)",
+    "bestInvestigation": "PEFR (bedside, immediate severity classification) + ABG in severe/life-threatening (rising pCO2 = near-fatal)",
+    "diagnosis": "Acute Severe Asthma (approaching life-threatening)",
+    "treatment": "O2 >94% + Salbutamol 5mg nebulised (back-to-back) + Ipratropium 500mcg (severe/life-threatening) + Prednisolone 40-50mg + IV Magnesium sulfate 1.2-2g (if severe not responding at 30min or life-threatening)",
+    "followUp": "GP within 2 working days, step up preventer therapy, written action plan, inhaler technique check",
+    "complications": [
+      "Near-fatal asthma / respiratory arrest",
+      "Pneumothorax (rare but serious)",
+      "Ventilator-associated complications if intubated",
+      "Hypokalaemia (from high-dose salbutamol)",
+      "Hyperglycaemia (from steroids)"
+    ],
+    "guidelineRef": "BTS/SIGN British Guideline on the Management of Asthma 2023"
+  },
+  "guideline": {
+    "title": "Acute Asthma Severity Classification & Management — BTS/SIGN",
+    "body": "SEVERITY CLASSIFICATION\n\nMODERATE ACUTE:\n• PEFR 50-75% predicted\n• No features of acute severe\n\nACUTE SEVERE (any one of):\n• PEFR 33-50% predicted\n• HR ≥110 bpm\n• RR ≥25/min\n• Unable to complete sentences\n\nLIFE-THREATENING (any one of):\n• PEFR <33% predicted\n• SpO2 <92%\n• PaO2 <8kPa\n• Normal/rising pCO2 (4.6-6.0kPa)\n• Silent chest\n• Cyanosis\n• Poor respiratory effort\n• Altered consciousness\n• Hypotension/bradycardia\n\nNEAR-FATAL:\n• Raised pCO2\n• Requiring mechanical ventilation\n\nTREATMENT ESCALATION\n1. O2 to maintain SpO2 >94-98%\n2. Salbutamol 5mg nebulised (O2-driven), back-to-back\n3. + Ipratropium 500mcg (severe/life-threatening)\n4. + Prednisolone 40-50mg PO (or IV hydrocortisone 100mg)\n5. + IV Magnesium sulfate 1.2-2g over 20min (life-threatening OR no response at 30min)\n6. IV Salbutamol (if poor response to nebulisers)\n7. ITU/anaesthetic input for intubation if above fails\n\nDISCHARGE CRITERIA\n• PEFR ≥75% predicted or personal best\n• SpO2 ≥94% on air\n• Symptoms controlled\n• On regular ICS\n• Salbutamol needed ≤4-hourly\n• Written action plan given\n• Follow-up within 2 working days arranged",
+    "calculators": []
+  },
+  "availableBadges": [
+    {
+      "id": "magnesium-master",
+      "label": "Magnesium Master",
+      "icon": "⚡",
+      "description": "Correctly identified the indication for IV magnesium sulfate in non-responding acute severe asthma",
+      "positive": true
+    },
+    {
+      "id": "asthma-educator",
+      "label": "Prevention Champion",
+      "icon": "📋",
+      "description": "Completed the full discharge bundle including written action plan and preventer optimisation",
+      "positive": true
+    }
+  ],
+  "disclaimer": "This game is for educational and entertainment purposes only. It does not constitute medical advice. Always follow local guidelines and senior supervision in clinical practice."
+}

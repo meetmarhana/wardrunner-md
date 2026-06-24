@@ -1,0 +1,418 @@
+{
+  "id": "hhs",
+  "specialty": "Internal Medicine",
+  "title": "Elderly Confusion and Profound Thirst",
+  "subtitle": "Hyperosmolar Hyperglycaemic State",
+  "difficulty": "advanced",
+  "estimatedMinutes": 22,
+  "patient": {
+    "age": 78,
+    "sex": "M",
+    "chiefComplaint": "5 days of increasing confusion, thirst, and urinary frequency",
+    "history": "78-year-old male with Type 2 Diabetes (on metformin and gliclazide) brought in by his daughter. She reports he has been 'not himself' for 5 days — drinking enormous amounts, passing urine constantly, and increasingly confused. Today he cannot recognise her. No vomiting. No abdominal pain.",
+    "initialVitals": {
+      "bp": "88/60",
+      "hr": 130,
+      "rr": 20,
+      "spo2": 96,
+      "temp": 37.2,
+      "gcs": 10
+    },
+    "symptoms": [
+      "Profound confusion (GCS 10)",
+      "Polyuria and polydipsia for 5 days",
+      "Severe dehydration",
+      "Tachycardia and hypotension (shocked)",
+      "No vomiting or abdominal pain (unlike DKA)",
+      "Weakness and lethargy"
+    ],
+    "redFlags": [
+      "GCS 10 — severely reduced consciousness",
+      "BP 88/60 — hypotensive shock",
+      "HR 130 — significant tachycardia",
+      "Extreme dehydration — likely >8-10L deficit"
+    ],
+    "backgroundHistory": "Type 2 DM for 15 years (metformin 1g BD, gliclazide 80mg OD). Hypertension (amlodipine 10mg). AF (apixaban 5mg BD — NOTE: HOLD during acute illness). Previous mild stroke 3 years ago. Non-smoker. Lives alone — daughter visits weekly."
+  },
+  "startNodeId": "initial-assessment",
+  "nodes": [
+    {
+      "id": "initial-assessment",
+      "category": "Assessment",
+      "prompt": "A 78-year-old man with Type 2 DM presents with 5 days of confusion, profound thirst, and reduced GCS. He is severely dehydrated and haemodynamically compromised. What is your immediate priority?",
+      "context": "BP 88/60, HR 130, RR 20, SpO2 96%, GCS 10. He is profoundly dehydrated — no skin turgor, cracked lips, sunken eyes. No ketotic breath. No vomiting.",
+      "choices": [
+        {
+          "id": "aggressive-fluids-first",
+          "text": "Immediate IV access (two large-bore cannulae), 0.9% saline fluid resuscitation urgently. This patient is in hypovolaemic shock — fluids are the priority",
+          "correct": true,
+          "feedback": "Correct. In HHS, aggressive fluid replacement is the most important initial intervention — even more so than in DKA. This patient has profound volume depletion estimated at 8-10 litres. Resuscitation with 0.9% saline must begin immediately. Insulin comes LATER, only after fluids are running and electrolytes known.",
+          "nextNodeId": "bloods-investigation",
+          "timeAdvanceMin": 10,
+          "vitalsDelta": { "hr": -8, "bp": "95/65" },
+          "scoreDelta": 20,
+          "educationalNote": "HHS typically has a fluid deficit of 8-10 litres (vs 5-8L in DKA). The primary treatment is fluid replacement. Insulin should not be started until fluids are running and K+ is known — premature insulin without adequate volume replacement risks cardiovascular collapse."
+        },
+        {
+          "id": "insulin-first-hhs",
+          "text": "Start insulin immediately — glucose must be 55mmol/L or higher given the confusion",
+          "correct": false,
+          "feedback": "Dangerous error. In HHS, giving insulin before fluids risks catastrophic haemodynamic collapse. Insulin shifts glucose and water intracellularly, rapidly reducing intravascular volume in an already severely dehydrated patient. Fluids MUST come first. Insulin is added later at a LOW dose.",
+          "nextNodeId": "bloods-investigation",
+          "timeAdvanceMin": 15,
+          "vitalsDelta": { "hr": 20, "bp": "75/50" },
+          "scoreDelta": -25,
+          "educationalNote": "HHS vs DKA insulin timing: In DKA, insulin follows fluids by 1 hour. In HHS, insulin is added even more cautiously — glucose falls adequately with fluids alone initially. Start insulin only if glucose fails to fall by 5mmol/L/hr with fluids, or if ketones develop."
+        },
+        {
+          "id": "oral-rehydration-hhs",
+          "text": "Give oral fluids — he is alert enough to swallow if supported",
+          "correct": false,
+          "feedback": "Insufficient. This patient is in haemodynamic shock with GCS 10. Oral rehydration is wholly inadequate for an 8-10 litre deficit and carries aspiration risk at this GCS level. Large-bore IV access and aggressive IV fluid resuscitation is mandatory.",
+          "nextNodeId": "bloods-investigation",
+          "timeAdvanceMin": 20,
+          "vitalsDelta": { "hr": 10 },
+          "scoreDelta": -15,
+          "educationalNote": "GCS ≤13 is a contraindication to oral fluids due to aspiration risk. The magnitude of dehydration in HHS (8-10L) cannot be corrected orally. IV resuscitation is essential."
+        }
+      ]
+    },
+    {
+      "id": "bloods-investigation",
+      "category": "Investigation",
+      "prompt": "IV access established, 1L 0.9% saline given rapidly. Bloods are back. What do the results show and how do you distinguish this from DKA?",
+      "context": "Glucose: 55mmol/L. Osmolality: 382 mOsm/kg (calculated). Na+: 152mmol/L. K+: 4.8mmol/L. VBG: pH 7.35, HCO3 22 (no significant acidosis). Ketones: 0.8mmol/L (trace only). Creatinine: 210 (eGFR 24 — AKI). Urea: 22. Hb: 172 (haemoconcentrated). CXR: no consolidation.",
+      "choices": [
+        {
+          "id": "diagnose-hhs-correctly",
+          "text": "HHS: Glucose 55mmol/L + osmolality >320 + no significant ketonaemia + no significant acidosis. Also note concurrent AKI (creatinine 210) — likely precipitated by dehydration",
+          "correct": true,
+          "feedback": "Correct diagnosis. HHS diagnostic criteria met: glucose >30mmol/L, osmolality >320mOsm/kg (here 382), no significant ketones (<3mmol/L), and no significant acidosis (pH 7.35). The AKI is a key complication — metformin must be held immediately (lactic acidosis risk with AKI).",
+          "nextNodeId": "fluid-strategy-hhs",
+          "timeAdvanceMin": 5,
+          "scoreDelta": 20,
+          "triggerBadge": "diagnostician",
+          "educationalNote": "HHS diagnostic criteria: glucose >30mmol/L + osmolality >320mOsm/kg + no significant ketones (<3mmol/L) + venous pH >7.3. Calculated osmolality = 2(Na+) + glucose + urea. At 382, this is markedly elevated. AKI in HHS is common — hold metformin and nephrotoxins."
+        },
+        {
+          "id": "diagnose-as-dka",
+          "text": "This looks like DKA — high glucose and confusion, treat as DKA with standard FRIII",
+          "correct": false,
+          "feedback": "Incorrect. This is HHS, not DKA. Key differences: no significant ketonaemia (0.8mmol/L vs ≥3 in DKA), no acidosis (pH 7.35 vs <7.3 in DKA), extreme hyperglycaemia (55mmol/L), markedly elevated osmolality (382), and older Type 2 DM patient. Treating HHS with standard DKA insulin doses risks rapid glucose falls with cerebral oedema.",
+          "nextNodeId": "fluid-strategy-hhs",
+          "timeAdvanceMin": 10,
+          "scoreDelta": -20,
+          "educationalNote": "HHS vs DKA: HHS = Type 2 DM + extreme hyperglycaemia + hyperosmolality + minimal ketones + no acidosis + older patient + insidious onset. DKA = Type 1 (or 2) + ketonaemia + acidosis + fruity breath + Kussmaul breathing + younger patient + rapid onset."
+        },
+        {
+          "id": "ignore-aki",
+          "text": "Diagnose HHS. AKI is a coincidental finding — no immediate action needed for that",
+          "correct": false,
+          "feedback": "Incomplete. The AKI requires immediate action: (1) Hold metformin NOW — metformin causes lactic acidosis in AKI. (2) Hold NSAIDs/nephrotoxins. (3) Consider holding ACEi/ARB temporarily. (4) Monitor fluid balance carefully — oliguria may develop. (5) Urology or nephrology review if not improving with fluids.",
+          "nextNodeId": "fluid-strategy-hhs",
+          "timeAdvanceMin": 5,
+          "scoreDelta": -10,
+          "educationalNote": "Metformin is contraindicated in AKI (eGFR <30) due to risk of lactic acidosis. This must be withheld immediately in HHS with AKI. Also hold other nephrotoxic drugs. Monitor urine output hourly — consider urinary catheter for accurate output measurement."
+        }
+      ]
+    },
+    {
+      "id": "fluid-strategy-hhs",
+      "category": "Treatment",
+      "prompt": "HHS diagnosed. AKI noted — metformin held. What is your fluid replacement strategy? Target sodium correction rate is critical here.",
+      "context": "Na+ 152mmol/L, Osmolality 382. BP has improved slightly to 96/68 after 1L. Still HR 125. Total estimated fluid deficit: 8-10 litres.",
+      "choices": [
+        {
+          "id": "correct-fluid-hhs",
+          "text": "Continue 0.9% saline at 500mL/hr. Target sodium correction: reduce Na+ by NO MORE than 10mmol/L in 24 hours. Switch to 0.45% saline only if osmolality not falling despite adequate 0.9% saline. Aim full replacement over 48 hours",
+          "correct": true,
+          "feedback": "Correct and nuanced. In HHS, correction must be slow to prevent cerebral oedema. 0.9% saline is relatively hypotonic to this patient's plasma (osmolality 382) so will gradually lower sodium — no need to rush to 0.45% saline. Target: Na+ falling ≤10mmol/L per 24hrs, osmolality falling ≤3-8mOsm/kg/hr.",
+          "nextNodeId": "insulin-hhs",
+          "timeAdvanceMin": 180,
+          "vitalsDelta": { "hr": -15, "bp": "110/72" },
+          "scoreDelta": 20,
+          "educationalNote": "HHS sodium correction: maximum 10mmol/L per 24 hours. Rapid sodium correction causes cerebral oedema — osmotic demyelination syndrome risk. Use 0.9% saline as the primary fluid (it is hypotonic relative to patient's plasma). 0.45% saline only if osmolality not responding. Replace full deficit over 48 hours."
+        },
+        {
+          "id": "rapid-sodium-correction",
+          "text": "Na+ is dangerously high — use 0.45% saline rapidly to correct the sodium quickly over 6 hours",
+          "correct": false,
+          "feedback": "Dangerous. Rapid sodium correction in HHS causes cerebral oedema. The brain has adapted to hyperosmolality by accumulating osmolytes — rapid correction of plasma osmolality causes water to shift into brain cells. Maximum safe correction is 10mmol/L Na+ per 24 hours. 0.9% saline is sufficient initially.",
+          "nextNodeId": "insulin-hhs",
+          "timeAdvanceMin": 30,
+          "vitalsDelta": { "hr": -5 },
+          "scoreDelta": -25,
+          "educationalNote": "Cerebral oedema is a catastrophic complication of over-rapid fluid correction in HHS. The serum sodium should fall by no more than 10mmol/L per 24 hours. Use measured/calculated osmolality to guide replacement rate."
+        },
+        {
+          "id": "give-5pc-dextrose-hhs",
+          "text": "Start 5% dextrose to replace the fluid deficit — the glucose in it will help prevent hypoglycaemia",
+          "correct": false,
+          "feedback": "Incorrect. 5% dextrose is contraindicated in HHS — it would worsen the hyperglycaemia. The patient already has glucose of 55mmol/L. Use 0.9% saline for initial resuscitation. Dextrose is only introduced when glucose falls to ≤14mmol/L (same as DKA).",
+          "nextNodeId": "insulin-hhs",
+          "timeAdvanceMin": 15,
+          "vitalsDelta": { "hr": 5 },
+          "scoreDelta": -20,
+          "educationalNote": "Never give glucose-containing fluids in HHS until blood glucose has fallen to ≤14mmol/L. This is the same threshold as DKA. In HHS with glucose of 55mmol/L, 5% dextrose would be profoundly harmful."
+        }
+      ]
+    },
+    {
+      "id": "insulin-hhs",
+      "category": "Treatment",
+      "prompt": "Fluids are running. After 2 hours of 0.9% saline, glucose is 48mmol/L (fallen by 7 — from fluids alone). K+ is now 4.2mmol/L. Should you start insulin now?",
+      "context": "After 2 hours: BP 108/70, HR 118, GCS 11. Glucose 48mmol/L (fallen by 7 with fluids alone). Osmolality estimated at 372. K+ 4.2mmol/L. No ketones.",
+      "choices": [
+        {
+          "id": "hold-insulin-glucose-falling",
+          "text": "Glucose is falling adequately with fluids alone (>5mmol/L/hr) — continue fluids only for now. Start insulin only if glucose fails to fall, or if ketones ≥1mmol/L develop",
+          "correct": true,
+          "feedback": "Correct. In HHS, if glucose is falling adequately with IV fluids alone (target: ≥5mmol/L/hr), insulin is not immediately required. The risk of adding insulin is precipitating rapid osmolality reduction (cerebral oedema) or hypokalaemia. Only add insulin at a LOW dose (0.05 units/kg/hr — half the DKA dose) if glucose response is inadequate.",
+          "nextNodeId": "thromboprophylaxis",
+          "timeAdvanceMin": 60,
+          "vitalsDelta": { "hr": -5 },
+          "scoreDelta": 20,
+          "educationalNote": "HHS insulin principle: fluids are the primary therapy. Insulin at 0.05 units/kg/hr (half the DKA dose) is added only if glucose fails to fall by ≥5mmol/L/hr with adequate fluid resuscitation, or if significant ketones develop (≥1mmol/L). Never use the full DKA insulin dose in HHS."
+        },
+        {
+          "id": "start-full-dka-dose-insulin",
+          "text": "Start insulin at 0.1 units/kg/hr (same as DKA) — glucose is still very high at 48mmol/L",
+          "correct": false,
+          "feedback": "Incorrect. The DKA insulin dose is too high for HHS. In HHS, the target is a gradual glucose reduction. Excessive insulin causes rapid osmolality shifts → cerebral oedema. If insulin is needed, the HHS dose is 0.05 units/kg/hr (half DKA). Glucose is currently falling with fluids alone — no insulin indicated yet.",
+          "nextNodeId": "thromboprophylaxis",
+          "timeAdvanceMin": 15,
+          "vitalsDelta": { "hr": -5 },
+          "scoreDelta": -15,
+          "educationalNote": "HHS insulin dose = 0.05 units/kg/hr (50% of DKA dose). The reduced dose prevents over-rapid osmolality correction. Glucose reduction target in HHS: 5mmol/L/hr maximum."
+        },
+        {
+          "id": "no-insulin-ever",
+          "text": "Do not start insulin at all — HHS does not require insulin therapy",
+          "correct": false,
+          "feedback": "Partially incorrect. While fluids are the primary therapy and insulin is not always required in HHS, insulin should be added if: (1) glucose fails to fall ≥5mmol/L/hr with adequate fluids, (2) ketones develop ≥1mmol/L, or (3) glucose is not reaching target. The current scenario does not yet require insulin, but it may be needed later.",
+          "nextNodeId": "thromboprophylaxis",
+          "timeAdvanceMin": 10,
+          "scoreDelta": 5,
+          "educationalNote": "In HHS, insulin is used judiciously — the primary treatment is fluids. However, insulin is added at low dose (0.05 units/kg/hr) if glucose response to fluids is inadequate. The absence of significant ketosis means insulin is less urgently required than in DKA."
+        }
+      ]
+    },
+    {
+      "id": "thromboprophylaxis",
+      "category": "Treatment",
+      "prompt": "Treatment is underway. A nurse asks about VTE prophylaxis. The patient is on apixaban for AF — should you continue it?",
+      "context": "The patient has AF (on apixaban 5mg BD) and has been relatively immobile for 5 days. Dehydration causes significant hypercoagulability. Creatinine is 210 (AKI). Platelets 245. No active bleeding.",
+      "choices": [
+        {
+          "id": "correct-vte-hhs",
+          "text": "HHS carries very high VTE risk. Hold apixaban temporarily given the AKI, but start LMWH (low-molecular-weight heparin) thromboprophylaxis — the thrombosis risk in HHS is extremely high. Review apixaban when AKI resolves",
+          "correct": true,
+          "feedback": "Correct. HHS is associated with a hypercoagulable state — dehydration, hyperviscosity, and endothelial damage markedly increase VTE and arterial thrombosis risk (stroke, MI, peripheral arterial occlusion). Anticoagulation with LMWH is essential. Apixaban is held due to AKI (monitor eGFR). LMWH dose-adjust for renal function.",
+          "nextNodeId": "precipitant-search",
+          "timeAdvanceMin": 15,
+          "scoreDelta": 15,
+          "triggerBadge": "anticoagulation-hero",
+          "educationalNote": "VTE in HHS: HHS is a prothrombotic state. DVT, PE, stroke, and MI are well-recognised complications. ALL patients with HHS should receive therapeutic or prophylactic anticoagulation unless contraindicated. Thrombosis can also be arterial (stroke, limb ischaemia). This is a higher-risk situation than DKA."
+        },
+        {
+          "id": "continue-apixaban-hhs",
+          "text": "Continue his usual apixaban — he has AF and needs full anticoagulation",
+          "correct": false,
+          "feedback": "Problematic. Apixaban should be used with caution in AKI (eGFR 24) — it is renally cleared and can accumulate, increasing bleeding risk. However, the underlying principle is correct: this patient needs anticoagulation. Switch to LMWH (dose-adjusted for eGFR) during the acute illness and resume apixaban when AKI resolves.",
+          "nextNodeId": "precipitant-search",
+          "timeAdvanceMin": 5,
+          "scoreDelta": -5,
+          "educationalNote": "Apixaban in AKI: while apixaban has less renal clearance than dabigatran, significant AKI (eGFR <25) warrants caution. During acute illness with AKI, switching to LMWH allows better dose titration and monitoring."
+        },
+        {
+          "id": "no-anticoagulation-bleeding-risk",
+          "text": "Hold all anticoagulation — he is confused and at risk of falls, bleeding risk outweighs benefit",
+          "correct": false,
+          "feedback": "Incorrect. In HHS, the thrombosis risk (stroke, PE, DVT, limb ischaemia) is extremely high and substantially outweighs bleeding risk in most patients. Withholding all anticoagulation in HHS is associated with significant morbidity and mortality. LMWH should be given unless there is a specific absolute contraindication.",
+          "nextNodeId": "precipitant-search",
+          "timeAdvanceMin": 10,
+          "scoreDelta": -20,
+          "educationalNote": "Thrombosis is a major cause of death in HHS — not just VTE but arterial events (stroke, MI). The hyperosmolar, dehydrated state creates profound hypercoagulability. LMWH thromboprophylaxis is mandatory in HHS guidelines."
+        }
+      ]
+    },
+    {
+      "id": "precipitant-search",
+      "category": "Investigation",
+      "prompt": "HHS rarely happens without a trigger. What common precipitants should you actively investigate?",
+      "context": "The patient lives alone and was well 2 weeks ago. No recent illness reported by daughter. He ran out of metformin 10 days ago (did not reorder). Temperature 37.2°C — not overtly febrile. MSU sent. CXR clear.",
+      "choices": [
+        {
+          "id": "investigate-precipitants",
+          "text": "Investigate for: infection (MSU, blood cultures, CXR), new medications (steroids, diuretics, olanzapine), recent MI/stroke (ECG, troponin), and non-adherence to medications. Send HbA1c to assess chronic control",
+          "correct": true,
+          "feedback": "Thorough and correct. Common HHS precipitants include: infection (50% — often UTI or pneumonia), newly prescribed steroids or antipsychotics, dietary indiscretion, medication non-compliance, myocardial infarction, or stroke. An ECG and troponin are important — acute MI can precipitate HHS AND can occur as a complication due to the thrombotic state.",
+          "nextNodeId": "monitoring-hhs",
+          "timeAdvanceMin": 30,
+          "scoreDelta": 15,
+          "educationalNote": "HHS precipitants (learn these): (1) Infection — most common (50%), often occult. (2) Medications — steroids, thiazides, antipsychotics, sodium-glucose cotransporter 2 inhibitors. (3) Myocardial infarction. (4) Stroke (which is also a complication). (5) Non-compliance with diabetes medications. (6) First presentation of undiagnosed T2DM."
+        },
+        {
+          "id": "assume-noncompliance",
+          "text": "He ran out of metformin — that explains it. No further investigation of precipitants needed",
+          "correct": false,
+          "feedback": "Incomplete. Metformin non-compliance alone rarely causes HHS of this severity. There is likely an additional precipitant. The absence of fever does not exclude infection — elderly patients often do not mount a fever with sepsis. Blood cultures, MSU, ECG, and troponin are essential.",
+          "nextNodeId": "monitoring-hhs",
+          "timeAdvanceMin": 10,
+          "scoreDelta": -10,
+          "educationalNote": "Metformin non-compliance in Type 2 DM increases glucose but rarely causes HHS of this severity alone. Always search for a concurrent precipitant — particularly occult infection in the elderly."
+        },
+        {
+          "id": "ecg-only",
+          "text": "Get an ECG — this could be a NSTEMI that precipitated the HHS",
+          "correct": false,
+          "feedback": "Good thinking but incomplete. An ECG and troponin are indeed important — acute MI can precipitate HHS and is also a complication. However, a comprehensive precipitant screen (blood cultures, MSU, CXR review, medication history) is required. One investigation alone is insufficient.",
+          "nextNodeId": "monitoring-hhs",
+          "timeAdvanceMin": 10,
+          "scoreDelta": 5,
+          "educationalNote": "Myocardial infarction is both a precipitant AND a complication of HHS (due to the prothrombotic state). An ECG and troponin are essential in all HHS presentations."
+        }
+      ]
+    },
+    {
+      "id": "monitoring-hhs",
+      "category": "Monitoring",
+      "prompt": "Treatment is underway. What are your monitoring priorities and resolution criteria for HHS?",
+      "context": "6 hours in: Glucose 35mmol/L, Na+ 148mmol/L (fallen 4 from 152 — within target). Osmolality 365. K+ 3.8. BP 118/74, HR 105, GCS 12 (improving). AKI improving (creatinine 185). UTI found on MSU — antibiotics started.",
+      "choices": [
+        {
+          "id": "correct-hhs-monitoring",
+          "text": "Monitor: glucose 1-2 hourly, Na+ and osmolality 4-hourly, K+ 2-4 hourly. Resolution: osmolality <320 + glucose <15mmol/L + GCS returning to baseline + patient clinically well. Strict fluid balance with urinary catheter",
+          "correct": true,
+          "feedback": "Correct. Resolution of HHS is defined by osmolality normalisation, glucose <15mmol/L, and clinical improvement. Strict fluid balance via urinary catheter allows accurate input/output monitoring. Na+ correction must not exceed 10mmol/L/24hr. An osmolality approaching 300 with clinical improvement indicates resolution.",
+          "nextNodeId": "final-disposition-hhs",
+          "timeAdvanceMin": 240,
+          "vitalsDelta": { "hr": -15, "bp": "122/76" },
+          "scoreDelta": 15,
+          "educationalNote": "HHS resolution criteria: blood glucose <15mmol/L + osmolality <320mOsm/kg + patient clinically stable + GCS improving. Full resolution typically takes 24-72 hours. Transition to SC insulin is made when eating and drinking. Note: many HHS patients can be managed with oral antidiabetic agents at discharge — insulin is not always required long-term."
+        },
+        {
+          "id": "discharge-hhs-too-early",
+          "text": "He is improving and the UTI is being treated — can probably discharge in 24 hours",
+          "correct": false,
+          "feedback": "Too soon. HHS requires 48-72 hours of careful monitoring and treatment. The osmolality is still 365 (target <320), glucose is 35, and GCS is still impaired. Premature discharge risks re-decompensation. Additionally, the patient lives alone — a social and discharge safety assessment is essential.",
+          "nextNodeId": "final-disposition-hhs",
+          "timeAdvanceMin": 20,
+          "scoreDelta": -15,
+          "educationalNote": "HHS is a high-mortality condition (15-20% in-hospital mortality vs 1-2% for DKA). Full resolution takes 24-72 hours. Discharge planning must include: safe to live alone? Social support? Medication reconciliation? Diabetes education? Falls risk assessment."
+        },
+        {
+          "id": "no-catheter-needed",
+          "text": "No urinary catheter needed — just check fluid balance from nursing observations",
+          "correct": false,
+          "feedback": "Insufficient in a confused, haemodynamically compromised patient with AKI. A urinary catheter is essential for accurate hourly urine output monitoring in HHS — oliguria is a key indicator of inadequate resuscitation or worsening AKI. Clinical nursing estimates of fluid balance are inaccurate in this setting.",
+          "nextNodeId": "final-disposition-hhs",
+          "timeAdvanceMin": 10,
+          "scoreDelta": -5,
+          "educationalNote": "Urinary catheterisation in HHS: essential for accurate fluid balance monitoring, especially with concurrent AKI. Target urine output: >0.5mL/kg/hr. Oliguria despite adequate fluid resuscitation suggests AKI is not improving and nephrology review is warranted."
+        }
+      ]
+    },
+    {
+      "id": "final-disposition-hhs",
+      "category": "Disposition",
+      "prompt": "After 60 hours, the patient has recovered: osmolality 305, glucose 12mmol/L, GCS 15, eating small meals. AKI resolving (creatinine 140). UTI treated. What is your discharge plan?",
+      "context": "He is alert and conversing normally. He understands what happened. His daughter is present. He remains on an endocrine ward.",
+      "isTerminal": true,
+      "choices": [
+        {
+          "id": "comprehensive-discharge-hhs",
+          "text": "Discharge plan: restart gliclazide (hold metformin until creatinine <150 or as per eGFR), restart apixaban now AKI resolving, arrange diabetes nurse follow-up, educate on signs of decompensation, social assessment for living alone, GP follow-up in 1 week",
+          "correct": true,
+          "feedback": "Excellent comprehensive plan. Key points: (1) Metformin held until AKI fully resolved (eGFR >30). (2) Apixaban restarted as AKI improving. (3) Diabetes nurse review within 1 week. (4) Social assessment — he lives alone, fell into crisis without anyone noticing for 5 days. (5) GP follow-up. Consider whether this patient needs a carer or enhanced community support.",
+          "nextNodeId": null,
+          "timeAdvanceMin": 30,
+          "scoreDelta": 20,
+          "triggerBadge": "hhs-resolved",
+          "educationalNote": "HHS discharge checklist: (1) Metformin: restart only when eGFR >30 and creatinine stable. (2) DOAC/anticoagulation: restart once AKI resolved. (3) Diabetes education and sick-day rules. (4) Social support assessment — many HHS patients are elderly and live alone. (5) Cause identified and treated. (6) Outpatient diabetes follow-up within 2 weeks."
+        },
+        {
+          "id": "restart-all-medications",
+          "text": "Restart all his usual medications including metformin and discharge",
+          "correct": false,
+          "feedback": "Incorrect. Metformin must NOT be restarted until the AKI has fully resolved (creatinine normalised and eGFR >30). Restarting metformin with creatinine 140 risks lactic acidosis. Review renal function at 1-week GP follow-up and restart when safe.",
+          "nextNodeId": null,
+          "timeAdvanceMin": 10,
+          "scoreDelta": -15,
+          "educationalNote": "Metformin is absolutely contraindicated in AKI (eGFR <30). After HHS with AKI, recheck renal function before restarting. Safe threshold for metformin: eGFR >30 (reduce dose at 30-45, stop below 30). Standard dose can be resumed above eGFR 45."
+        }
+      ]
+    }
+  ],
+  "diseaseMap": {
+    "presenting": [
+      "Extreme hyperglycaemia (glucose >30mmol/L, often >50)",
+      "Hyperosmolality (>320 mOsm/kg)",
+      "Profound dehydration (8-10L deficit)",
+      "Reduced consciousness or confusion",
+      "No significant ketonaemia (<3mmol/L)",
+      "No significant acidosis (pH >7.3)",
+      "Elderly Type 2 DM patient",
+      "Insidious onset over days"
+    ],
+    "redFlags": [
+      "GCS <10",
+      "Systolic BP <90mmHg",
+      "Osmolality >400mOsm/kg",
+      "Signs of arterial thrombosis (new focal neurology, chest pain)",
+      "Oliguria despite fluid resuscitation",
+      "Na+ >160mmol/L"
+    ],
+    "bestFirstStep": "Aggressive IV fluid resuscitation with 0.9% saline — before insulin",
+    "bestInvestigation": "Serum osmolality (measured or calculated: 2Na + glucose + urea) + VBG to confirm absence of significant acidosis",
+    "diagnosis": "Hyperosmolar Hyperglycaemic State (HHS)",
+    "treatment": "0.9% saline IV (full replacement over 48hrs, Na+ correction ≤10mmol/L/24hr) + LMWH thromboprophylaxis + Low-dose insulin (0.05 units/kg/hr) only if glucose not responding to fluids + Treat precipitant",
+    "followUp": "Diabetes nurse review, recheck renal function before restarting metformin, social assessment, GP follow-up 1 week",
+    "complications": [
+      "Cerebral oedema (from too-rapid sodium correction)",
+      "VTE — DVT, PE (very high risk)",
+      "Arterial thrombosis — stroke, MI, limb ischaemia",
+      "AKI",
+      "Hypokalaemia (less severe than DKA but still present with insulin)",
+      "Aspiration (low GCS)"
+    ],
+    "guidelineRef": "JBDS (Joint British Diabetes Societies) HHS Guidelines 2023"
+  },
+  "guideline": {
+    "title": "HHS Management — JBDS 2023 Summary",
+    "body": "DIAGNOSTIC CRITERIA\n• Blood glucose >30mmol/L\n• Osmolality >320mOsm/kg (calculated: 2Na + glucose + urea)\n• No significant ketonaemia (<3mmol/L)\n• No significant acidosis (pH >7.3)\n\nFLUID STRATEGY\n• Estimated deficit: 8-10 litres — replace over 48 hours\n• Use 0.9% saline throughout (relatively hypotonic to HHS plasma)\n• Target Na+ reduction ≤10mmol/L per 24 hours\n• Switch to 0.45% saline only if osmolality not falling with 0.9% saline\n• Add 5% dextrose only when glucose ≤14mmol/L\n• Insert urinary catheter for accurate fluid balance\n\nINSULIN\n• NOT required if glucose falling ≥5mmol/L/hr with fluids alone\n• Start at 0.05 units/kg/hr (half DKA dose) if:\n  - Glucose not falling ≥5mmol/L/hr despite adequate fluids\n  - Ketones ≥1mmol/L develop\n• Maximum glucose reduction rate: 5mmol/L/hr\n\nPOTASSIUM — as for DKA protocol\n\nTHROMBOPROPHYLAXIS\n• MANDATORY — very high VTE AND arterial thrombosis risk\n• LMWH dose-adjusted for renal function\n• Hold DOACs during acute illness if AKI\n\nRESOLUTION CRITERIA\n• Osmolality <320mOsm/kg\n• Blood glucose <15mmol/L\n• Patient clinically well, GCS at baseline\n\nCALCULATED OSMOLALITY\n= 2 × Na+ (mmol/L) + glucose (mmol/L) + urea (mmol/L)\nNormal: 275-295 mOsm/kg\nHHS: >320 mOsm/kg",
+    "calculators": [
+      {
+        "name": "Serum Osmolality",
+        "formula": "2 × Na+ + Glucose + Urea",
+        "units": "mOsm/kg",
+        "normalRange": "275-295",
+        "hssThreshold": ">320"
+      }
+    ]
+  },
+  "availableBadges": [
+    {
+      "id": "diagnostician",
+      "label": "Sharp Diagnostician",
+      "icon": "🔬",
+      "description": "Correctly distinguished HHS from DKA using osmolality, ketones, and pH",
+      "positive": true
+    },
+    {
+      "id": "anticoagulation-hero",
+      "label": "Clot Buster",
+      "icon": "🩸",
+      "description": "Recognised the extreme thrombosis risk in HHS and initiated thromboprophylaxis",
+      "positive": true
+    },
+    {
+      "id": "hhs-resolved",
+      "label": "Osmolality Tamed",
+      "icon": "💧",
+      "description": "Successfully managed HHS with safe fluid correction and comprehensive discharge planning",
+      "positive": true
+    }
+  ],
+  "disclaimer": "This game is for educational and entertainment purposes only. It does not constitute medical advice. Always follow local guidelines and senior supervision in clinical practice."
+}

@@ -1,0 +1,487 @@
+{
+  "id": "hypertensive-emergency",
+  "specialty": "Internal Medicine",
+  "title": "Thunderclap Headache and Vision Changes",
+  "subtitle": "Hypertensive Emergency",
+  "difficulty": "advanced",
+  "estimatedMinutes": 22,
+  "patient": {
+    "age": 55,
+    "sex": "F",
+    "chiefComplaint": "Severe headache and blurred vision with extreme blood pressure elevation",
+    "history": "A 55-year-old female presents to the emergency department with a 3-hour history of the worst headache of her life, described as a severe pressure sensation across the occiput and temples, associated with blurred vision and photophobia. She has a known history of hypertension, currently on only amlodipine 10mg — her GP has tried adding further agents but she reports side effects from everything. Her husband measured her BP at home as 'very high' before calling the ambulance.",
+    "initialVitals": {
+      "bp": "240/145",
+      "hr": 94,
+      "rr": 18,
+      "spo2": 98,
+      "temp": 37.0,
+      "gcs": 14
+    },
+    "symptoms": [
+      "Severe occipital and frontal headache — 10/10 severity",
+      "Blurred vision and photophobia",
+      "GCS 14 — mild confusion",
+      "Nausea without vomiting",
+      "Palpitations"
+    ],
+    "redFlags": [
+      "BP 240/145 — extreme hypertension",
+      "GCS 14 — altered consciousness = end-organ damage to brain",
+      "Blurred vision — hypertensive retinopathy/papilloedema",
+      "Headache severity — raises concern for hypertensive encephalopathy or haemorrhagic stroke",
+      "Single antihypertensive only — likely undertreated chronic hypertension"
+    ],
+    "backgroundHistory": {
+      "pastMedicalHistory": [
+        "Hypertension (diagnosed 10 years ago, poorly controlled)",
+        "No prior cardiac events or stroke",
+        "No known renal disease"
+      ],
+      "medications": [
+        "Amlodipine 10mg once daily (sole antihypertensive)",
+        "No ACE inhibitor, ARB, or beta-blocker — patient reports 'side effects' with previous trials"
+      ],
+      "allergies": "Ramipril — cough (ACE inhibitor class effect). Bisoprolol — 'made me feel awful' (fatigue).",
+      "socialHistory": "Office administrator. Married. Smokes 5 cigarettes/day (15 pack-years). Drinks 8 units alcohol/week. High-sodium diet admitted. BMI 31.",
+      "familyHistory": "Father died of stroke aged 62. Mother has hypertension and CKD. Sister has hypertension.",
+      "reviewOfSystems": "No chest pain. No dyspnoea. No focal neurological deficits noted by patient. No recent new medications. No illicit drug use (cocaine — must ask and document). No pregnancy (post-menopausal). No recent weight change. No episodes of severe headache in the past."
+    }
+  },
+  "startNodeId": "node-assessment",
+  "nodes": [
+    {
+      "id": "node-assessment",
+      "category": "diagnosis",
+      "prompt": "A 55-year-old female presents with BP 240/145 (×2 readings, 5 minutes apart), GCS 14, severe headache, and blurred vision. What is the critical diagnostic distinction you must establish FIRST before deciding on treatment?",
+      "context": "The patient is on a monitor. Two BP readings 5 minutes apart confirm 240/145 and 238/142. She is alert but slightly confused and photophobic.",
+      "choices": [
+        {
+          "id": "assessment-correct",
+          "text": "Hypertensive EMERGENCY vs URGENCY: both have very high BP, but emergency = END-ORGAN DAMAGE (brain, heart, kidneys, eyes). This patient has GCS 14 (brain), blurred vision (eyes) — confirmed hypertensive EMERGENCY requiring IV therapy and monitored BP reduction in HDU/ICU.",
+          "correct": true,
+          "feedback": "Critical and correct distinction. Hypertensive emergency = severe hypertension (typically SBP >180/DBP >120) WITH end-organ damage. Urgency = same BP WITHOUT end-organ damage. This distinction entirely governs treatment: Emergency requires IV antihypertensives with controlled, monitored reduction in HDU/ICU. Urgency can be managed with oral agents and close outpatient follow-up. Getting this wrong is dangerous in both directions — over-treating urgency causes stroke; under-treating emergency causes progressive end-organ failure.",
+          "nextNodeId": "node-investigations",
+          "timeAdvanceMin": 5,
+          "vitalsDelta": { "hr": 0, "spo2": 0 },
+          "scoreDelta": 15,
+          "educationalNote": "End-organ damage in hypertensive emergency: Brain (hypertensive encephalopathy, haemorrhagic stroke, posterior reversible encephalopathy syndrome — PRES); Heart (acute LVF, NSTEMI, aortic dissection); Kidneys (malignant nephrosclerosis — AKI with proteinuria, haematuria, rising creatinine); Eyes (hypertensive retinopathy Grades 3–4, papilloedema); Aorta (Type A dissection — always consider). Each organ defines the target organ and guides treatment choice."
+        },
+        {
+          "id": "assessment-urgency",
+          "text": "This is hypertensive urgency — very high BP but no objective evidence of organ damage yet. Give oral antihypertensives and reassess in 6 hours.",
+          "correct": false,
+          "feedback": "This is incorrect and dangerous. This patient has two clear signs of end-organ damage: GCS 14 (cerebral dysfunction) and blurred vision (retinal/cerebral involvement). These confirm hypertensive emergency, not urgency. Managing a hypertensive emergency as urgency risks: untreated hypertensive encephalopathy, worsening PRES, haemorrhagic stroke, and acute cardiac decompensation.",
+          "nextNodeId": "node-investigations",
+          "timeAdvanceMin": 8,
+          "vitalsDelta": { "hr": 3, "spo2": 0 },
+          "scoreDelta": -15,
+          "triggerBadge": "delayed-diagnosis",
+          "educationalNote": "Common misclassification trap: 'No obvious organ damage' does not mean urgency when GCS is reduced or vision is blurred. Any new neurological symptom in extreme hypertension = treat as emergency until proved otherwise. The stakes of under-treatment are permanent neurological disability or death."
+        },
+        {
+          "id": "assessment-stroke",
+          "text": "This could be a haemorrhagic stroke — activate stroke pathway immediately and give IV antihypertensives while awaiting CT head.",
+          "correct": false,
+          "feedback": "While haemorrhagic stroke must be excluded (hence urgent CT head), treating with IV antihypertensives before diagnosis is premature. Importantly, the BP treatment target differs significantly: In hypertensive emergency without stroke, reduce MAP by max 25% in first hour. In acute haemorrhagic stroke, target SBP <140 (INTERACT2). In acute ischaemic stroke, aggressive BP reduction is harmful unless BP >220/120. CT head must be done before committing to a treatment approach.",
+          "nextNodeId": "node-investigations",
+          "timeAdvanceMin": 10,
+          "vitalsDelta": { "hr": 0, "spo2": 0 },
+          "scoreDelta": -5,
+          "educationalNote": "Hypertensive emergency and acute stroke can coexist — hypertension often causes stroke, and stroke raises BP through catecholamine surge and raised ICP. Always perform CT head before deciding on BP targets in a patient with neurological symptoms and extreme hypertension."
+        }
+      ],
+      "isTerminal": false
+    },
+    {
+      "id": "node-investigations",
+      "category": "investigation",
+      "prompt": "Hypertensive emergency is suspected. What investigations are essential to: (1) confirm and quantify end-organ damage, and (2) exclude life-threatening differentials (particularly haemorrhagic stroke and aortic dissection)?",
+      "context": "Time since arrival: 8 minutes. IV access is established. The patient is uncomfortable with the bright light in the resus bay. Her husband reports she has had no cocaine use and no new medications.",
+      "choices": [
+        {
+          "id": "investigations-correct",
+          "text": "Urgent CT head (non-contrast — exclude haemorrhagic stroke and PRES). Fundoscopy (papilloedema, AV nipping, flame haemorrhages). ECG (LVH, ischaemia, strain). Urine dipstick (proteinuria, haematuria = renal damage). Bloods: U&E, creatinine, FBC, troponin, LFT. Consider CT aorta if chest pain or pulse differential.",
+          "correct": true,
+          "feedback": "Complete and correct investigation set. CT head is the most urgent investigation — it excludes haemorrhagic stroke (which changes treatment targets) and PRES (posterior reversible encephalopathy syndrome, a feared complication of severe hypertension). Fundoscopy is essential — papilloedema (Grade 4 retinopathy) confirms hypertensive emergency and is diagnostic. ECG detects LVH (evidence of chronic severe hypertension) and acute ischaemia. Urine dipstick is fast and specific for hypertensive nephropathy.",
+          "nextNodeId": "node-treatment-principle",
+          "timeAdvanceMin": 25,
+          "vitalsDelta": { "hr": 0, "spo2": 0 },
+          "scoreDelta": 15,
+          "investigations": [
+            { "name": "CT head (non-contrast)", "value": "No haemorrhage. No infarct. Mild cerebral oedema consistent with hypertensive encephalopathy/PRES. No mass lesion.", "flagged": true },
+            { "name": "Fundoscopy", "value": "Bilateral papilloedema. Flame haemorrhages and cotton-wool spots OU. AV nipping. Hypertensive retinopathy Grade 4 (papilloedema present) — CONFIRMS hypertensive emergency.", "flagged": true },
+            { "name": "ECG", "value": "Sinus rhythm. HR 94. Left ventricular hypertrophy (Sokolow-Lyon criteria met: SV1 + RV5 = 40mm). ST depression V4–V6 (LV strain pattern). No acute STEMI.", "flagged": true },
+            { "name": "U&E", "value": "Na 141, K 3.8, Creatinine 148 µmol/L (elevated — likely hypertensive nephropathy), eGFR 38 ml/min", "flagged": true },
+            { "name": "Urine dipstick", "value": "Protein 3+, Blood 2+ — significant proteinuria and haematuria consistent with hypertensive nephropathy", "flagged": true },
+            { "name": "Troponin", "value": "Troponin I 85 ng/L (mildly elevated — consistent with demand ischaemia from LV strain, not classic ACS pattern)", "flagged": true },
+            { "name": "FBC", "value": "Hb 128 g/L, WBC 9.2, Platelets 192. Blood film: microangiopathic haemolytic anaemia (schistocytes) — consistent with malignant hypertension.", "flagged": true }
+          ],
+          "educationalNote": "PRES (Posterior Reversible Encephalopathy Syndrome): a radiological-clinical syndrome caused by failure of cerebrovascular autoregulation in severe hypertension. MRI shows T2/FLAIR hyperintensity in the posterior (occipital/parietal) white matter — vasogenic oedema. Usually reversible with BP control. Can cause seizures, visual loss, and coma if untreated."
+        },
+        {
+          "id": "investigations-iv-first",
+          "text": "Skip the investigations for now and start IV antihypertensives immediately — the BP must come down before anything else",
+          "correct": false,
+          "feedback": "Treating BP before CT head in a patient with severe headache and confusion risks harm. The BP management approach depends critically on the CT result: (1) If haemorrhagic stroke: target SBP <140 in first hour; (2) If ischaemic stroke: caution — avoid lowering BP below 220/120; (3) If hypertensive encephalopathy/PRES: max 25% MAP reduction in first hour. Starting IV antihypertensives without CT results may cause stroke from overshoot in a patient who has not yet been assessed for intracranial pathology.",
+          "nextNodeId": "node-treatment-principle",
+          "timeAdvanceMin": 5,
+          "vitalsDelta": { "hr": 0, "spo2": 0 },
+          "scoreDelta": -10
+        },
+        {
+          "id": "investigations-ect",
+          "text": "Perform CT head and CT aorta simultaneously — must exclude both stroke and aortic dissection before any treatment",
+          "correct": false,
+          "feedback": "CT aorta (CTPA/CT angiography) is only indicated if there are features of aortic dissection: sudden tearing chest pain radiating to the back, pulse differential between arms, wide mediastinum on CXR, or acute aortic regurgitation. This patient has none of these features. Ordering CT aorta routinely delays necessary CT head and uses unnecessary contrast in a patient with likely renal impairment (creatinine already elevated).",
+          "nextNodeId": "node-treatment-principle",
+          "timeAdvanceMin": 30,
+          "vitalsDelta": { "hr": 3, "spo2": -1 },
+          "scoreDelta": -5
+        }
+      ],
+      "isTerminal": false
+    },
+    {
+      "id": "node-treatment-principle",
+      "category": "treatment",
+      "prompt": "CT head shows no haemorrhage but mild cerebral oedema consistent with hypertensive encephalopathy. Fundoscopy confirms papilloedema. What is the CRITICAL PRINCIPLE governing how fast you lower this patient's blood pressure?",
+      "context": "Current BP 240/145 (MAP ≈ 177 mmHg). GCS 14. The patient is in resus. Your target is to treat the hypertensive emergency — but the rate of reduction is as important as the magnitude.",
+      "choices": [
+        {
+          "id": "treatment-principle-correct",
+          "text": "Maximum 25% MAP reduction in the FIRST HOUR ONLY. Do not lower BP to normal — this is catastrophic. The target is MAP reduced by 25% from baseline over 1 hour, then gradual further reduction over 24–48 hours to 160/100, then to normal over days/weeks.",
+          "correct": true,
+          "feedback": "This is the single most important principle in hypertensive emergency management. The brain (and other target organs) have reset their autoregulatory curve after years of chronic severe hypertension — they REQUIRE a higher BP to maintain normal perfusion. Suddenly lowering BP to 'normal' (120/80) causes paradoxical ischaemia — hypertensive encephalopathy converts to ischaemic stroke. Target: MAP reduction ≤25% in first hour. For MAP 177: target MAP ~133 (BP approximately 175/105 after 1 hour).",
+          "nextNodeId": "node-iv-antihypertensive",
+          "timeAdvanceMin": 5,
+          "vitalsDelta": { "hr": 0, "spo2": 0 },
+          "scoreDelta": 20,
+          "educationalNote": "Cerebrovascular autoregulation: normally, cerebral blood flow remains constant across MAP 50–150 mmHg. In chronic severe hypertension, this curve shifts rightward — autoregulation is maintained at MAP 70–180 mmHg. Acute BP reduction to a 'normal' MAP of 70–90 mmHg places the patient at the lower limit of their autoregulatory capacity, risking watershed ischaemic stroke. This is why gradual, controlled reduction is mandatory."
+        },
+        {
+          "id": "treatment-principle-normalise",
+          "text": "Bring BP to normal (120/80) within 2 hours — the extreme hypertension is causing brain damage and must be corrected immediately",
+          "correct": false,
+          "feedback": "Normalising BP rapidly in a hypertensive emergency is one of the most dangerous management errors. It causes ischaemic stroke from cerebral autoregulation failure. Multiple case series document new strokes in hypertensive emergency patients treated too aggressively. The maximum safe reduction is 25% of MAP in the first hour. Further reduction must occur gradually over 24–48 hours.",
+          "nextNodeId": "node-iv-antihypertensive",
+          "timeAdvanceMin": 5,
+          "vitalsDelta": { "hr": 5, "spo2": -1, "bp": -60 },
+          "scoreDelta": -25,
+          "triggerBadge": "patient-harmed",
+          "educationalNote": "Iatrogenic stroke from overly rapid BP reduction in hypertensive emergency is a well-documented complication. The term 'overshoot hypotension' describes this phenomenon. Arterial line monitoring is recommended to prevent this — frequent non-invasive BP monitoring is the minimum required in an HDU setting."
+        },
+        {
+          "id": "treatment-principle-slow",
+          "text": "Lower BP very gradually — no more than 20 mmHg per day over 2 weeks to avoid any risk of ischaemia",
+          "correct": false,
+          "feedback": "This is too slow. Active end-organ damage (papilloedema, hypertensive encephalopathy, renal impairment) requires controlled BP reduction within hours, not weeks. A maximum 25% MAP reduction within the first hour, then gradual further reduction over 24–48 hours, strikes the correct balance between preventing ischaemia from overshoot and preventing ongoing end-organ damage from undertreated hypertension.",
+          "nextNodeId": "node-iv-antihypertensive",
+          "timeAdvanceMin": 5,
+          "vitalsDelta": { "hr": 3, "spo2": 0 },
+          "scoreDelta": -10
+        }
+      ],
+      "isTerminal": false
+    },
+    {
+      "id": "node-iv-antihypertensive",
+      "category": "treatment",
+      "prompt": "The treatment principle is established: maximum 25% MAP reduction in 1 hour. Which IV antihypertensive agent is most appropriate, and which agent is CONTRAINDICATED in this situation?",
+      "context": "The patient has no cardiac failure. No chest pain. No features of aortic dissection. ECG shows LVH and strain but no acute STEMI. Renal function mildly impaired (creatinine 148). She has allergies to ramipril (ACE-inhibitor cough) and bisoprolol (fatigue).",
+      "choices": [
+        {
+          "id": "iv-antihypertensive-correct",
+          "text": "Labetalol IV infusion (first-line for most hypertensive emergencies) — combined alpha/beta blocker, titratable, avoids reflex tachycardia. Alternatively: sodium nitroprusside (most titratable but requires ICU and arterial line) or IV nicardipine. Avoid nifedipine sublingual — causes uncontrolled, unpredictable BP drops.",
+          "correct": true,
+          "feedback": "Correct. Labetalol IV is the preferred first-line agent: combined alpha (vasodilation) and beta (reduces cardiac output) blockade, smooth and predictable onset, well-tolerated in most organ-specific emergencies. Note: contraindicated in acute LVF, asthma, and severe bradycardia. Sodium nitroprusside is the most titratable (arterial line essential) but carries risk of cyanide toxicity in prolonged use and renal impairment. IV nicardipine (calcium channel blocker) is an alternative. Sublingual nifedipine is absolutely contraindicated — it causes unpredictable, uncontrolled BP drops that precipitate stroke.",
+          "nextNodeId": "node-monitoring",
+          "timeAdvanceMin": 10,
+          "vitalsDelta": { "hr": -5, "spo2": 0, "bp": -30 },
+          "scoreDelta": 15,
+          "educationalNote": "Hypertensive emergency agents by indication: Labetalol — most emergencies, aortic dissection (combine with sodium nitroprusside for dissection); Sodium nitroprusside — most titratable, ICU only (cyanide risk in renal impairment); Nicardipine IV — good for neurological emergencies; GTN IV — acute LVF with hypertension; Phentolamine — phaeochromocytoma; Hydralazine — eclampsia/pre-eclampsia. Avoid: sublingual nifedipine (all settings), atenolol (not titratable IV), oral antihypertensives in true emergency."
+        },
+        {
+          "id": "iv-nifedipine",
+          "text": "Sublingual nifedipine 10mg — fast-acting, easy to give, brings BP down quickly",
+          "correct": false,
+          "feedback": "Sublingual nifedipine is absolutely contraindicated in hypertensive emergency. Its absorption via sublingual mucosa is unpredictable and variable — BP can drop by 30–50 mmHg rapidly, completely bypassing controlled titration. This unpredictable BP crash frequently causes ischaemic stroke in patients whose autoregulatory curve is shifted right. Multiple case reports and regulatory warnings have led to its removal from hypertensive emergency guidelines. It should NEVER be used.",
+          "nextNodeId": "node-monitoring",
+          "timeAdvanceMin": 8,
+          "vitalsDelta": { "hr": 8, "spo2": -1, "bp": -55 },
+          "scoreDelta": -25,
+          "triggerBadge": "patient-harmed",
+          "educationalNote": "Sublingual nifedipine and hypertensive emergencies: FDA issued a warning in 1985 after reports of myocardial infarction, stroke, and death from uncontrolled hypotension. It was removed from all hypertensive emergency guidelines internationally in the 1990s. It is still occasionally used in clinical practice and this error is regularly documented in serious incident reviews. It is a classic exam trap."
+        },
+        {
+          "id": "iv-atenolol",
+          "text": "Atenolol 25mg orally — beta-blockers are appropriate and she is already intolerant of bisoprolol, but atenolol is different",
+          "correct": false,
+          "feedback": "Oral antihypertensives are not appropriate in confirmed hypertensive emergency with active end-organ damage. IV therapy is required for controlled, titratable BP reduction with continuous monitoring. Atenolol is also poorly titratable and not available as an IV formulation suitable for this situation. Her intolerance to bisoprolol (fatigue) is a class effect and does not mean atenolol is safe. IV labetalol (combined alpha/beta) is far more appropriate.",
+          "nextNodeId": "node-monitoring",
+          "timeAdvanceMin": 5,
+          "vitalsDelta": { "hr": -3, "spo2": 0, "bp": -5 },
+          "scoreDelta": -12
+        },
+        {
+          "id": "iv-furosemide",
+          "text": "Furosemide 80mg IV — reduce the volume overload driving the high BP and relieve the cerebral oedema",
+          "correct": false,
+          "feedback": "Furosemide is not a first-line antihypertensive for hypertensive emergency without pulmonary oedema. Most hypertensive emergencies involve high systemic vascular resistance (not volume overload) as the predominant mechanism. Aggressive diuresis in a patient whose cerebral perfusion is already at risk from a shifted autoregulatory curve could cause haemoconcentration and cerebral ischaemia. Furosemide has a role in hypertensive emergency with acute pulmonary oedema — not here.",
+          "nextNodeId": "node-monitoring",
+          "timeAdvanceMin": 8,
+          "vitalsDelta": { "hr": 5, "spo2": 0, "bp": -8 },
+          "scoreDelta": -8
+        }
+      ],
+      "isTerminal": false
+    },
+    {
+      "id": "node-monitoring",
+      "category": "monitoring",
+      "prompt": "Labetalol infusion is running. 45 minutes later, BP is 190/115 (MAP ≈ 140 — approximately 21% reduction from MAP 177). The patient's headache is slightly better. GCS remains 14. What monitoring is essential, and what is your next BP target over the following 24 hours?",
+      "context": "The HDU has a bed ready. Arterial line is being inserted by the anaesthetics team. The patient's vision remains blurred but she says it is 'a tiny bit better.'",
+      "choices": [
+        {
+          "id": "monitoring-correct",
+          "text": "Monitoring: Continuous arterial line BP monitoring, hourly GCS, hourly urine output (IDC), repeat U&E and creatinine at 6 and 24 hours. 24-hour target: BP 160/100 — achieved gradually. Do NOT lower below 160/100 in first 24 hours. Then gradual normalisation over days to weeks with oral agents.",
+          "correct": true,
+          "feedback": "Correct monitoring and target escalation plan. Arterial line provides beat-to-beat BP monitoring — essential for titrating IV antihypertensives safely. Hourly GCS detects neurological deterioration (ischaemic stroke from overshoot or worsening PRES). The 24-hour target of 160/100 represents a safe stepwise reduction without precipitating ischaemia. Renal function (creatinine, urine output) monitors for hypertensive nephropathy progression or ischaemic AKI from BP reduction.",
+          "nextNodeId": "node-secondary-causes",
+          "timeAdvanceMin": 60,
+          "vitalsDelta": { "hr": -3, "spo2": 0, "bp": -12 },
+          "scoreDelta": 15,
+          "educationalNote": "Arterial line in hypertensive emergency: Non-invasive BP (NIBP) cuff readings are inaccurate and sluggish at extreme hypertension — they tend to underestimate at very high BP and overestimate at lower BP. Arterial line provides continuous, accurate readings essential for safe IV antihypertensive titration. It also allows ABG sampling for lactate, pH, and oxygenation monitoring."
+        },
+        {
+          "id": "monitoring-aggressive",
+          "text": "Keep reducing BP aggressively — aim for 140/90 within 4 hours since the patient is improving",
+          "correct": false,
+          "feedback": "Over-reduction to 140/90 within 4 hours risks ischaemic stroke. The patient has shifted autoregulation — her cerebral perfusion threshold is approximately MAP 120–130. A MAP of 107 (BP 140/90) is dangerously close to this threshold. The GCS is still 14 (not 15), meaning cerebral dysfunction has not fully resolved. Continuing to lower BP aggressively before autoregulation normalises risks catastrophic ischaemia.",
+          "nextNodeId": "node-secondary-causes",
+          "timeAdvanceMin": 10,
+          "vitalsDelta": { "hr": 8, "spo2": -1, "bp": -25 },
+          "scoreDelta": -15,
+          "triggerBadge": "patient-harmed"
+        },
+        {
+          "id": "monitoring-stop",
+          "text": "Stop the labetalol infusion — BP is now 190/115, which is much better. Switch to oral amlodipine and discharge to outpatients.",
+          "correct": false,
+          "feedback": "Stopping IV treatment and discharging a patient with active hypertensive emergency (papilloedema, encephalopathy, renal impairment) is dangerous. The target 25% MAP reduction has been achieved, but the patient still has active end-organ damage (GCS 14, papilloedema) requiring HDU monitoring and gradual continued BP reduction over 24–48 hours. BP will likely rebound rapidly without continued IV therapy.",
+          "nextNodeId": "node-secondary-causes",
+          "timeAdvanceMin": 5,
+          "vitalsDelta": { "hr": 10, "spo2": 0, "bp": 20 },
+          "scoreDelta": -15,
+          "triggerBadge": "patient-harmed"
+        }
+      ],
+      "isTerminal": false
+    },
+    {
+      "id": "node-secondary-causes",
+      "category": "diagnosis",
+      "prompt": "The patient is in the HDU, improving. A junior doctor asks: 'Is this just essential hypertension, or should we look for secondary causes?' What secondary causes of hypertension should be considered and investigated in a 55-year-old presenting this way?",
+      "context": "The patient has no prior workup for secondary hypertension. Her BP has been poorly controlled for 10 years on monotherapy. She has strong family history. Renal function mildly impaired.",
+      "choices": [
+        {
+          "id": "secondary-correct",
+          "text": "Secondary causes to investigate: (1) Phaeochromocytoma (episodic headache, sweating, palpitations — check 24h urinary catecholamines/plasma metanephrines); (2) Primary hyperaldosteronism (low K, adrenal adenoma — plasma renin:aldosterone ratio); (3) Renal artery stenosis (bruit, age, atheromatous risk — Doppler USS or CT renal arteries); (4) CKD/renovascular disease (creatinine 148 — already noted); (5) Obstructive sleep apnoea (obesity, snoring).",
+          "correct": true,
+          "feedback": "Comprehensive and correct. Secondary hypertension causes are important — they are present in 5–10% of hypertensive patients and in up to 20% of those with resistant or severe hypertension. Phaeochromocytoma is a medical emergency when undiagnosed and is associated with hypertensive crises. Primary hyperaldosteronism is the most common secondary cause (6–13% of all hypertension). Renal artery stenosis is common in older atheromatous patients with CKD. Workup should be initiated before discharge.",
+          "nextNodeId": "node-disposition",
+          "timeAdvanceMin": 5,
+          "vitalsDelta": { "hr": 0, "spo2": 0 },
+          "scoreDelta": 12,
+          "educationalNote": "Phaeochromocytoma: the 'great mimic'. Symptoms: paroxysmal hypertension, headache, diaphoresis, palpitations (classic triad). Beta-blockers WITHOUT prior alpha-blockade can precipitate hypertensive crisis in phaeochromocytoma (unopposed alpha stimulation). For this reason, alpha-blockade (phenoxybenzamine or doxazosin) should precede beta-blockade in suspected phaeochromocytoma. Plasma metanephrines have 99% sensitivity for phaeochromocytoma."
+        },
+        {
+          "id": "secondary-none",
+          "text": "No secondary workup needed — she has a family history of hypertension and is 55, so essential hypertension is the obvious diagnosis",
+          "correct": false,
+          "feedback": "Missing secondary causes in a patient with hypertensive emergency is a diagnostic error. Up to 20% of patients with severe or resistant hypertension have a secondary cause. Phaeochromocytoma, if missed, causes recurrent and potentially fatal hypertensive crises. Primary hyperaldosteronism, the most common secondary cause, is treatable with adrenalectomy or aldosterone antagonists. A 55-year-old with 10 years of poor BP control on monotherapy deserves secondary workup.",
+          "nextNodeId": "node-disposition",
+          "timeAdvanceMin": 5,
+          "vitalsDelta": { "hr": 0, "spo2": 0 },
+          "scoreDelta": -8
+        },
+        {
+          "id": "secondary-cocaine",
+          "text": "The most important secondary cause to exclude is cocaine use — always assume recreational drug use in severe hypertension",
+          "correct": false,
+          "feedback": "Cocaine use should be asked about and documented (it was — husband denied it), but it cannot be 'assumed' and is not the most common secondary cause of chronic hypertension. Cocaine-induced hypertensive emergencies are typically episodic and in younger patients. For a 55-year-old with 10 years of poorly controlled hypertension, primary hyperaldosteronism, phaeochromocytoma, and renal artery stenosis are far more likely secondary causes requiring systematic investigation.",
+          "nextNodeId": "node-disposition",
+          "timeAdvanceMin": 5,
+          "vitalsDelta": { "hr": 0, "spo2": 0 },
+          "scoreDelta": -5
+        }
+      ],
+      "isTerminal": false
+    },
+    {
+      "id": "node-disposition",
+      "category": "disposition",
+      "prompt": "After 24 hours in the HDU: BP 168/102, GCS 15, headache improving, vision clearer. Creatinine stable at 145 µmol/L. Papilloedema beginning to resolve on repeat fundoscopy. What is the correct next step for this patient?",
+      "context": "The patient is asking to go home — she feels much better. The HDU bed is needed. You need to decide on step-down, oral therapy transition, and secondary prevention planning.",
+      "choices": [
+        {
+          "id": "disposition-correct",
+          "text": "Step down to monitored ward (not general ward — needs 4-hourly BP monitoring). Transition to oral antihypertensives: amlodipine (already taking, can continue) + add amlodipine-sparing agent (ARB — avoid ACE inhibitor due to cough allergy — e.g. losartan or candesartan). Plan secondary cause workup (plasma metanephrines, aldosterone:renin ratio, renal Doppler USS). Ophthalmology review for hypertensive retinopathy. Hypertension specialist or nephrology referral.",
+          "correct": true,
+          "feedback": "Complete and correct step-down plan. A monitored ward (not general) is required until BP is reliably <160/100 on oral therapy. Transitioning to oral agents: amlodipine is already prescribed (continue). An ARB (losartan, candesartan) is the logical addition — avoids ACE inhibitor (ramipril allergy — cough). Secondary workup must be initiated during admission. Ophthalmology review for Grade 4 retinopathy is important — visual prognosis depends on speed of BP normalisation.",
+          "nextNodeId": null,
+          "timeAdvanceMin": 0,
+          "vitalsDelta": { "hr": 0, "spo2": 0 },
+          "scoreDelta": 15,
+          "triggerBadge": "guideline-clean",
+          "educationalNote": "Oral antihypertensive transition from IV therapy: overlap IV and oral therapy for 1–2 hours before stopping IV to avoid BP rebound. The oral regimen should aim for ≤2 agents initially — simple regimens improve long-term adherence. Non-adherence is the most common cause of uncontrolled hypertension — involving the patient in the regimen choice improves outcomes."
+        },
+        {
+          "id": "disposition-discharge",
+          "text": "Discharge home today — BP is much better, she feels well, and can follow up with her GP next week",
+          "correct": false,
+          "feedback": "Premature discharge. The patient still has papilloedema, mildly impaired renal function, and BP 168/102 on IV therapy — the oral regimen has not yet been established and tested. Discharge before stable BP on oral agents risks rebound hypertensive crisis. Ophthalmology has not reviewed her. Secondary workup has not been initiated. GP follow-up in 1 week is not sufficient safety netting after a hypertensive emergency.",
+          "nextNodeId": null,
+          "timeAdvanceMin": 0,
+          "vitalsDelta": { "hr": 0, "spo2": 0 },
+          "scoreDelta": -15,
+          "triggerBadge": "patient-harmed"
+        },
+        {
+          "id": "disposition-icu-continue",
+          "text": "Keep in HDU for another 5 days until BP is fully normal and all secondary investigations are complete",
+          "correct": false,
+          "feedback": "Extended HDU admission is not warranted when the patient is haemodynamically stable with improving BP and resolving end-organ damage. HDU resources are scarce and prolonged high-dependency admission increases VTE and hospital-acquired infection risk. Step-down to a monitored ward with appropriate oral therapy and close outpatient follow-up is the correct approach. Secondary workup can be conducted on the ward and outpatient.",
+          "nextNodeId": null,
+          "timeAdvanceMin": 0,
+          "vitalsDelta": { "hr": 0, "spo2": 0 },
+          "scoreDelta": -5
+        }
+      ],
+      "isTerminal": true
+    }
+  ],
+  "diseaseMap": {
+    "condition": "Hypertensive Emergency",
+    "icd10": "I16.1",
+    "presentingSymptoms": [
+      "Severe headache (thunderclap or pressure)",
+      "Blurred vision or visual loss",
+      "Confusion, seizures, or coma (hypertensive encephalopathy)",
+      "Chest pain (acute cardiac involvement)",
+      "Dyspnoea (acute LVF)",
+      "Reduced urine output (renal involvement)",
+      "Nausea and vomiting"
+    ],
+    "atypicalPresentations": [
+      "Asymptomatic with extreme hypertension (urgency not emergency — no organ damage)",
+      "Seizures as the presenting feature (PRES)",
+      "Acute visual loss without headache (ocular hypertensive emergency)",
+      "Confusion only, mimicking stroke or delirium"
+    ],
+    "redFlags": [
+      "GCS change in hypertensive patient = emergency",
+      "Papilloedema = end-organ damage = emergency",
+      "BP >220/140 — absolute emergency risk",
+      "New focal neurology — stroke must be excluded urgently",
+      "Chest pain + hypertension — dissection vs ACS",
+      "Anuria + severe hypertension — malignant nephrosclerosis"
+    ],
+    "bestFirstStep": "Confirm end-organ damage (emergency vs urgency distinction), then CT head",
+    "bestInvestigation": "Fundoscopy (papilloedema confirms emergency) + CT head (exclude haemorrhage)",
+    "diagnosis": "Hypertensive emergency = SBP >180 or DBP >120 WITH end-organ damage. Hypertensive urgency = same BP WITHOUT end-organ damage. The distinction is clinical, not numerical. End-organ damage: brain (encephalopathy, stroke, PRES), heart (ACS, LVF), kidneys (AKI, proteinuria), eyes (papilloedema, haemorrhages), aorta (dissection).",
+    "treatment": {
+      "principle": "Maximum 25% MAP reduction in first hour. Target 160/100 over 24 hours. Never normalise acutely. Cerebrovascular autoregulation is shifted — rapid reduction to normal BP causes ischaemic stroke.",
+      "ivAgents": [
+        "Labetalol IV — first-line for most emergencies (alpha/beta blockade, titratable)",
+        "Sodium nitroprusside — most titratable, ICU only, cyanide risk in renal impairment",
+        "IV nicardipine — good for neurological emergencies",
+        "IV glyceryl trinitrate (GTN) — acute LVF with hypertension",
+        "Phentolamine IV — phaeochromocytoma crisis",
+        "IV hydralazine — eclampsia/pre-eclampsia"
+      ],
+      "absolutely_contraindicated": [
+        "Sublingual nifedipine — uncontrolled, unpredictable BP drop causing stroke",
+        "Oral antihypertensives alone in true emergency",
+        "Beta-blockers without prior alpha-blockade in suspected phaeochromocytoma"
+      ],
+      "monitoring": [
+        "Arterial line (continuous BP monitoring)",
+        "Hourly GCS and neurological observations",
+        "Hourly urine output via IDC",
+        "Continuous cardiac monitoring",
+        "Serial creatinine, U&E every 6–12 hours"
+      ]
+    },
+    "followUp": "Ophthalmology review for hypertensive retinopathy. Secondary hypertension workup: plasma metanephrines, aldosterone:renin ratio, renal artery Doppler. Hypertension specialist referral. Oral antihypertensive optimisation — typically 3–4 agent combination for resistant hypertension. Smoking cessation, dietary sodium reduction, weight loss counselling.",
+    "complications": [
+      "Hypertensive encephalopathy (PRES)",
+      "Haemorrhagic stroke",
+      "Ischaemic stroke from overly rapid BP reduction",
+      "Acute LVF and pulmonary oedema",
+      "Malignant nephrosclerosis → ESKD",
+      "Hypertensive retinopathy → visual loss",
+      "Aortic dissection",
+      "Microangiopathic haemolytic anaemia (TMA)"
+    ],
+    "guidelineRef": "ESC/ESH 2023 Guidelines for the Management of Arterial Hypertension — European Heart Journal (2023) 44(28):2527–2625; and 2022 ACC/AHA Hypertension Guidelines"
+  },
+  "guideline": {
+    "name": "Hypertensive Emergency vs Urgency Classification",
+    "description": "The critical bedside distinction that determines whether IV therapy in monitored setting (emergency) or oral therapy with close outpatient follow-up (urgency) is required.",
+    "fields": {
+      "blood_pressure": {
+        "label": "Blood Pressure",
+        "description": "Severe elevation confirmed on ≥2 readings",
+        "options": [
+          { "score": 0, "description": "SBP <180 / DBP <120 — not a hypertensive crisis" },
+          { "score": 1, "description": "SBP ≥180 OR DBP ≥120 — confirmed severe hypertension" }
+        ]
+      },
+      "end_organ_damage": {
+        "label": "End-Organ Damage",
+        "description": "New or acutely worsening damage attributable to hypertension",
+        "options": [
+          { "score": 0, "description": "None identified → Hypertensive URGENCY — oral therapy, no admission mandatory" },
+          { "score": 1, "description": "Present (brain, heart, kidneys, eyes, aorta) → Hypertensive EMERGENCY — IV therapy, HDU/ICU, monitored BP reduction" }
+        ]
+      }
+    },
+    "formula": "Emergency = severe hypertension + end-organ damage. Urgency = severe hypertension without end-organ damage.",
+    "maxScore": 2,
+    "interpretation": [
+      { "range": "Urgency", "risk": "No acute organ damage", "recommendation": "Oral antihypertensives. Lower BP over 24–48 hours (not minutes). GP follow-up within 24–48 hours. Safety-net for symptoms of emergency." },
+      { "range": "Emergency", "risk": "Active end-organ damage — high mortality without treatment", "recommendation": "IV antihypertensives (labetalol first-line). HDU/ICU admission. Max 25% MAP reduction in 1 hour. Continuous monitoring. Do not normalise BP acutely." }
+    ],
+    "thisPatientScore": {
+      "bp_elevated": 1,
+      "organ_damage": 1,
+      "classification": "Hypertensive EMERGENCY",
+      "organs_affected": ["Brain (hypertensive encephalopathy, GCS 14)", "Eyes (papilloedema, Grade 4 retinopathy)", "Kidneys (creatinine 148, proteinuria 3+, haematuria 2+)", "Heart (LVH, LV strain, mild troponin elevation)"]
+    }
+  },
+  "availableBadges": [
+    {
+      "id": "guideline-clean",
+      "label": "Guideline Clean",
+      "description": "Correctly distinguished emergency from urgency, applied the 25% MAP rule, chose appropriate IV agent, and planned safe oral transition.",
+      "icon": "checkmark",
+      "positive": true
+    },
+    {
+      "id": "delayed-diagnosis",
+      "label": "Delayed Diagnosis",
+      "description": "Misclassified a hypertensive emergency as urgency, delaying IV therapy and allowing ongoing end-organ damage.",
+      "icon": "clock-warning",
+      "positive": false
+    },
+    {
+      "id": "patient-harmed",
+      "label": "Patient Harmed",
+      "description": "A treatment decision caused direct patient harm — sublingual nifedipine, overly rapid BP reduction to normal, or unsafe discharge with active end-organ damage.",
+      "icon": "danger",
+      "positive": false
+    }
+  ],
+  "disclaimer": "This case is designed for medical education and clinical reasoning training only. It is not a substitute for clinical guidelines, senior supervision, or real patient care. Always refer to current local and national protocols. Drug doses and management pathways should be verified against current British National Formulary (BNF) and relevant clinical guidelines before application to real patients. ESC/ESH 2023 Hypertension Guideline reference: Eur Heart J (2023) 44(28):2527–2625."
+}

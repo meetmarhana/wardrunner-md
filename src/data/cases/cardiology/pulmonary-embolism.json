@@ -1,0 +1,555 @@
+{
+  "id": "pulmonary-embolism",
+  "specialty": "Cardiology",
+  "title": "Sudden Breathlessness on the Ward",
+  "subtitle": "Pulmonary Embolism",
+  "difficulty": "advanced",
+  "estimatedMinutes": 22,
+  "patient": {
+    "name": "Margaret Okafor",
+    "age": 45,
+    "sex": "F",
+    "occupation": "Accountant",
+    "presentingComplaint": "Sudden onset breathlessness, right-sided chest pain and right calf swelling",
+    "backgroundNarrative": "Mrs Okafor is on the orthopaedic ward, post-op day 3 following an elective right total hip replacement. The nursing staff called you urgently — she became acutely breathless approximately 20 minutes ago while sitting up in bed. She describes the chest pain as sharp, worse on inspiration.",
+    "pmh": "Nil significant. No prior DVT or PE. No known malignancy.",
+    "medications": ["Paracetamol 1g QDS", "Enoxaparin 40mg SC OD (last dose 18 hours ago — prophylactic dose)", "Oxycodone 5mg PRN"],
+    "allergies": "NKDA",
+    "vitals": {
+      "bp": "100/70",
+      "hr": 122,
+      "rr": 26,
+      "spo2": 90,
+      "temp": 37.4,
+      "gcs": 15,
+      "pain": "7/10 (pleuritic chest pain)"
+    },
+    "examination": {
+      "general": "Anxious, tachypnoeic, sitting forward. Visibly distressed.",
+      "respiratory": "Reduced air entry right base. No wheeze. Breathing is rapid and shallow.",
+      "cardiovascular": "Tachycardic, regular. Loud P2. JVP elevated at 4 cm above sternal angle.",
+      "legs": "Right calf erythema, swelling and tenderness on palpation. Homan's sign positive (unreliable but noted). Left leg normal.",
+      "abdomen": "Soft, non-tender. Recent hip surgery wound clean and dry."
+    }
+  },
+  "startNodeId": "node-stabilize",
+  "nodes": [
+    {
+      "id": "node-stabilize",
+      "type": "decision",
+      "title": "Immediate Stabilisation",
+      "body": "Mrs Okafor is acutely breathless with SpO₂ 90%, BP 100/70, HR 122. She is on post-op day 3 following hip replacement. You are the on-call doctor. What is your first priority?",
+      "clinicalPearl": "In any acutely unwell patient, secure Airway, Breathing, Circulation before diagnostics. Hypoxia and haemodynamic compromise define urgency here.",
+      "choices": [
+        {
+          "id": "c1a",
+          "text": "Apply high-flow oxygen via non-rebreather mask (15 L/min), establish two large-bore IV cannulae, send urgent bloods, attach monitoring, call for senior review",
+          "isCorrect": true,
+          "feedback": "Correct. High-flow O₂ addresses hypoxia immediately. Two large-bore IVs allow fluid resuscitation and IV medication. Bloods (FBC, U&E, coagulation, troponin, BNP, ABG, D-dimer) and cardiac monitoring are essential. Escalating early is appropriate — this patient may be haemodynamically unstable.",
+          "nextNodeId": "node-history"
+        },
+        {
+          "id": "c1b",
+          "text": "Order a chest X-ray and wait for results before doing anything else",
+          "isCorrect": false,
+          "feedback": "Incorrect. A CXR is part of the workup but should not delay immediate stabilisation. This patient has SpO₂ 90% and borderline hypotension — acting on ABCs comes first.",
+          "nextNodeId": "node-stabilize-retry"
+        },
+        {
+          "id": "c1c",
+          "text": "Give nebulised salbutamol — likely bronchospasm post-anaesthesia",
+          "isCorrect": false,
+          "feedback": "Incorrect. There is no wheeze and no history of asthma. Salbutamol is not indicated. Treating presumed bronchospasm without supporting evidence wastes critical time in what may be a haemodynamically significant PE.",
+          "nextNodeId": "node-stabilize-retry"
+        },
+        {
+          "id": "c1d",
+          "text": "Administer 300 mg aspirin — rule out ACS first",
+          "isCorrect": false,
+          "feedback": "Incorrect. While ACS must be on the differential, aspirin (an antiplatelet) is not the correct treatment for PE. Anticoagulation — not antiplatelet therapy — is the cornerstone of PE management. Giving aspirin here delays appropriate treatment and does not address the thrombotic process.",
+          "nextNodeId": "node-antiplatelet-error"
+        }
+      ]
+    },
+    {
+      "id": "node-antiplatelet-error",
+      "type": "teaching",
+      "title": "Antiplatelet vs Anticoagulant — A Critical Distinction",
+      "body": "You gave aspirin. The nurse asks what else you want to do. Meanwhile, the SpO₂ has dropped to 87%.",
+      "clinicalPearl": "Antiplatelet agents (aspirin, clopidogrel) inhibit platelet aggregation and are used in arterial thrombosis (e.g., MI, stroke). Venous thromboembolism — including PE and DVT — is driven by the coagulation cascade and fibrin, not platelet plugs. Anticoagulation (heparin, LMWH, DOACs) is the treatment. This is a fundamental distinction. Giving aspirin instead of anticoagulation in PE is a dangerous error.",
+      "choices": [
+        {
+          "id": "c-ae1",
+          "text": "Recognise the error — return to stabilisation and initiate appropriate anticoagulation",
+          "isCorrect": true,
+          "feedback": "Good. Recognising and correcting errors early is essential. Proceed with proper stabilisation and the diagnostic pathway.",
+          "nextNodeId": "node-history"
+        }
+      ]
+    },
+    {
+      "id": "node-stabilize-retry",
+      "type": "teaching",
+      "title": "Stabilisation First",
+      "body": "The patient's SpO₂ has fallen to 87% while you waited. The nurse is asking what you want to do.",
+      "clinicalPearl": "Airway, Breathing, Circulation is non-negotiable. No investigation should delay life-saving oxygen therapy and IV access in an acutely hypoxic, hypotensive patient.",
+      "choices": [
+        {
+          "id": "c-sr1",
+          "text": "Apply high-flow O₂, establish IV access, send urgent bloods and attach monitoring",
+          "isCorrect": true,
+          "feedback": "Correct. Stabilise the patient first. You can now move to history and clinical scoring.",
+          "nextNodeId": "node-history"
+        }
+      ]
+    },
+    {
+      "id": "node-history",
+      "type": "decision",
+      "title": "Focused History & Wells PE Score",
+      "body": "Mrs Okafor is now on 15 L/min O₂ with SpO₂ improving to 94%. You have IV access and bloods are running. She is able to give a brief history. You need to calculate her pre-test probability for PE. Which elements of the Wells PE score apply to her?",
+      "clinicalPearl": "The Wells PE score is the validated pre-test probability tool for PE. It determines whether D-dimer or direct imaging (CTPA) is the next step. Getting this right determines your entire investigation strategy.",
+      "choices": [
+        {
+          "id": "c2a",
+          "text": "Clinical signs of DVT (calf swelling/tenderness) +3 | PE most likely diagnosis +3 | HR >100 +1.5 | Surgery/immobilisation in past 4 weeks +1.5 | No prior DVT/PE 0 | No haemoptysis 0 | No malignancy 0 → Total = 9 points → HIGH probability",
+          "isCorrect": true,
+          "feedback": "Correct. Wells score = 9 points. This is HIGH pre-test probability (>4 points). In high-probability PE, D-dimer is NOT recommended — a negative D-dimer cannot safely rule out PE at this probability, and a positive result does not change management. CTPA is required directly.",
+          "nextNodeId": "node-investigation"
+        },
+        {
+          "id": "c2b",
+          "text": "HR >100 +1.5 | Surgery in past 4 weeks +1.5 → Total = 3 points → LOW probability — send D-dimer",
+          "isCorrect": false,
+          "feedback": "Incorrect. You have missed two major Wells criteria: clinical signs of DVT (right calf swelling and tenderness = +3) and PE being the most likely diagnosis (+3). The correct Wells score is 9 — high probability. A D-dimer in high-probability PE is not useful and may falsely reassure.",
+          "nextNodeId": "node-history"
+        },
+        {
+          "id": "c2c",
+          "text": "Skip the Wells score — she clearly has PE, just go straight to treatment with LMWH",
+          "isCorrect": false,
+          "feedback": "Partially understandable but incorrect process. Treatment without confirmed diagnosis risks anticoagulating a patient who may have a different cause (e.g., haemopericardium, aortic dissection). CTPA is fast and confirmatory — complete the diagnostic pathway before committing to full anticoagulation unless the patient is in extremis.",
+          "nextNodeId": "node-investigation"
+        }
+      ]
+    },
+    {
+      "id": "node-investigation",
+      "type": "decision",
+      "title": "Investigation Strategy",
+      "body": "Wells score = 9 (HIGH probability). Your bloods are back. D-dimer: >10,000 ng/mL [flagged — normal <500 ng/mL]. ECG is on the monitor. ABG shows pH 7.47, pO₂ 8.1 kPa, pCO₂ 3.2 kPa (hypoxia + hypocapnia — classic for PE). What is your next investigation priority?",
+      "clinicalPearl": "In HIGH pre-test probability PE, a very elevated D-dimer confirms thrombotic activity but CTPA is mandatory regardless — D-dimer cannot rule in or change management at this stage. CTPA is the gold standard for PE diagnosis.",
+      "choices": [
+        {
+          "id": "c3a",
+          "text": "CTPA (CT Pulmonary Angiography) urgently + 12-lead ECG + bedside echocardiogram to assess RV function",
+          "isCorrect": true,
+          "feedback": "Correct. CTPA is the definitive investigation for PE. ECG may show the classic S1Q3T3 pattern or right heart strain. Bedside echo assesses for RV dilatation and dysfunction — critical for risk stratification (massive vs sub-massive PE). Results: CTPA confirms bilateral PE with RV strain. ECG shows S1Q3T3 pattern. Echo shows RV:LV ratio >1.0, septal flattening (D-sign).",
+          "nextNodeId": "node-results"
+        },
+        {
+          "id": "c3b",
+          "text": "The D-dimer is very high — this confirms PE. Start treatment without CTPA",
+          "isCorrect": false,
+          "feedback": "Incorrect. D-dimer is highly sensitive but non-specific. An elevated D-dimer is expected in any inflammatory, post-surgical, or thrombotic state and does not confirm PE anatomically. CTPA is required to confirm the diagnosis, assess clot burden, and guide risk stratification. Skipping it in a haemodynamically compromised patient is a dangerous shortcut.",
+          "nextNodeId": "node-investigation"
+        },
+        {
+          "id": "c3c",
+          "text": "V/Q scan first — lower radiation and equally reliable",
+          "isCorrect": false,
+          "feedback": "Partially incorrect in this context. V/Q scan is a valid alternative when CTPA is contraindicated (e.g., CKD, contrast allergy) or in pregnancy. However, in an acute haemodynamically compromised patient, CTPA is faster and provides more anatomical detail including RV strain assessment. V/Q is also less reliable in patients with underlying lung disease or abnormal CXR.",
+          "nextNodeId": "node-investigation"
+        }
+      ]
+    },
+    {
+      "id": "node-results",
+      "type": "results",
+      "title": "Investigation Results",
+      "body": "Results are back:",
+      "results": [
+        {
+          "test": "CTPA",
+          "value": "Bilateral pulmonary emboli — right main pulmonary artery and multiple segmental branches bilaterally. Right ventricular dilatation with interventricular septal flattening (D-sign). No pulmonary infarction.",
+          "flagged": true,
+          "interpretation": "Confirms bilateral PE with right heart strain"
+        },
+        {
+          "test": "ECG",
+          "value": "Sinus tachycardia 122 bpm. S wave in lead I, Q wave and T-wave inversion in lead III (S1Q3T3 pattern). Right axis deviation. T-wave inversions V1-V4.",
+          "flagged": true,
+          "interpretation": "Classic pattern of right heart strain — seen in massive/sub-massive PE"
+        },
+        {
+          "test": "Echocardiogram (bedside)",
+          "value": "RV:LV ratio 1.2 (dilated RV). Septal flattening in systole. Reduced TAPSE (15 mm). Estimated RVSP 55 mmHg. No pericardial effusion.",
+          "flagged": true,
+          "interpretation": "RV dysfunction — consistent with sub-massive PE"
+        },
+        {
+          "test": "D-dimer",
+          "value": ">10,000 ng/mL",
+          "flagged": true,
+          "interpretation": "Markedly elevated — expected in extensive VTE"
+        },
+        {
+          "test": "Troponin I",
+          "value": "0.42 μg/L (upper limit normal 0.04)",
+          "flagged": true,
+          "interpretation": "Elevated — indicates RV myocardial injury from pressure overload"
+        },
+        {
+          "test": "BNP",
+          "value": "680 pg/mL (normal <100)",
+          "flagged": true,
+          "interpretation": "Elevated — indicates RV wall stress"
+        },
+        {
+          "test": "FBC",
+          "value": "Hb 118 g/L, WBC 11.2 × 10⁹/L, Platelets 210 × 10⁹/L",
+          "flagged": false,
+          "interpretation": "Mild anaemia; WBC mildly raised (post-surgical). Platelets adequate for anticoagulation."
+        },
+        {
+          "test": "Coagulation",
+          "value": "PT 13 s, APTT 30 s, INR 1.1",
+          "flagged": false,
+          "interpretation": "Normal — patient not on therapeutic anticoagulation"
+        },
+        {
+          "test": "U&E / Creatinine",
+          "value": "Na 138, K 4.1, Creatinine 82 μmol/L, eGFR >90",
+          "flagged": false,
+          "interpretation": "Normal renal function — no contraindication to contrast or DOAC"
+        }
+      ],
+      "choices": [
+        {
+          "id": "c-results-1",
+          "text": "Proceed to risk stratification",
+          "isCorrect": true,
+          "feedback": "Good. You now have confirmed bilateral PE with echocardiographic RV dysfunction, elevated troponin, and elevated BNP. Proceed to classify severity.",
+          "nextNodeId": "node-risk-stratification"
+        }
+      ]
+    },
+    {
+      "id": "node-risk-stratification",
+      "type": "decision",
+      "title": "PE Risk Stratification",
+      "body": "You have confirmed bilateral PE. Mrs Okafor's current observations: BP 100/70 (borderline hypotensive), HR 122, SpO₂ 94% on 15 L/min O₂. She has RV dilatation on echo, S1Q3T3 on ECG, troponin 0.42 μg/L, BNP 680 pg/mL. She has NOT had a cardiac arrest and maintains consciousness. How do you classify this PE?",
+      "clinicalPearl": "PE severity classification drives treatment decisions — specifically whether systemic thrombolysis is indicated. Massive PE = haemodynamic collapse (SBP <90 for >15 min, cardiac arrest, or need for vasopressors). Sub-massive (intermediate-high risk) = haemodynamically stable but with RV dysfunction and/or myocardial injury markers. Low-risk = no haemodynamic compromise, no RV dysfunction.",
+      "choices": [
+        {
+          "id": "c4a",
+          "text": "Sub-massive (Intermediate-High Risk) PE — haemodynamically borderline with RV dysfunction, elevated troponin and BNP, but no cardiac arrest or refractory hypotension",
+          "isCorrect": true,
+          "feedback": "Correct. This is sub-massive (intermediate-high risk) PE by ESC/ACCP criteria: haemodynamically borderline, RV dysfunction on imaging, and elevated cardiac biomarkers. This classification means: systemic thrombolysis is not yet indicated but must be immediately available. Start therapeutic anticoagulation now. Arrange ICU/HDU monitoring. Reassess haemodynamics every 15-30 minutes — deterioration to massive PE may mandate rescue thrombolysis.",
+          "nextNodeId": "node-treatment"
+        },
+        {
+          "id": "c4b",
+          "text": "Massive PE — she is hypotensive and has RV strain. Give immediate systemic thrombolysis with alteplase",
+          "isCorrect": false,
+          "feedback": "Incorrect. Massive PE requires SBP <90 mmHg sustained for >15 minutes despite resuscitation, or cardiac arrest. Mrs Okafor is borderline hypotensive (100/70) but has not met the threshold for massive PE. Systemic thrombolysis carries significant bleeding risk (including intracranial haemorrhage at ~2%). Giving it without massive PE criteria is premature and dangerous. This is sub-massive PE.",
+          "nextNodeId": "node-thrombolysis-error"
+        },
+        {
+          "id": "c4c",
+          "text": "Low-risk PE — she is conscious and maintaining saturations. Standard LMWH and discharge planning",
+          "isCorrect": false,
+          "feedback": "Incorrect. Low-risk PE requires absence of haemodynamic compromise AND absence of RV dysfunction AND normal biomarkers. Mrs Okafor has borderline hypotension, RV dilatation, elevated troponin, and elevated BNP — she is intermediate-high risk and requires ICU-level monitoring, not discharge.",
+          "nextNodeId": "node-risk-stratification"
+        }
+      ]
+    },
+    {
+      "id": "node-thrombolysis-error",
+      "type": "teaching",
+      "title": "Thrombolysis Without Massive PE Criteria — A Serious Error",
+      "body": "You give alteplase 100 mg IV over 2 hours. Two hours later, Mrs Okafor develops a severe headache and left-sided arm weakness. CT head shows intracranial haemorrhage.",
+      "clinicalPearl": "Systemic thrombolysis carries a 2% risk of intracranial haemorrhage and up to 10% risk of major bleeding. It is indicated in massive PE (cardiac arrest, refractory shock) — not sub-massive PE unless there is haemodynamic deterioration despite therapeutic anticoagulation. This case is a teaching point in risk/benefit analysis: the bleeding risk of thrombolysis exceeds the benefit in non-massive PE. Always verify massive PE criteria before giving thrombolytics.",
+      "choices": [
+        {
+          "id": "c-te1",
+          "text": "Understand the lesson and return to the correct treatment pathway",
+          "isCorrect": true,
+          "feedback": "Noted. Sub-massive PE = therapeutic anticoagulation + close monitoring + rescue thrombolysis only if haemodynamic collapse occurs.",
+          "nextNodeId": "node-treatment"
+        }
+      ]
+    },
+    {
+      "id": "node-treatment",
+      "type": "decision",
+      "title": "Acute Treatment — Sub-Massive PE",
+      "body": "Sub-massive PE confirmed. Mrs Okafor is borderline hypotensive. She has normal renal function and no contraindications to anticoagulation. What is the correct immediate treatment?",
+      "clinicalPearl": "In confirmed PE, therapeutic anticoagulation must be started without delay once the diagnosis is confirmed (or even suspected if CTPA is not immediately available in high-probability PE). Unfractionated heparin (UFH) IV is preferred in sub-massive PE where the patient may deteriorate and require thrombolysis (UFH can be rapidly reversed; LMWH cannot). LMWH is acceptable in haemodynamically stable patients.",
+      "choices": [
+        {
+          "id": "c5a",
+          "text": "Unfractionated heparin (UFH) IV infusion: 80 units/kg bolus then 18 units/kg/hr infusion — titrate to APTT 60-100 seconds. Prepare thrombolysis (alteplase 100 mg) on standby in case of haemodynamic collapse. Oxygen, IV fluids cautiously (avoid fluid overload worsening RV). Alert ICU.",
+          "isCorrect": true,
+          "feedback": "Correct. UFH IV is the anticoagulant of choice in sub-massive PE because: (1) It is rapidly titratable, (2) It can be reversed with protamine if thrombolysis becomes necessary or if bleeding occurs, (3) It provides immediate therapeutic anticoagulation. Caution with IV fluids — aggressive fluid resuscitation can worsen RV failure by increasing preload on an already-distended RV. Thrombolysis on standby is appropriate. Alert ICU for close haemodynamic monitoring.",
+          "nextNodeId": "node-disposition"
+        },
+        {
+          "id": "c5b",
+          "text": "LMWH (enoxaparin 1.5 mg/kg SC OD) — she is already on prophylactic LMWH so just increase the dose",
+          "isCorrect": false,
+          "feedback": "Partially acceptable but not optimal in this scenario. LMWH is suitable for haemodynamically stable PE. However, this patient is borderline hypotensive with RV dysfunction — if she deteriorates and requires thrombolysis, LMWH cannot be reversed and significantly increases bleeding risk. UFH IV is preferred in intermediate-high risk PE. Additionally, enoxaparin 40 mg OD prophylaxis does not simply 'scale up' — the treatment dose calculation is separate.",
+          "nextNodeId": "node-disposition"
+        },
+        {
+          "id": "c5c",
+          "text": "Start a DOAC (rivaroxaban 15 mg BD) immediately — simpler, no monitoring required",
+          "isCorrect": false,
+          "feedback": "Incorrect for the acute setting. While DOACs are excellent for outpatient/sub-acute PE management, they are not appropriate as first-line treatment for sub-massive PE with haemodynamic compromise. Rivaroxaban cannot be reversed in an emergency, its onset is slower than IV heparin, and it cannot be used alongside or as a bridge to thrombolysis. DOACs are appropriate after stabilisation for long-term anticoagulation.",
+          "nextNodeId": "node-treatment"
+        },
+        {
+          "id": "c5d",
+          "text": "Give warfarin 10 mg immediately and bridge with heparin",
+          "isCorrect": false,
+          "feedback": "Incorrect. Warfarin has a delayed onset of 3-5 days and requires bridging with parenteral anticoagulation. It also requires monitoring and dietary restrictions. While warfarin was historically first-line for VTE, DOACs have largely replaced it for most patients. In the acute/unstable setting, IV UFH remains the treatment of choice regardless.",
+          "nextNodeId": "node-treatment"
+        }
+      ]
+    },
+    {
+      "id": "node-disposition",
+      "type": "decision",
+      "title": "Disposition — Where Does She Go?",
+      "body": "Mrs Okafor is now on UFH infusion. SpO₂ 95% on 10 L/min O₂. BP 102/72, HR 116. She is alert and communicating. Where should she be admitted?",
+      "clinicalPearl": "Sub-massive PE with haemodynamic instability, RV dysfunction, and elevated biomarkers requires close monitoring for deterioration — this defines ICU/HDU admission. Haemodynamic collapse can occur rapidly and rescue thrombolysis or catheter-directed therapy must be immediately available.",
+      "choices": [
+        {
+          "id": "c6a",
+          "text": "Admit to ICU/HDU for continuous haemodynamic monitoring, continuous ECG, repeat echo at 24 hours, hourly obs, UFH infusion titration with 6-hourly APTT",
+          "isCorrect": true,
+          "feedback": "Correct. Sub-massive PE with borderline haemodynamics requires ICU or HDU level care. Goals: (1) Monitor for haemodynamic deterioration, (2) Titrate UFH to therapeutic APTT, (3) Repeat echo at 12-24 hours to assess RV recovery, (4) Have thrombolysis immediately available, (5) Surgical embolectomy or catheter-directed thrombolysis as rescue options if deterioration occurs.",
+          "nextNodeId": "node-followup"
+        },
+        {
+          "id": "c6b",
+          "text": "Return to the orthopaedic ward with 4-hourly observations",
+          "isCorrect": false,
+          "feedback": "Incorrect. This patient has haemodynamic compromise and RV dysfunction. 4-hourly observations on a general ward are inadequate — haemodynamic collapse in PE can be rapid and unpredictable. She requires continuous monitoring in a high-dependency environment.",
+          "nextNodeId": "node-disposition"
+        },
+        {
+          "id": "c6c",
+          "text": "Discharge home with LMWH injections and outpatient CTPA follow-up",
+          "isCorrect": false,
+          "feedback": "Incorrect. Discharge is only appropriate for LOW-risk PE (e.g., PESI score Class I-II, haemodynamically stable, no RV dysfunction, no significant comorbidity, good home support). This patient has haemodynamic compromise, RV dysfunction, and elevated biomarkers — she must be admitted to ICU/HDU.",
+          "nextNodeId": "node-disposition"
+        }
+      ]
+    },
+    {
+      "id": "node-followup",
+      "type": "decision",
+      "title": "Follow-Up Anticoagulation Plan",
+      "body": "Mrs Okafor stabilises over 48 hours in ICU. Repeat echo shows improving RV function (RV:LV ratio 0.9, TAPSE 18 mm). Troponin trending down. BP normalised at 118/78. HR 88. She is ready for step-down. What is the long-term anticoagulation plan?",
+      "clinicalPearl": "Duration of anticoagulation after PE depends on provoking factors. Provoked PE (identifiable transient risk factor such as surgery, immobilisation) typically warrants 3 months. Extended therapy beyond 3 months may be considered for unprovoked PE, recurrent PE, or cancer-associated thrombosis. DOACs (rivaroxaban, apixaban) are now first-line over warfarin for most patients with VTE.",
+      "choices": [
+        {
+          "id": "c7a",
+          "text": "Transition to rivaroxaban 15 mg BD for 21 days then 20 mg OD for a total of 3 months (provoked PE — surgical risk factor). Arrange haematology/respiratory follow-up at 3 months to reassess anticoagulation duration. Arrange outpatient CTPA/V-Q at 3-6 months to assess for chronic PE.",
+          "isCorrect": true,
+          "feedback": "Correct. This is a provoked PE (post-operative, major transient risk factor). Rivaroxaban (or apixaban) is first-line. The rivaroxaban PE protocol is 15 mg BD for 21 days (higher initial dose to ensure rapid therapeutic levels) then 20 mg OD. Three months is standard for provoked PE. Follow-up should include assessment for residual PE/CTEPH and a decision on whether extended anticoagulation is warranted. Thrombophilia screening should be deferred until at least 3 months after the event and off anticoagulation.",
+          "nextNodeId": "node-summary"
+        },
+        {
+          "id": "c7b",
+          "text": "Continue warfarin indefinitely with target INR 2-3. No follow-up needed.",
+          "isCorrect": false,
+          "feedback": "Incorrect on two counts. (1) DOACs are now preferred over warfarin for VTE in the absence of contraindications (e.g., antiphospholipid syndrome, mechanical heart valves). (2) Indefinite anticoagulation is not indicated for a first provoked PE with a resolved risk factor — 3 months is appropriate. Follow-up is essential to assess for resolution, CTEPH, and recurrence risk.",
+          "nextNodeId": "node-followup"
+        },
+        {
+          "id": "c7c",
+          "text": "Stop all anticoagulation at discharge — the clot will resolve on its own and the surgical risk has passed",
+          "isCorrect": false,
+          "feedback": "Incorrect and dangerous. PE carries significant recurrence risk without anticoagulation. The minimum duration after symptomatic PE is 3 months regardless of whether the provoking factor has resolved. Stopping anticoagulation at discharge would expose Mrs Okafor to serious risk of recurrence.",
+          "nextNodeId": "node-followup"
+        }
+      ]
+    },
+    {
+      "id": "node-summary",
+      "type": "summary",
+      "title": "Case Complete — Clinical Summary",
+      "body": "Well done. You have successfully managed a case of sub-massive bilateral pulmonary embolism.",
+      "summaryPoints": [
+        "Post-operative PE (day 3 after hip replacement) is a classic high-risk scenario — prophylactic LMWH does not eliminate VTE risk.",
+        "Wells score = 9 (HIGH probability): clinical DVT signs (+3), PE most likely diagnosis (+3), HR >100 (+1.5), recent surgery (+1.5).",
+        "In HIGH pre-test probability PE, go directly to CTPA — do not use D-dimer as a rule-out tool.",
+        "CTPA confirmed bilateral PE with RV strain. ECG showed S1Q3T3. Echo showed RV dilatation (RV:LV >1). Elevated troponin and BNP confirmed intermediate-high (sub-massive) PE.",
+        "Massive PE = haemodynamic collapse (SBP <90 sustained, cardiac arrest) → systemic thrombolysis indicated. Sub-massive PE = RV dysfunction without collapse → therapeutic anticoagulation + close monitoring + thrombolysis on standby.",
+        "UFH IV infusion is preferred in sub-massive PE (titratable, reversible). Avoid aggressive fluid resuscitation — it worsens RV afterload.",
+        "ICU/HDU admission for continuous haemodynamic monitoring and rapid access to rescue thrombolysis.",
+        "3 months anticoagulation with DOAC (rivaroxaban or apixaban) for provoked PE. Follow-up at 3 months for reassessment.",
+        "Key errors to avoid: antiplatelet instead of anticoagulant, thrombolysis without massive PE criteria, skipping CTPA in high pre-test probability, discharging sub-massive PE."
+      ],
+      "nextNodeId": null
+    }
+  ],
+  "diseaseMap": {
+    "title": "Pulmonary Embolism",
+    "pathophysiology": "Thrombus (most commonly from deep veins of lower limbs or pelvis) embolises to pulmonary vasculature → mechanical obstruction → increased pulmonary vascular resistance → RV pressure overload → RV dilatation and dysfunction → reduced LV preload → reduced cardiac output → haemodynamic compromise → distributive shock in massive PE.",
+    "keyRiskFactors": [
+      "Recent surgery (especially orthopaedic — hip/knee replacement highest risk)",
+      "Immobility / prolonged travel",
+      "Prior DVT/PE",
+      "Active malignancy",
+      "Thrombophilia (Factor V Leiden, antiphospholipid syndrome, protein C/S deficiency)",
+      "Oral contraceptive pill / hormone replacement therapy",
+      "Pregnancy / postpartum period",
+      "Obesity",
+      "Dehydration",
+      "Central venous catheters"
+    ],
+    "classicPresentation": "Sudden dyspnoea + pleuritic chest pain + haemoptysis + unilateral leg swelling (DVT). Note: many PEs present atypically — dyspnoea alone is the most common symptom.",
+    "differentialDiagnosis": [
+      "Acute coronary syndrome",
+      "Pneumothorax",
+      "Pneumonia / pleuritis",
+      "Cardiac tamponade",
+      "Aortic dissection",
+      "Acute pulmonary oedema",
+      "Anxiety / hyperventilation"
+    ],
+    "ecgFindings": "Most common: sinus tachycardia. S1Q3T3 (S wave in I, Q wave and T-wave inversion in III) is classic but seen in only ~20% of PE cases. Right axis deviation, RBBB, T-wave inversions V1-V4 (right heart strain pattern) are also seen.",
+    "cxrFindings": "Often normal. Classic signs: Westermark sign (oligaemia distal to embolus), Hampton's hump (peripheral wedge-shaped opacity — infarction), Fleischner sign (enlarged pulmonary artery). CXR is mainly used to exclude other diagnoses.",
+    "classification": {
+      "massive": "SBP <90 mmHg for >15 min, cardiac arrest, or vasopressor requirement. Treatment: systemic thrombolysis (alteplase 100 mg IV over 2h) or surgical embolectomy. High-dose UFH.",
+      "subMassive": "Haemodynamically stable but RV dysfunction (echo or CT) AND/OR elevated troponin or BNP. Treatment: therapeutic anticoagulation (UFH IV preferred), thrombolysis on standby, ICU monitoring.",
+      "lowRisk": "No haemodynamic compromise, no RV dysfunction, normal biomarkers. PESI Class I-II. Treatment: DOAC, consider early discharge with follow-up."
+    }
+  },
+  "guideline": {
+    "name": "Wells PE Score Calculator",
+    "source": "Wells PS et al. Derivation of a simple clinical model to categorize patients probability of pulmonary embolism. Thromb Haemost. 2000.",
+    "version": "Original Wells PE Score",
+    "fields": [
+      {
+        "id": "dvt_signs",
+        "label": "Clinical signs and symptoms of DVT (leg swelling, pain on palpation of deep veins)",
+        "points": 3,
+        "description": "Objective leg swelling and tenderness over deep veins scores +3"
+      },
+      {
+        "id": "pe_most_likely",
+        "label": "PE is the most likely diagnosis (or equally likely as other diagnoses)",
+        "points": 3,
+        "description": "Clinical judgement: if PE is at least as likely as alternative diagnoses, score +3"
+      },
+      {
+        "id": "hr_over_100",
+        "label": "Heart rate > 100 bpm",
+        "points": 1.5,
+        "description": "Resting heart rate above 100 bpm on examination"
+      },
+      {
+        "id": "immobilisation_surgery",
+        "label": "Immobilisation (≥3 consecutive days bed rest) OR surgery in the previous 4 weeks",
+        "points": 1.5,
+        "description": "Includes hospitalisation, long-haul flights >6 hours, or any surgery in past 4 weeks"
+      },
+      {
+        "id": "prior_dvt_pe",
+        "label": "Previous objectively diagnosed DVT or PE",
+        "points": 1.5,
+        "description": "Prior confirmed VTE (DVT or PE) scores +1.5"
+      },
+      {
+        "id": "haemoptysis",
+        "label": "Haemoptysis",
+        "points": 1,
+        "description": "Any blood-stained sputum"
+      },
+      {
+        "id": "malignancy",
+        "label": "Malignancy (treatment within last 6 months, or palliative)",
+        "points": 1,
+        "description": "Active cancer including treatment within 6 months or palliative treatment"
+      }
+    ],
+    "formula": "Sum all applicable points from the 7 fields above",
+    "interpretation": [
+      {
+        "range": "≤ 4 points",
+        "probability": "Low probability",
+        "action": "D-dimer: if negative (<500 ng/mL), PE excluded. If positive, proceed to CTPA.",
+        "prevalence": "Approximately 12% have PE at this score"
+      },
+      {
+        "range": "> 4 points",
+        "probability": "High probability",
+        "action": "CTPA directly — do NOT use D-dimer as rule-out tool at this pre-test probability",
+        "prevalence": "Approximately 37% have PE at this score"
+      }
+    ],
+    "notes": [
+      "Two-tier model (≤4 = PE unlikely, >4 = PE likely) is most commonly used in clinical practice",
+      "Some guidelines use a three-tier model: 0-1 (low), 2-6 (moderate), ≥7 (high)",
+      "Wells score is for diagnosis only — not for severity stratification once PE is confirmed",
+      "In pregnancy, use the YEARS algorithm instead",
+      "D-dimer has near-100% sensitivity but poor specificity — only useful when pre-test probability is LOW"
+    ]
+  },
+  "availableBadges": [
+    {
+      "id": "badge-wells-master",
+      "title": "Wells Wizard",
+      "description": "Correctly calculated the Wells PE score on the first attempt",
+      "icon": "calculator",
+      "criteria": "Selected correct Wells score option on first attempt at node-history"
+    },
+    {
+      "id": "badge-stabiliser",
+      "title": "Stabilise First",
+      "description": "Secured airway, breathing and circulation before proceeding to diagnostics",
+      "icon": "shield",
+      "criteria": "Selected correct stabilisation option at node-stabilize on first attempt"
+    },
+    {
+      "id": "badge-ctpa-champion",
+      "title": "CTPA Champion",
+      "description": "Correctly identified that high pre-test probability requires direct CTPA — not D-dimer",
+      "icon": "scan",
+      "criteria": "Selected CTPA as primary investigation at node-investigation on first attempt"
+    },
+    {
+      "id": "badge-risk-stratifier",
+      "title": "Risk Stratifier",
+      "description": "Correctly classified the PE as sub-massive and avoided inappropriate thrombolysis",
+      "icon": "scale",
+      "criteria": "Selected sub-massive PE at node-risk-stratification on first attempt"
+    },
+    {
+      "id": "badge-heparin-hero",
+      "title": "Anticoagulation Expert",
+      "description": "Selected UFH IV as the appropriate anticoagulant for sub-massive PE",
+      "icon": "syringe",
+      "criteria": "Selected UFH at node-treatment on first attempt"
+    },
+    {
+      "id": "badge-perfect-run",
+      "title": "Perfect Resuscitation",
+      "description": "Completed the case with no incorrect decisions",
+      "icon": "star",
+      "criteria": "All nodes completed on first attempt with no incorrect choices"
+    },
+    {
+      "id": "badge-icu-decision",
+      "title": "Right Place, Right Time",
+      "description": "Correctly escalated the patient to ICU for sub-massive PE monitoring",
+      "icon": "hospital",
+      "criteria": "Selected ICU disposition at node-disposition on first attempt"
+    }
+  ],
+  "disclaimer": "This case is designed for educational purposes only. Clinical decisions in real patients must be made by qualified healthcare professionals using current local guidelines, complete patient assessment, and institutional protocols. Drug doses, investigation thresholds, and management pathways may vary by jurisdiction and should be verified against local formularies and guidelines (e.g., NICE, ESC, BTS, ACCP). This simulator does not replace clinical training or supervised clinical experience."
+}

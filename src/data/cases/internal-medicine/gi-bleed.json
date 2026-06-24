@@ -1,0 +1,516 @@
+{
+  "id": "gi-bleed",
+  "specialty": "Internal Medicine",
+  "title": "Vomiting Blood",
+  "subtitle": "Upper GI Bleed",
+  "difficulty": "intermediate",
+  "estimatedMinutes": 20,
+  "patient": {
+    "age": 48,
+    "sex": "M",
+    "chiefComplaint": "Two episodes of vomiting blood and black tarry stools for 24 hours",
+    "history": "A 48-year-old male presents with two episodes of haematemesis over the past 6 hours — the first frank red blood, the second coffee-ground vomitus. He has also noticed black, tarry, offensive-smelling stools over the past 24 hours. He has no known liver disease and has not had this before. He admits to daily ibuprofen use for chronic back pain over the past 3 months and drinks approximately 25 units of alcohol per week.",
+    "initialVitals": {
+      "bp": "98/62",
+      "hr": 126,
+      "rr": 22,
+      "spo2": 97,
+      "temp": 37.0,
+      "gcs": 15
+    },
+    "symptoms": [
+      "Haematemesis — frank blood then coffee-ground vomitus",
+      "Melaena (black tarry stools) for 24 hours",
+      "Lightheadedness on standing",
+      "Pallor and diaphoresis",
+      "Epigastric discomfort",
+      "Nausea"
+    ],
+    "redFlags": [
+      "Haematemesis — confirms upper GI source (proximal to ligament of Treitz)",
+      "Melaena — blood in GI tract for >8 hours (upper source, usually)",
+      "BP 98/62 — haemodynamic compromise (Class III haemorrhage)",
+      "HR 126 — significant tachycardia",
+      "NSAID use — major risk factor for peptic ulcer disease",
+      "High alcohol intake — additional GI mucosal risk + variceal risk"
+    ],
+    "backgroundHistory": {
+      "pastMedicalHistory": [
+        "Chronic low back pain (managed with ibuprofen 400mg TDS for 3 months)",
+        "No known liver disease",
+        "No prior GI bleeding",
+        "No previous endoscopy"
+      ],
+      "medications": [
+        "Ibuprofen 400mg three times daily (ongoing — no PPI prescribed)",
+        "Paracetamol 1g as needed"
+      ],
+      "allergies": "NKDA",
+      "socialHistory": "Works as a lorry driver. Married with two children. Smoker (10 cigarettes/day). Alcohol: approximately 25 units/week (above safe limits). No recreational drug use.",
+      "familyHistory": "No family history of GI cancers or liver disease.",
+      "reviewOfSystems": "No weight loss. No dysphagia. No abdominal mass. No jaundice. No haematuria. Stools were previously normal-coloured until yesterday."
+    }
+  },
+  "startNodeId": "node-stabilize",
+  "nodes": [
+    {
+      "id": "node-stabilize",
+      "category": "stabilization",
+      "prompt": "A 48-year-old male presents with haematemesis and melaena. BP 98/62 lying, HR 126, SpO2 97%, GCS 15. He is pale and sweaty. What is your IMMEDIATE first step?",
+      "context": "The patient arrives in the emergency department. He looks pale and anxious. He is conscious and communicating. His shirt is stained with blood. No IV access yet.",
+      "choices": [
+        {
+          "id": "stabilize-correct",
+          "text": "Two large-bore IV cannulae (16G or larger), urgent bloods (FBC, U&E, LFT, coagulation, crossmatch 4 units), IV fluid resuscitation with 500mL crystalloid, continuous monitoring, and call GI/endoscopy urgently",
+          "correct": true,
+          "feedback": "Correct. Active upper GI bleeding with haemodynamic compromise (BP 98/62, HR 126) requires immediate large-bore IV access ×2 for rapid fluid and blood administration. Crossmatching 4 units of packed red cells is essential for a haemodynamically compromised bleed. Urgent GI/endoscopy contact should be made immediately — endoscopy within 24 hours (or <12 hours if ongoing bleeding) is the definitive treatment. Fluid resuscitation bridges to transfusion.",
+          "nextNodeId": "node-blatchford",
+          "timeAdvanceMin": 5,
+          "vitalsDelta": { "hr": -8, "spo2": 0, "bp": 8 },
+          "scoreDelta": 10,
+          "educationalNote": "Upper GI bleeding causes approximately 85,000 hospital admissions per year in the UK. The two most common causes are peptic ulcer disease (~35%) and oesophageal varices (~10–15%). NSAID use is the largest preventable risk factor — NSAIDs without PPI co-prescription account for 25% of peptic ulcer bleeds."
+        },
+        {
+          "id": "stabilize-one-iv",
+          "text": "Insert one IV cannula and take bloods — then reassess once results are back",
+          "correct": false,
+          "feedback": "One IV cannula is insufficient for active haemorrhage with haemodynamic compromise. You need two large-bore cannulae for parallel fluid and blood administration. Waiting for results before acting on a haemodynamically compromised patient delays resuscitation and risks cardiovascular collapse.",
+          "nextNodeId": "node-blatchford",
+          "timeAdvanceMin": 8,
+          "vitalsDelta": { "hr": 8, "spo2": -1, "bp": -5 },
+          "scoreDelta": -8
+        },
+        {
+          "id": "stabilize-ppi-first",
+          "text": "Give IV omeprazole 80mg immediately — PPI will stop the bleeding",
+          "correct": false,
+          "feedback": "IV PPI alone does not stop active bleeding and cannot precede resuscitation and access. PPI infusion before endoscopy is appropriate (it stabilises clot and reduces re-bleeding post-endoscopy), but it is not a first action and is not a substitute for IV access, crossmatch, and haemodynamic stabilisation.",
+          "nextNodeId": "node-blatchford",
+          "timeAdvanceMin": 5,
+          "vitalsDelta": { "hr": 5, "spo2": 0, "bp": -3 },
+          "scoreDelta": -5
+        },
+        {
+          "id": "stabilize-transfuse-immediately",
+          "text": "Request emergency O-negative blood immediately and transfuse before doing anything else",
+          "correct": false,
+          "feedback": "Emergency O-negative blood is reserved for immediately life-threatening exsanguination when there is no time for crossmatching. This patient is haemodynamically compromised but conscious with GCS 15 — crossmatching 4 units takes approximately 30–40 minutes and provides type-specific blood. In the interim, IV crystalloid resuscitation is appropriate. Requesting O-neg before IV access or assessment is premature.",
+          "nextNodeId": "node-blatchford",
+          "timeAdvanceMin": 5,
+          "vitalsDelta": { "hr": -3, "spo2": 0, "bp": 5 },
+          "scoreDelta": -3
+        }
+      ],
+      "isTerminal": false
+    },
+    {
+      "id": "node-blatchford",
+      "category": "diagnosis",
+      "prompt": "Bloods return. Hb 78 g/L, Urea 18.2 mmol/L, Sodium 138, BP 98/62. HR 126. The patient has melaena. No liver disease. No syncope. What risk score applies here, and what does this patient's score suggest?",
+      "context": "Time since arrival: 12 minutes. Two large-bore IVs in situ. Crossmatch has been sent. A nurse is applying a second bag of Hartmann's.",
+      "choices": [
+        {
+          "id": "blatchford-correct",
+          "text": "Glasgow-Blatchford Score (GBS): this patient scores ≥6 (Hb 78 = 6pts, urea 18.2 = 4pts, HR ≥100 = 1pt, melaena = 1pt, SBP 90–99 = 2pts). High-risk = needs urgent endoscopy and inpatient management. GBS ≥6 predicts need for intervention.",
+          "correct": true,
+          "feedback": "Correct. The Glasgow-Blatchford Score is the validated pre-endoscopy risk stratification tool for UGIB. A score of ≥6 indicates high risk for needing intervention (transfusion, endoscopic treatment, or surgery). This patient's score is approximately 14+ — extremely high risk. GBS 0 = can be managed as outpatient; GBS ≥6 = inpatient + endoscopy within 24 hours (or urgently if ongoing haemodynamic instability).",
+          "nextNodeId": "node-transfusion",
+          "timeAdvanceMin": 5,
+          "vitalsDelta": { "hr": 0, "spo2": 0 },
+          "scoreDelta": 12,
+          "investigations": [
+            { "name": "FBC", "value": "Hb 78 g/L (severely low), WBC 11.8 ×10⁹/L, Platelets 224 ×10⁹/L", "flagged": true },
+            { "name": "U&E", "value": "Na 138, K 4.2, Urea 18.2 mmol/L (elevated — blood digestion in gut), Creatinine 94 µmol/L", "flagged": true },
+            { "name": "LFT", "value": "ALT 48, ALP 98, Bilirubin 16, Albumin 36 — no evidence of liver disease", "flagged": false },
+            { "name": "Coagulation", "value": "INR 1.1 — normal", "flagged": false },
+            { "name": "Group and Save / Crossmatch", "value": "Group O+. 4 units crossmatched and available.", "flagged": false }
+          ],
+          "educationalNote": "Glasgow-Blatchford Score components: Urea (>25 = 6pts), Haemoglobin (male <100 = 3pts, <120 = 1pt), Systolic BP (<90 = 3pts, 90–99 = 2pts, 100–109 = 1pt), Pulse ≥100 = 1pt, Melaena = 1pt, Syncope = 2pts, Hepatic disease = 2pts, Heart failure = 2pts. Score 0 = very low risk (possible outpatient management). Score ≥6 = high risk, inpatient care required."
+        },
+        {
+          "id": "blatchford-rockall",
+          "text": "Use the Rockall Score — it accounts for endoscopy findings and is the gold standard for UGIB risk stratification",
+          "correct": false,
+          "feedback": "The Rockall Score has two versions: pre-endoscopy (clinical) and post-endoscopy (complete). The post-endoscopy Rockall is used to predict re-bleeding and mortality after endoscopy. For pre-endoscopy risk stratification and the decision to perform urgent endoscopy, the Glasgow-Blatchford Score is more sensitive and validated (NICE guidelines recommend GBS). Using the incomplete pre-endoscopy Rockall underestimates risk and may lead to premature discharge.",
+          "nextNodeId": "node-transfusion",
+          "timeAdvanceMin": 5,
+          "vitalsDelta": { "hr": 3, "spo2": 0 },
+          "scoreDelta": -3,
+          "educationalNote": "NICE NG141 (2020): Use GBS pre-endoscopy to identify low-risk patients who may be suitable for outpatient management. Use Rockall post-endoscopy to assess re-bleeding risk and plan discharge. A GBS of 0 = very low risk; Rockall 0 post-endoscopy = can be discharged from endoscopy."
+        },
+        {
+          "id": "blatchford-low-risk",
+          "text": "The Blatchford score suggests this could be low risk — plan CT angiography to identify the bleeding point and consider discharge if stable",
+          "correct": false,
+          "feedback": "This patient has an extremely high Blatchford score (>10). Suggesting low risk is incorrect and dangerous. CT angiography is reserved for lower GI bleeding or massive haemorrhage when endoscopy is not immediately possible. This patient needs urgent endoscopy, not CT. Considering discharge with haemodynamic compromise is unsafe.",
+          "nextNodeId": "node-transfusion",
+          "timeAdvanceMin": 30,
+          "vitalsDelta": { "hr": 10, "spo2": -1, "bp": -8 },
+          "scoreDelta": -15,
+          "triggerBadge": "delayed-diagnosis"
+        }
+      ],
+      "isTerminal": false
+    },
+    {
+      "id": "node-transfusion",
+      "category": "treatment",
+      "prompt": "Hb is 78 g/L and the patient is haemodynamically compromised. What is the correct transfusion strategy for this non-variceal upper GI bleed?",
+      "context": "The patient has received 1L of Hartmann's. BP is now 102/66, HR 118. Crossmatched blood is available. He has no history of cardiac disease. He is not actively vomiting blood right now.",
+      "choices": [
+        {
+          "id": "transfusion-correct",
+          "text": "Restrictive transfusion strategy: transfuse to maintain Hb ≥70 g/L (target 70–80 g/L). Do NOT transfuse to Hb >90 g/L in non-variceal UGIB. Each unit raises Hb by approximately 10 g/L.",
+          "correct": true,
+          "feedback": "Correct. The TRIGGER trial and NICE NG141 establish a restrictive transfusion threshold (Hb ≥70 g/L) for non-variceal UGIB in non-cardiac patients. Overtransfusion (Hb >90) worsens outcomes in peptic ulcer bleeding by increasing portal pressure and re-bleeding risk. This patient's Hb is 78 — transfusion is borderline; given haemodynamic compromise, 1–2 units are reasonable, targeting Hb 80–90 g/L.",
+          "nextNodeId": "node-ppi-endoscopy",
+          "timeAdvanceMin": 8,
+          "vitalsDelta": { "hr": -10, "spo2": 1, "bp": 10 },
+          "scoreDelta": 15,
+          "educationalNote": "TRIGGER trial (Jairath et al., Lancet 2015): Restrictive transfusion (Hb threshold 80 g/L) vs liberal (Hb threshold 100 g/L) in UGIB — restrictive strategy was associated with lower 28-day mortality (8% vs 15% absolute) and fewer re-bleeding events in the per-protocol analysis. Overtransfusion increases portal venous pressure in varices and may worsen peptic ulcer re-bleeding by restoring perfusion pressure."
+        },
+        {
+          "id": "transfusion-liberal",
+          "text": "Transfuse aggressively to Hb >100 g/L — the patient is compromised and needs the oxygen-carrying capacity",
+          "correct": false,
+          "feedback": "Overtransfusion (Hb >90 g/L) worsens outcomes in UGIB. For non-variceal bleeding, the TRIGGER and Villanueva trials show liberal transfusion increases re-bleeding rates and mortality. For variceal bleeding, overtransfusion increases portal pressure and variceal re-bleeding. NICE NG141 target: Hb 70–80 g/L in non-variceal UGIB.",
+          "nextNodeId": "node-ppi-endoscopy",
+          "timeAdvanceMin": 8,
+          "vitalsDelta": { "hr": -8, "spo2": 0, "bp": 8 },
+          "scoreDelta": -12
+        },
+        {
+          "id": "transfusion-no",
+          "text": "Do not transfuse — the Hb is 78 and he is haemodynamically stable now after fluids. Await endoscopy first.",
+          "correct": false,
+          "feedback": "Withholding transfusion in haemodynamically compromised UGIB with Hb 78 and active tachycardia (HR 118) is unsafe. The haemodynamic 'improvement' after crystalloids is temporary — tissue oxygen delivery remains impaired. Transfusion must proceed alongside endoscopy preparation. Waiting for endoscopy before transfusing risks further deterioration.",
+          "nextNodeId": "node-ppi-endoscopy",
+          "timeAdvanceMin": 5,
+          "vitalsDelta": { "hr": 5, "spo2": -1, "bp": -5 },
+          "scoreDelta": -8
+        }
+      ],
+      "isTerminal": false
+    },
+    {
+      "id": "node-ppi-endoscopy",
+      "category": "treatment",
+      "prompt": "Transfusion is underway. The GI registrar asks what pre-endoscopy medications you should give. What do you prescribe, and what is the target endoscopy time for this patient?",
+      "context": "Time since arrival: 28 minutes. BP 108/70, HR 110. Endoscopy suite is available. It is currently 11pm. The GI team is on-call.",
+      "choices": [
+        {
+          "id": "ppi-correct",
+          "text": "IV omeprazole 80mg bolus then 8mg/hr infusion (PPI infusion pre-endoscopy). NBM (nil by mouth). Endoscopy within 24 hours — or within 12 hours if haemodynamic instability persists (currently borderline). Erythromycin 250mg IV 30–90 minutes before endoscopy to improve gastric visibility.",
+          "correct": true,
+          "feedback": "Correct on all counts. Pre-endoscopy IV PPI infusion reduces re-bleeding and improves endoscopic appearances (less active oozing). NICE NG141: endoscopy within 24 hours for haemodynamically stable UGIB; within 12 hours for continuing haemodynamic instability. Erythromycin as a prokinetic clears blood from the stomach, improving endoscopic visibility and reducing need for repeat procedures (NICE recommendation).",
+          "nextNodeId": "node-endoscopy",
+          "timeAdvanceMin": 5,
+          "vitalsDelta": { "hr": -3, "spo2": 0 },
+          "scoreDelta": 15,
+          "educationalNote": "Pre-endoscopy erythromycin (250mg IV, 30–90 minutes before scope): acts as a motilin receptor agonist, stimulating gastric emptying and clearing blood/clots from the stomach. A 2019 meta-analysis showed erythromycin before endoscopy reduces the need for second-look endoscopy and improves mucosal visualisation. It is now recommended by NICE NG141."
+        },
+        {
+          "id": "ppi-oral",
+          "text": "Oral lansoprazole 30mg — oral PPIs are as effective as IV and the patient can swallow",
+          "correct": false,
+          "feedback": "Oral PPIs are not appropriate in active UGIB with haemodynamic compromise. Oral absorption is unreliable, gastric motility is impaired by blood in the stomach, and NBM status should be maintained in preparation for endoscopy and potential anaesthesia. IV PPI infusion (high-dose: 80mg bolus then 8mg/hr) achieves the intragastric pH >6 needed for clot stabilisation.",
+          "nextNodeId": "node-endoscopy",
+          "timeAdvanceMin": 5,
+          "vitalsDelta": { "hr": 5, "spo2": 0 },
+          "scoreDelta": -8
+        },
+        {
+          "id": "ppi-no-scope-urgent",
+          "text": "PPI infusion is sufficient — delay endoscopy to morning to allow full stabilisation on the ward",
+          "correct": false,
+          "feedback": "Delaying endoscopy to the morning is not appropriate for a haemodynamically compromised patient (BP 108/70, HR 110). NICE NG141 recommends endoscopy within 12 hours for patients with continuing haemodynamic instability. This patient has not fully stabilised. The GI team must be prepared to scope tonight if haemodynamics do not improve.",
+          "nextNodeId": "node-endoscopy",
+          "timeAdvanceMin": 480,
+          "vitalsDelta": { "hr": 8, "spo2": -1, "bp": -8 },
+          "scoreDelta": -12,
+          "triggerBadge": "delayed-diagnosis"
+        }
+      ],
+      "isTerminal": false
+    },
+    {
+      "id": "node-endoscopy",
+      "category": "investigation",
+      "prompt": "At endoscopy: a large posterior duodenal wall ulcer with visible vessel is found. The endoscopist asks if the aetiology could be variceal (given alcohol history). How do you differentiate, and what endoscopic treatment is appropriate for a peptic ulcer with visible vessel?",
+      "context": "The stomach has been cleared with erythromycin. No oesophageal or gastric varices are seen. There is a 15mm ulcer in the posterior duodenal bulb with a 'sentinel clot' and visible vessel.",
+      "choices": [
+        {
+          "id": "endoscopy-correct",
+          "text": "Non-variceal bleeding confirmed (no varices at OGD). High-risk stigmata present (visible vessel = Forrest Ia/IIa) — dual endoscopic therapy: adrenaline injection PLUS mechanical haemostasis (haemoclip or thermocoagulation). Continue IV PPI infusion post-procedure for 72 hours.",
+          "correct": true,
+          "feedback": "Correct. The Forrest Classification guides endoscopic intervention: Ia (spurting) and IIa (visible vessel) are high-risk and require endoscopic treatment. Dual therapy (adrenaline injection + mechanical or thermal haemostasis) is superior to monotherapy. Post-endoscopy IV PPI infusion for 72 hours reduces re-bleeding in high-risk ulcers (PEPTIC trial). NICE NG141 mandates post-endoscopy IV PPI for Forrest Ia, Ib, IIa, IIb ulcers.",
+          "nextNodeId": "node-post-endoscopy",
+          "timeAdvanceMin": 30,
+          "vitalsDelta": { "hr": -12, "spo2": 1, "bp": 8 },
+          "scoreDelta": 15,
+          "triggerBadge": "endoscopy-hero",
+          "educationalNote": "Forrest Classification of peptic ulcer bleeding: Ia = spurting vessel (highest risk, >80% re-bleed without treatment); Ib = oozing; IIa = visible non-bleeding vessel; IIb = adherent clot; IIc = haematin-covered flat spot; III = clean base (lowest risk, <5% re-bleed). Dual endoscopic therapy reduces re-bleeding in Forrest Ia/IIa by ~70%."
+        },
+        {
+          "id": "endoscopy-variceal",
+          "text": "Despite no varices seen, this could still be variceal — give terlipressin and prophylactic antibiotics as for variceal bleed",
+          "correct": false,
+          "feedback": "Terlipressin and prophylactic antibiotics are for confirmed or suspected variceal haemorrhage. OGD has excluded varices — this is confirmed peptic ulcer disease. Terlipressin is not indicated for non-variceal UGIB. The correct treatment is endoscopic dual haemostasis and IV PPI infusion.",
+          "nextNodeId": "node-post-endoscopy",
+          "timeAdvanceMin": 30,
+          "vitalsDelta": { "hr": -8, "spo2": 0 },
+          "scoreDelta": -8,
+          "educationalNote": "Terlipressin (vasopressin analogue) reduces portal pressure and splanchnic blood flow — it is effective in variceal haemorrhage. It has no role in non-variceal UGIB and has side effects including cardiovascular ischaemia and hyponatraemia."
+        },
+        {
+          "id": "endoscopy-adrenaline-only",
+          "text": "Adrenaline injection alone into the ulcer base — adequate and low-risk",
+          "correct": false,
+          "feedback": "Adrenaline monotherapy is no longer recommended for high-risk ulcers (Forrest Ia/IIa). Multiple RCTs show that dual therapy (adrenaline + mechanical or thermal haemostasis) significantly reduces re-bleeding compared to adrenaline alone. NICE NG141 recommends dual therapy for high-risk stigmata. Adrenaline alone is acceptable only as a temporising measure before definitive treatment.",
+          "nextNodeId": "node-post-endoscopy",
+          "timeAdvanceMin": 30,
+          "vitalsDelta": { "hr": -5, "spo2": 0 },
+          "scoreDelta": -10
+        }
+      ],
+      "isTerminal": false
+    },
+    {
+      "id": "node-post-endoscopy",
+      "category": "treatment",
+      "prompt": "Endoscopy is successful — haemostasis achieved. Post-procedure Hb is 82 g/L, BP 118/74, HR 96. What post-endoscopy and discharge management is required?",
+      "context": "The patient is comfortable and haemodynamically stable. The endoscopist documented successful dual haemostasis of a Forrest IIa posterior duodenal ulcer. He asks when he can eat and go home.",
+      "choices": [
+        {
+          "id": "post-correct",
+          "text": "IV PPI infusion for 72 hours post-endoscopy. Restart oral PPI (lansoprazole 30mg OD) on discharge. Test for H. pylori (CLO test, urea breath test, or stool antigen) and eradicate if positive. STOP NSAIDs permanently. If NSAIDs must be used in future, co-prescribe PPI.",
+          "correct": true,
+          "feedback": "Correct post-endoscopy bundle. 72-hour IV PPI infusion reduces re-bleeding rate for high-risk ulcers (PEPTIC trial, NEJM 2020: PPI infusion vs bolus — no significant mortality difference but reduced re-bleeding). H. pylori testing is mandatory after peptic ulcer bleed — eradication reduces recurrence from 67% to <5% at 1 year. NSAIDs must be stopped — they caused this bleed. Future NSAID use requires mandatory PPI co-prescription.",
+          "nextNodeId": "node-disposition",
+          "timeAdvanceMin": 0,
+          "vitalsDelta": { "hr": 0, "spo2": 0 },
+          "scoreDelta": 15,
+          "educationalNote": "H. pylori eradication after PUB: Without eradication, 1-year re-bleed rate is 50–67%. With successful eradication, re-bleed rate is <5%. Testing: CLO test (rapid urease from biopsy) is ideal at endoscopy. If not done at scope: urea breath test (UBT) or stool antigen test 4 weeks post-PPI cessation. PPIs suppress H. pylori and cause false negatives — stop PPI ≥2 weeks before UBT."
+        },
+        {
+          "id": "post-restart-nsaid",
+          "text": "Restart ibuprofen with omeprazole co-prescription — the ulcer is now treated and the back pain needs managing",
+          "correct": false,
+          "feedback": "NSAIDs should be stopped permanently after a peptic ulcer bleed — they caused the ulcer and re-bleeding risk with reinstatement remains high. A PPI co-prescription reduces (but does not eliminate) NSAID-associated ulcer risk. Alternative analgesia should be explored: paracetamol, topical NSAIDs, or specialist pain review. Resuming systemic ibuprofen after UGIB is contraindicated without a compelling clinical need reviewed by a specialist.",
+          "nextNodeId": "node-disposition",
+          "timeAdvanceMin": 0,
+          "vitalsDelta": { "hr": 3, "spo2": 0 },
+          "scoreDelta": -10
+        },
+        {
+          "id": "post-no-hp",
+          "text": "Discharge on oral PPI. No need to test for H. pylori — it is more likely NSAID-induced.",
+          "correct": false,
+          "feedback": "H. pylori testing is mandatory after any peptic ulcer bleed regardless of the suspected aetiology. H. pylori co-infection is common alongside NSAID use and is an independent re-bleeding risk. NICE NG141 mandates H. pylori testing and eradication for all peptic ulcer bleeds. Missing H. pylori leaves a curable re-bleeding risk untreated.",
+          "nextNodeId": "node-disposition",
+          "timeAdvanceMin": 0,
+          "vitalsDelta": { "hr": 0, "spo2": 0 },
+          "scoreDelta": -8
+        }
+      ],
+      "isTerminal": false
+    },
+    {
+      "id": "node-disposition",
+      "category": "disposition",
+      "prompt": "After 72 hours, the patient is stable. Hb 88 g/L, BP 124/78, HR 82. No further melaena. H. pylori CLO test from the endoscopy biopsy is POSITIVE. He asks about going home. What is the correct disposition and discharge plan?",
+      "context": "The patient has been on IV PPI for 72 hours. He is eating and drinking. Observations stable. No re-bleeding. He is eager to go home.",
+      "choices": [
+        {
+          "id": "disposition-correct",
+          "text": "Discharge home. Switch to oral PPI (lansoprazole 30mg OD) for 4–8 weeks. Prescribe H. pylori eradication triple therapy (e.g., lansoprazole + amoxicillin + clarithromycin for 7 days). Confirm eradication with UBT ≥4 weeks after completing antibiotics. Safety-net: return if recurrent vomiting of blood or black stools. Alcohol and smoking cessation advice. GP follow-up.",
+          "correct": true,
+          "feedback": "Complete and correct discharge plan. H. pylori eradication is the most important secondary prevention measure (reduces re-bleed from 67% to <5% at 1 year). Standard triple therapy remains effective in most UK patients with no prior clarithromycin exposure. Confirm eradication by UBT (not serology — antibody titres persist after treatment) at least 4 weeks after antibiotics and ≥2 weeks off PPI.",
+          "nextNodeId": null,
+          "timeAdvanceMin": 0,
+          "vitalsDelta": { "hr": 0, "spo2": 0 },
+          "scoreDelta": 15,
+          "triggerBadge": "guideline-clean",
+          "educationalNote": "H. pylori eradication therapy: First-line triple therapy (7 days): PPI (full dose) + amoxicillin 1g BD + clarithromycin 500mg BD. If penicillin allergy: PPI + clarithromycin + metronidazole. If prior macrolide exposure: quadruple therapy (PPI + bismuth + tetracycline + metronidazole). Test of cure: urea breath test ≥4 weeks after antibiotics and ≥2 weeks after stopping PPI."
+        },
+        {
+          "id": "disposition-no-hp-treatment",
+          "text": "Discharge on PPI alone — H. pylori treatment can be arranged by the GP at a future appointment",
+          "correct": false,
+          "feedback": "H. pylori eradication should be prescribed before discharge from the index admission, not deferred. Compliance with GP follow-up and antibiotic courses is higher when initiated in hospital with clear explanation. Deferring eradication risks non-compliance, persistent infection, and recurrent ulcer haemorrhage.",
+          "nextNodeId": null,
+          "timeAdvanceMin": 0,
+          "vitalsDelta": { "hr": 0, "spo2": 0 },
+          "scoreDelta": -8
+        },
+        {
+          "id": "disposition-admit-longer",
+          "text": "Keep for a further 5 days observation — posterior duodenal ulcers have the highest re-bleed risk",
+          "correct": false,
+          "feedback": "Extended admission is not required. The patient is clinically stable for ≥72 hours post-endoscopy with successful haemostasis, improving Hb, no further melaena, and tolerating oral intake. Posterior DU ulcers do have higher re-bleed risk (proximity to gastroduodenal artery), but successful dual endoscopic haemostasis with IV PPI for 72 hours reduces this risk substantially. Prolonged hospitalisation beyond clinical need increases VTE, hospital-acquired infection, and deconditioning risk.",
+          "nextNodeId": null,
+          "timeAdvanceMin": 0,
+          "vitalsDelta": { "hr": 0, "spo2": 0 },
+          "scoreDelta": -5
+        }
+      ],
+      "isTerminal": true
+    }
+  ],
+  "diseaseMap": {
+    "condition": "Acute Upper Gastrointestinal Bleeding",
+    "icd10": "K92.2",
+    "presentingSymptoms": [
+      "Haematemesis (vomiting blood — bright red or coffee-ground)",
+      "Melaena (black, tarry, offensive-smelling stools)",
+      "Haematochezia (fresh rectal blood — only in massive UGIB with rapid transit)",
+      "Syncope or pre-syncope",
+      "Pallor, diaphoresis, tachycardia",
+      "Epigastric pain (ulcer) or no pain (varices)"
+    ],
+    "atypicalPresentations": [
+      "Presentation with anaemia only (chronic bleeding)",
+      "Haematochezia (suggests massive UGIB or lower GI bleed)",
+      "Collapse without obvious haematemesis"
+    ],
+    "redFlags": [
+      "BP <90 systolic — haemorrhagic shock",
+      "HR >100 — significant blood loss",
+      "Haematemesis of bright red blood — active arterial bleeding",
+      "Melaena — suggests blood has been in gut ≥8 hours (usually upper GI source)",
+      "Glasgow-Blatchford Score ≥6 — high risk, needs inpatient management",
+      "Known liver disease + UGIB — variceal bleed must be excluded urgently"
+    ],
+    "bestFirstStep": "Two large-bore IV cannulae + crossmatch 4–6 units + urgent GI review",
+    "bestInvestigation": "OGD (upper GI endoscopy) — diagnostic and therapeutic. Target: within 24 hours (stable) or 12 hours (haemodynamically unstable).",
+    "diagnosis": "Clinical diagnosis from haematemesis/melaena + haemodynamic assessment. Glasgow-Blatchford Score for pre-endoscopy risk stratification. OGD confirms source and guides treatment.",
+    "treatment": {
+      "immediate": [
+        "IV access ×2 (large-bore), crossmatch 4–6 units",
+        "IV fluid resuscitation (crystalloid until blood available)",
+        "Restrictive transfusion strategy: target Hb ≥70 g/L (70–80 g/L) for non-variceal; ≥80 for variceal",
+        "IV PPI infusion: omeprazole 80mg bolus then 8mg/hr",
+        "NBM",
+        "Erythromycin 250mg IV 30–90 min before OGD (prokinetic)",
+        "Urgent OGD: ≤24h (stable) or ≤12h (unstable)"
+      ],
+      "endoscopic": [
+        "Non-variceal Forrest Ia/IIa: dual therapy (adrenaline injection + clip/thermal coagulation)",
+        "Variceal: band ligation (oesophageal) or sclerotherapy + terlipressin + antibiotics",
+        "Post-endoscopy IV PPI for 72 hours for high-risk ulcers"
+      ],
+      "secondaryPrevention": [
+        "H. pylori test (CLO/UBT) — eradicate if positive",
+        "Stop NSAIDs permanently",
+        "If NSAIDs essential: mandatory PPI co-prescription",
+        "Alcohol reduction counselling",
+        "Secondary variceal prophylaxis if variceal cause: propranolol + repeat banding"
+      ]
+    },
+    "followUp": "Confirm H. pylori eradication ≥4 weeks post-antibiotics (UBT). Outpatient gastroenterology review. Repeat OGD at 6–8 weeks for gastric ulcers (to exclude malignancy) — not routinely required for duodenal ulcers.",
+    "complications": [
+      "Haemorrhagic shock",
+      "Re-bleeding (30-day re-bleed rate: ~14% for high-risk ulcers treated endoscopically)",
+      "Aspiration pneumonia (vomiting blood)",
+      "Acute kidney injury (hypovolaemia)",
+      "Cardiac ischaemia (demand ischaemia in shock)",
+      "Death (overall UGIB mortality 3–10%)"
+    ],
+    "guidelineRef": "NICE Guideline NG141: Acute Upper Gastrointestinal Bleeding in Over 16s (July 2020)"
+  },
+  "guideline": {
+    "name": "Glasgow-Blatchford Score (GBS)",
+    "description": "Pre-endoscopy risk stratification tool for acute upper GI bleeding. Determines need for inpatient management and urgency of endoscopy. Validated and recommended by NICE NG141.",
+    "fields": {
+      "urea": {
+        "label": "Blood Urea (mmol/L)",
+        "description": "Elevated urea reflects blood digestion in the gut and extent of haemorrhage",
+        "options": [
+          { "score": 0, "description": "<6.5 mmol/L" },
+          { "score": 2, "description": "6.5–7.9 mmol/L" },
+          { "score": 3, "description": "8–9.9 mmol/L" },
+          { "score": 4, "description": "10–24.9 mmol/L" },
+          { "score": 6, "description": "≥25 mmol/L" }
+        ]
+      },
+      "haemoglobin_male": {
+        "label": "Haemoglobin — Male (g/L)",
+        "description": "Lower Hb = more blood loss",
+        "options": [
+          { "score": 0, "description": "≥130 g/L" },
+          { "score": 1, "description": "120–129 g/L" },
+          { "score": 3, "description": "100–119 g/L" },
+          { "score": 6, "description": "<100 g/L" }
+        ]
+      },
+      "sbp": {
+        "label": "Systolic Blood Pressure (mmHg)",
+        "description": "Haemodynamic compromise",
+        "options": [
+          { "score": 0, "description": "≥110 mmHg" },
+          { "score": 1, "description": "100–109 mmHg" },
+          { "score": 2, "description": "90–99 mmHg" },
+          { "score": 3, "description": "<90 mmHg" }
+        ]
+      },
+      "other": {
+        "label": "Other Clinical Markers",
+        "description": "Additional risk markers",
+        "options": [
+          { "score": 1, "description": "Pulse ≥100 bpm" },
+          { "score": 1, "description": "Melaena on presentation" },
+          { "score": 2, "description": "Syncope on presentation" },
+          { "score": 2, "description": "Known hepatic disease" },
+          { "score": 2, "description": "Known heart failure" }
+        ]
+      }
+    },
+    "formula": "GBS = urea + haemoglobin + SBP + other markers",
+    "maxScore": 23,
+    "interpretation": [
+      { "range": "0", "risk": "Very low risk", "recommendation": "Outpatient OGD may be appropriate. Discharge with follow-up." },
+      { "range": "1–5", "risk": "Low risk", "recommendation": "Inpatient observation likely needed. OGD within 24 hours." },
+      { "range": "≥6", "risk": "High risk — needs intervention", "recommendation": "Inpatient management. Urgent OGD within 24 hours (or 12 hours if haemodynamically unstable). Transfusion likely required." }
+    ],
+    "thisPatientScore": {
+      "urea": 4,
+      "haemoglobin": 6,
+      "sbp": 2,
+      "pulse": 1,
+      "melaena": 1,
+      "total": 14,
+      "interpretation": "Score 14 — very high risk. Requires immediate inpatient management, urgent OGD, and likely transfusion."
+    }
+  },
+  "availableBadges": [
+    {
+      "id": "endoscopy-hero",
+      "label": "Endoscopy Ready",
+      "description": "Correctly prepared the patient for endoscopy with IV PPI infusion, erythromycin, and appropriate transfusion strategy.",
+      "icon": "checkmark",
+      "positive": true
+    },
+    {
+      "id": "guideline-clean",
+      "label": "Guideline Clean",
+      "description": "Followed NICE NG141 at every step — correct transfusion target, dual endoscopic therapy, 72-hour PPI infusion, and H. pylori eradication.",
+      "icon": "checkmark",
+      "positive": true
+    },
+    {
+      "id": "delayed-diagnosis",
+      "label": "Delayed Endoscopy",
+      "description": "A decision you made delayed timely endoscopy in a high-risk upper GI bleed, worsening outcomes.",
+      "icon": "clock-warning",
+      "positive": false
+    },
+    {
+      "id": "patient-harmed",
+      "label": "Patient Harmed",
+      "description": "A treatment decision directly worsened the patient — overtransfusion, inadequate endoscopic treatment, or contraindicated medications.",
+      "icon": "danger",
+      "positive": false
+    }
+  ],
+  "disclaimer": "This case is designed for medical education and clinical reasoning training only. It is not a substitute for clinical guidelines, senior supervision, or real patient care. Always refer to current local and national protocols. Drug doses and management pathways should be verified against current British National Formulary (BNF) and relevant clinical guidelines before application to real patients. NICE NG141 reference: Acute upper gastrointestinal bleeding in over 16s (July 2020)."
+}

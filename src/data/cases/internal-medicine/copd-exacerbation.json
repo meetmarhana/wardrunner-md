@@ -1,0 +1,375 @@
+{
+  "id": "copd-exacerbation",
+  "specialty": "Internal Medicine",
+  "title": "Worsening Breathlessness in a Smoker",
+  "subtitle": "COPD Exacerbation",
+  "difficulty": "intermediate",
+  "estimatedMinutes": 18,
+  "patient": {
+    "age": 68,
+    "sex": "M",
+    "chiefComplaint": "3 days of worsening breathlessness and yellow-green sputum",
+    "history": "68-year-old male ex-smoker (40 pack-years, quit 5 years ago) with known COPD GOLD stage 3. Lives with wife. Normally housebound but mobile around his home. On home oxygen 1L/min via nasal cannulae. Reports 3 days of worsening dyspnoea, increased cough with purulent (yellow-green) sputum, and feeling increasingly unwell. Wife called ambulance this morning when he could not get out of bed.",
+    "initialVitals": {
+      "bp": "145/88",
+      "hr": 108,
+      "rr": 28,
+      "spo2": 85,
+      "temp": 38.1,
+      "gcs": 15
+    },
+    "symptoms": [
+      "Worsening dyspnoea (3 days)",
+      "Purulent (yellow-green) sputum — increased volume",
+      "Increased cough",
+      "Wheeze",
+      "Reduced exercise tolerance",
+      "Mild confusion now (family report)",
+      "Bilateral coarse crackles on auscultation"
+    ],
+    "redFlags": [
+      "SpO2 85% on air — significantly hypoxic",
+      "RR 28 — tachypnoeic, increased work of breathing",
+      "Known COPD GOLD 3 with hypercapnic risk",
+      "Temp 38.1 — infective trigger likely",
+      "HR 108 — tachycardia"
+    ],
+    "backgroundHistory": "COPD GOLD 3 (FEV1 38% predicted). On: tiotropium 18mcg OD, salmeterol/fluticasone 50/500 BD, salbutamol PRN, home O2 1L/min. Ex-smoker 40 pack-years. Hypertension (ramipril 5mg). No diabetes. Previous COPD exacerbation requiring NIV 2 years ago. Lives with wife."
+  },
+  "startNodeId": "oxygen-decision",
+  "nodes": [
+    {
+      "id": "oxygen-decision",
+      "category": "Treatment",
+      "prompt": "A 68-year-old with severe COPD (GOLD 3) arrives with SpO2 85% on air and RR 28. His wife tells you he is on home oxygen. What do you do first?",
+      "context": "He is visibly breathless, using accessory muscles. SpO2 85% on air. He has known severe COPD with a previous NIV admission. Alert and talking in short sentences.",
+      "choices": [
+        {
+          "id": "controlled-oxygen-correct",
+          "text": "Apply controlled oxygen via 24% Venturi mask, targeting SpO2 88-92%. Do NOT use high-flow or 100% oxygen",
+          "correct": true,
+          "feedback": "Correct and critical. In COPD, the target SpO2 is 88-92% — NOT the standard 94-98%. Some COPD patients with chronic hypercapnia lose their hypoxic drive mechanism. High-flow oxygen can suppress respiratory drive, cause CO2 retention, and worsen respiratory acidosis. A 24-28% Venturi mask provides controlled, titrated oxygen.",
+          "nextNodeId": "abg-investigation",
+          "timeAdvanceMin": 5,
+          "vitalsDelta": { "spo2": 91, "rr": -2 },
+          "scoreDelta": 25,
+          "educationalNote": "COPD oxygen target: SpO2 88-92% (BTS guideline). Use Venturi mask for precise delivery: 24% = 2L/min, 28% = 4L/min, 35% = 8L/min. Standard non-rebreathe masks (100% O2) are DANGEROUS in COPD. Document target SpO2 and Venturi percentage on drug chart."
+        },
+        {
+          "id": "high-flow-oxygen",
+          "text": "SpO2 of 85% is dangerously low — apply 15L/min oxygen via non-rebreathe mask immediately",
+          "correct": false,
+          "feedback": "CRITICAL ERROR. High-flow oxygen in COPD can be fatal. By giving 100% O2, you suppress the hypoxic drive in a hypercapnic COPD patient, causing apnoea and CO2 narcosis. Target SpO2 in COPD is 88-92% — use a 24-28% Venturi mask. This is one of the most important distinctions in emergency medicine.",
+          "nextNodeId": "abg-investigation",
+          "timeAdvanceMin": 5,
+          "vitalsDelta": { "spo2": 99, "rr": 10, "hr": 5 },
+          "scoreDelta": -30,
+          "triggerBadge": "oxygen-trap",
+          "educationalNote": "High-flow O2 in COPD: The Haldane effect — high PaO2 causes CO2 release from haemoglobin, worsening hypercapnia. Combined with suppression of hypoxic drive, this can cause type 2 respiratory failure and death. SpO2 target in COPD: 88-92%. This is a NEVER event in COPD management."
+        },
+        {
+          "id": "no-oxygen-copd",
+          "text": "This patient is on home oxygen — he is used to being hypoxic. No additional oxygen needed",
+          "correct": false,
+          "feedback": "Incorrect. SpO2 85% is acutely dangerous and below his safe range. His home oxygen maintains his SpO2 in the 88-92% target range. He needs controlled supplemental oxygen to bring his SpO2 back to 88-92% using a Venturi mask — but not high-flow oxygen.",
+          "nextNodeId": "abg-investigation",
+          "timeAdvanceMin": 10,
+          "vitalsDelta": { "hr": 5 },
+          "scoreDelta": -15,
+          "educationalNote": "Home O2 in COPD: The patient's home O2 at 1L/min is prescribed to maintain SpO2 88-92% — this has been lost during the exacerbation. He needs controlled O2 via Venturi mask to restore his SpO2 to the therapeutic target range."
+        }
+      ]
+    },
+    {
+      "id": "abg-investigation",
+      "category": "Investigation",
+      "prompt": "Controlled oxygen at 28% has been applied. SpO2 is now 91%. An ABG has been done. What do the results tell you?",
+      "context": "ABG on 28% O2: pH 7.30, pCO2 8.9kPa (68mmHg), pO2 8.2kPa (62mmHg), HCO3 33mmol/L (raised — chronic compensation), BE +6. This is type 2 respiratory failure with acute-on-chronic hypercapnia.",
+      "choices": [
+        {
+          "id": "interpret-t2rf",
+          "text": "Type 2 respiratory failure: elevated pCO2 (8.9kPa) + acidosis (pH 7.30) with raised bicarbonate (chronic compensation). This is acute-on-chronic hypercapnia. NIV (BiPAP) may be needed if not improving with medical treatment",
+          "correct": true,
+          "feedback": "Correct interpretation. Type 2 respiratory failure = elevated pCO2 (>6kPa) + hypoxaemia. The raised HCO3 (33mmol/L) and positive base excess indicate chronic CO2 retention — this exacerbation has caused ACUTE worsening (pH 7.30, pCO2 8.9) on top of a CHRONIC baseline. NIV (BiPAP) is indicated if pH <7.35 with pCO2 >6kPa and not improving.",
+          "nextNodeId": "bronchodilators",
+          "timeAdvanceMin": 5,
+          "scoreDelta": 15,
+          "educationalNote": "ABG interpretation in COPD: Normal pCO2 = 4.7-6.0kPa. Type 2 RF = pCO2 >6kPa + pO2 <8kPa. Raised HCO3 with positive base excess = chronic compensation (renal HCO3 retention). pH 7.30 = acute decompensation. Acute-on-chronic = elevated pCO2 + low pH despite raised HCO3."
+        },
+        {
+          "id": "t1rf-diagnosis",
+          "text": "This is type 1 respiratory failure (hypoxaemia only) — the pCO2 elevation is irrelevant",
+          "correct": false,
+          "feedback": "Incorrect. Type 1 RF = low pO2 with NORMAL or LOW pCO2. This patient has type 2 RF = low pO2 + HIGH pCO2 (8.9kPa) + acidosis. This distinction is critical because it determines: (1) oxygen target (88-92%, already correct), (2) need for NIV assessment, and (3) urgency of escalation.",
+          "nextNodeId": "bronchodilators",
+          "timeAdvanceMin": 5,
+          "scoreDelta": -10,
+          "educationalNote": "Type 1 RF: pO2 <8kPa, pCO2 normal or low (due to hyperventilation). Cause: V/Q mismatch, shunt, diffusion defect. Type 2 RF: pO2 <8kPa + pCO2 >6kPa. Cause: pump failure — reduced respiratory drive, airflow obstruction, respiratory muscle fatigue. COPD exacerbation causes type 2 RF."
+        },
+        {
+          "id": "ignore-bicarbonate",
+          "text": "pH 7.30 and high pCO2 — give 100% O2 to correct the hypoxia urgently, the acidosis will resolve",
+          "correct": false,
+          "feedback": "Dangerous. Giving 100% O2 to a type 2 respiratory failure patient with COPD will worsen CO2 retention and deepen the acidosis. The controlled oxygen target (88-92%) has ALREADY been achieved at 91% on 28% Venturi. The management is now bronchodilators, steroids, antibiotics, and NIV assessment — not more oxygen.",
+          "nextNodeId": "bronchodilators",
+          "timeAdvanceMin": 5,
+          "vitalsDelta": { "rr": 5 },
+          "scoreDelta": -20,
+          "educationalNote": "Oxygen therapy in established type 2 RF: maintain SpO2 88-92% — do not push higher. The CO2 will be managed by improving airflow (bronchodilators), reducing inflammation (steroids), treating infection (antibiotics), and supporting ventilation (NIV)."
+        }
+      ]
+    },
+    {
+      "id": "bronchodilators",
+      "category": "Treatment",
+      "prompt": "Type 2 respiratory failure confirmed. Medical treatment must be optimised. What bronchodilator therapy do you prescribe?",
+      "context": "He is on home tiotropium and salmeterol/fluticasone. SpO2 91% on 28% O2. RR 26. Still using accessory muscles.",
+      "choices": [
+        {
+          "id": "correct-bronchodilators",
+          "text": "Salbutamol 5mg + ipratropium 500mcg nebulised, driven by AIR (not oxygen). Repeat salbutamol every 20-30 minutes if needed",
+          "correct": true,
+          "feedback": "Correct. In COPD, nebulisers should be driven by AIR, not oxygen — using oxygen to drive the nebuliser would deliver high-flow O2 and cause CO2 retention. Both salbutamol (SABA) and ipratropium (SAMA) are used in acute COPD. Continue tiotropium — it complements ipratropium via a different mechanism.",
+          "nextNodeId": "steroids-antibiotics",
+          "timeAdvanceMin": 20,
+          "vitalsDelta": { "hr": -5, "rr": -3, "spo2": 1 },
+          "scoreDelta": 15,
+          "educationalNote": "COPD nebulisers: ALWAYS drive with AIR, not O2. Using O2 to drive a nebuliser delivers ~6-8L/min oxygen — equivalent to a high-flow mask. This is a common and dangerous clinical error. If only O2-driven nebulisers are available, hold the mask away slightly and monitor SpO2 very closely."
+        },
+        {
+          "id": "nebulisers-oxygen-driven",
+          "text": "Salbutamol 5mg + ipratropium 500mcg nebulised, driven by oxygen at 6L/min to also boost his saturations",
+          "correct": false,
+          "feedback": "Incorrect. Driving nebulisers with oxygen delivers ~6-8L/min of uncontrolled O2 — equivalent to abandoning controlled oxygen therapy. This is a frequent clinical error in COPD. Nebulisers must be driven by compressed AIR. Continue the 28% Venturi mask for oxygen delivery separately.",
+          "nextNodeId": "steroids-antibiotics",
+          "timeAdvanceMin": 20,
+          "vitalsDelta": { "spo2": 99, "rr": 6 },
+          "scoreDelta": -15,
+          "educationalNote": "Oxygen-driven nebulisers in COPD: A nebuliser driven at 6L/min O2 is equivalent to giving 35-40% oxygen. In a patient where you are carefully maintaining SpO2 at 91%, this completely undermines oxygen management. Use AIR-driven nebulisers."
+        },
+        {
+          "id": "salbutamol-inhaler-only",
+          "text": "His salbutamol inhaler at home wasn't working well — use the same dose via MDI. No ipratropium needed",
+          "correct": false,
+          "feedback": "Suboptimal. In acute COPD exacerbation, nebulised bronchodilators are preferred over MDI because: (1) they deliver higher doses more reliably, (2) the patient may not coordinate inhaler technique when acutely breathless, and (3) both salbutamol AND ipratropium should be given together in acute COPD (unlike asthma where salbutamol alone may suffice initially).",
+          "nextNodeId": "steroids-antibiotics",
+          "timeAdvanceMin": 15,
+          "vitalsDelta": { "rr": -1 },
+          "scoreDelta": -5,
+          "educationalNote": "Inhaler technique in breathless patients is unreliable. Nebulisers ensure adequate drug delivery. In acute COPD, combined salbutamol + ipratropium nebulisation provides additive bronchodilation via different receptor mechanisms."
+        }
+      ]
+    },
+    {
+      "id": "steroids-antibiotics",
+      "category": "Treatment",
+      "prompt": "Nebulisers given via air-driven mask. What systemic treatment do you add?",
+      "context": "Post-nebuliser: RR 23, SpO2 92%, HR 102. Sputum is clearly purulent (green). Temperature 38.1°C. CXR shows hyperinflated lungs with increased peribronchial markings — no consolidation.",
+      "choices": [
+        {
+          "id": "correct-steroids-abx",
+          "text": "Prednisolone 30-40mg orally (or IV hydrocortisone 200mg if unable to take orally) + amoxicillin 500mg TDS orally (first-line for mild-moderate COPD exacerbation). 5-day course for both.",
+          "correct": true,
+          "feedback": "Correct. Systemic corticosteroids shorten recovery time in COPD exacerbations by reducing airway inflammation. Oral prednisolone is as effective as IV for those who can tolerate it. Antibiotics are indicated for purulent sputum — amoxicillin, doxycycline, or clarithromycin are first-line. 5-day courses are as effective as longer courses.",
+          "nextNodeId": "niv-assessment",
+          "timeAdvanceMin": 10,
+          "vitalsDelta": { "temp": -0.2 },
+          "scoreDelta": 15,
+          "educationalNote": "Steroid dose in COPD exacerbation: prednisolone 30-40mg OD for 5 days. Evidence from REDUCE trial shows 5-day course non-inferior to 14-day course. IV steroids only if unable to take orally. Antibiotics: amoxicillin 500mg TDS or doxycycline 200mg day 1 then 100mg OD or clarithromycin 500mg BD. All for 5 days."
+        },
+        {
+          "id": "no-steroids-diabetes-worry",
+          "text": "No steroids — he might have diabetes given his age, and steroids will raise his glucose. Just give antibiotics",
+          "correct": false,
+          "feedback": "Incorrect. Withholding steroids in COPD exacerbation significantly worsens outcomes — longer recovery, more NIV, higher re-admission rates. The risk of glucose elevation is manageable with monitoring. He does not have known diabetes. Steroids are a core treatment in COPD exacerbation regardless of steroid-induced hyperglycaemia concerns (which can be managed).",
+          "nextNodeId": "niv-assessment",
+          "timeAdvanceMin": 10,
+          "scoreDelta": -15,
+          "educationalNote": "Steroid-induced hyperglycaemia: common but manageable. Monitor glucose 4-hourly during steroid treatment. Sliding-scale insulin if glucose >12mmol/L. Do NOT withhold steroids in COPD exacerbation — the benefit of faster recovery outweighs glucose management challenges."
+        },
+        {
+          "id": "iv-antibiotics-broad",
+          "text": "Start IV piperacillin-tazobactam (broad spectrum IV antibiotics) — purulent sputum could be a serious infection",
+          "correct": false,
+          "feedback": "Over-treatment. Broad-spectrum IV antibiotics are reserved for severe CAP or ICU-level COPD exacerbations. For an infective COPD exacerbation without CXR evidence of consolidation or sepsis, oral amoxicillin (or doxycycline/clarithromycin) is first-line and equally effective. Antibiotic stewardship requires using the minimum necessary spectrum.",
+          "nextNodeId": "niv-assessment",
+          "timeAdvanceMin": 10,
+          "scoreDelta": -5,
+          "educationalNote": "Antibiotic stewardship in COPD: infective exacerbation without consolidation or severe sepsis = oral amoxicillin, doxycycline, or clarithromycin. Reserve broader agents (co-amoxiclav, quinolones, IV agents) for: failure of first-line, consolidation, ICU admission, or resistant organisms."
+        }
+      ]
+    },
+    {
+      "id": "niv-assessment",
+      "category": "Treatment",
+      "prompt": "1 hour after initial treatment: ABG repeated. pH 7.31, pCO2 9.2kPa (worsening slightly), pO2 8.5kPa. SpO2 90%. RR 26. Patient is tiring. What do you do now?",
+      "context": "Repeat ABG: pH 7.31, pCO2 9.2kPa. Patient is more fatigued, laboured breathing. GCS 15 still. Oxygen at 28%. Bronchodilators and steroids given.",
+      "choices": [
+        {
+          "id": "start-niv-correct",
+          "text": "Start NIV (BiPAP/non-invasive ventilation) — pH <7.35 with elevated pCO2, hypercapnic respiratory failure not improving with medical therapy. IPAP 12-14, EPAP 4-5, titrate to response",
+          "correct": true,
+          "feedback": "Correct. NIV (BiPAP) is indicated for: pH <7.35 + pCO2 >6kPa in COPD not responding to maximum medical therapy. NIV reduces the need for intubation, reduces mortality, and is the standard of care for hypercapnic COPD exacerbation. pH 7.31 is the trigger. Initial settings: IPAP 12-14cmH2O, EPAP 4-5cmH2O. Goal: pH >7.35, pCO2 falling.",
+          "nextNodeId": "monitoring-copd",
+          "timeAdvanceMin": 30,
+          "vitalsDelta": { "rr": -4, "hr": -8 },
+          "scoreDelta": 20,
+          "triggerBadge": "niv-master",
+          "educationalNote": "NIV (BiPAP) indications in COPD: pH <7.35 + pCO2 >6kPa, not improving with medical therapy. Contraindications: unable to protect airway, haemodynamic instability, facial injury, vomiting. Target: pH >7.35, patient comfort, pCO2 falling. If NIV fails → ITU discussion for intubation."
+        },
+        {
+          "id": "increase-oxygen-instead",
+          "text": "Increase oxygen to 35% Venturi — his SpO2 is dropping",
+          "correct": false,
+          "feedback": "Incorrect. SpO2 90% is within the acceptable 88-92% range. The problem is not inadequate oxygenation — it is worsening hypercapnia (pCO2 9.2kPa) with acidosis. Increasing oxygen will not fix CO2 retention and may worsen it. The indication for NIV has been met. Address the ventilation problem, not the oxygenation.",
+          "nextNodeId": "monitoring-copd",
+          "timeAdvanceMin": 15,
+          "vitalsDelta": { "rr": 4, "spo2": 2 },
+          "scoreDelta": -20,
+          "educationalNote": "Hypercapnia is a ventilation problem — not an oxygenation problem. More oxygen does not blow off CO2. NIV addresses the ventilation problem by providing positive pressure support, reducing respiratory muscle fatigue, and improving alveolar ventilation. Oxygen alone will not resolve type 2 RF."
+        },
+        {
+          "id": "wait-and-see-niv",
+          "text": "Continue current treatment — give it another 2-3 hours before considering NIV",
+          "correct": false,
+          "feedback": "Too slow. pH 7.31 with worsening pCO2 despite 1 hour of medical therapy is an indication for NIV now. Delaying NIV in a patient who is tiring risks respiratory arrest. The window for NIV is between mild acidosis (pH 7.25-7.35) — if pH falls below 7.25, the risk of NIV failure increases and intubation may be required.",
+          "nextNodeId": "monitoring-copd",
+          "timeAdvanceMin": 120,
+          "vitalsDelta": { "rr": 6, "hr": 10 },
+          "scoreDelta": -15,
+          "educationalNote": "NIV timing: the window for effective NIV is pH 7.25-7.35. Below 7.25, NIV success rates fall and ITU/intubation risk increases. Above 7.35 with improving patient — NIV may not be needed. pH 7.31 and worsening = act now."
+        }
+      ]
+    },
+    {
+      "id": "monitoring-copd",
+      "category": "Monitoring",
+      "prompt": "NIV has been started. The patient is more comfortable on BiPAP. What is your monitoring plan and when would you escalate to ITU?",
+      "context": "On BiPAP (IPAP 14, EPAP 5, FiO2 30%): SpO2 92%, RR 18, patient appears more comfortable. ABG at 1 hour on NIV: pH 7.33, pCO2 8.5kPa (improving). GCS 15.",
+      "choices": [
+        {
+          "id": "correct-niv-monitoring",
+          "text": "ABG at 1 hour on NIV (already done), then 4-hourly. Target pH >7.35, pCO2 falling. Escalate to ITU if: pH <7.26 on NIV, worsening consciousness, haemodynamic deterioration, or NIV intolerance",
+          "correct": true,
+          "feedback": "Correct monitoring and escalation criteria. This patient is improving (pH 7.33, pCO2 8.5 from 9.2). Target is pH >7.35 and pCO2 normalising. ITU/intubation escalation criteria: pH <7.26 on NIV, GCS deterioration (unable to protect airway), cardiovascular collapse, or NIV failure after optimisation.",
+          "nextNodeId": "discharge-planning-copd",
+          "timeAdvanceMin": 240,
+          "vitalsDelta": { "hr": -10, "rr": -3, "bp": "138/82" },
+          "scoreDelta": 15,
+          "educationalNote": "NIV monitoring: ABG at 1 hour on NIV, then 4-hourly. NIV failure criteria: pH failing to rise above 7.25 after 1-2 hours, SpO2 not improving, worsening confusion. Have a documented ceiling of care discussion — intubation vs. comfort measures — before starting NIV in severe COPD patients."
+        },
+        {
+          "id": "remove-niv-improving",
+          "text": "He is more comfortable — remove NIV after 1 hour and just continue the oxygen mask",
+          "correct": false,
+          "feedback": "Too early. NIV should be continued for at least 12-16 hours in an acute exacerbation, even if improving. Early removal risks respiratory fatigue recurrence. Continue NIV until: pH consistently >7.35 on NIV, pCO2 normalising, patient comfortable off NIV for trial periods, and clinically improving overall.",
+          "nextNodeId": "discharge-planning-copd",
+          "timeAdvanceMin": 30,
+          "vitalsDelta": { "rr": 8, "hr": 8 },
+          "scoreDelta": -10,
+          "educationalNote": "NIV duration in COPD: minimum 12-16 hours initially. Wean by allowing off-NIV periods (e.g. meals, physiotherapy). Do not remove NIV based on patient comfort alone — the ABG must show sustained improvement."
+        },
+        {
+          "id": "intubate-now",
+          "text": "pH 7.33 is still below normal — intubate now rather than wait for further deterioration",
+          "correct": false,
+          "feedback": "Premature. The patient is improving on NIV (pH 7.33, up from 7.30; pCO2 8.5, down from 9.2). Intubation carries significant risks in COPD — difficult weaning, ventilator-associated pneumonia, prolonged ICU stay. NIV is the preferred and evidence-based treatment. Intubation is reserved for NIV failure.",
+          "nextNodeId": "discharge-planning-copd",
+          "timeAdvanceMin": 20,
+          "scoreDelta": -15,
+          "educationalNote": "Intubation in COPD exacerbation: reserved for NIV failure. COPD patients are notoriously difficult to wean from mechanical ventilation. NIV reduces intubation rates, mortality, and ITU admission when used appropriately. If intubation unavoidable, early discussion with ITU and the patient/family about ceiling of care is essential."
+        }
+      ]
+    },
+    {
+      "id": "discharge-planning-copd",
+      "category": "Disposition",
+      "prompt": "After 72 hours, the patient has improved significantly: pH 7.39, pCO2 7.1kPa (his chronic baseline), SpO2 92% on 28% Venturi, no NIV for 12 hours. He is ready for discharge planning. What is essential before he goes home?",
+      "context": "Clinically improved. Eating and drinking. Completing 5-day steroid and antibiotic course. Back on his normal inhalers.",
+      "isTerminal": true,
+      "choices": [
+        {
+          "id": "correct-copd-discharge",
+          "text": "Ensure: correct inhaler technique demonstrated, pulmonary rehabilitation referral, smoking cessation (already quit but reinforce), self-management plan (COPD rescue pack — steroids + antibiotics), flu/pneumococcal vaccinations up to date, GP follow-up in 2 weeks, home oxygen review",
+          "correct": true,
+          "feedback": "Comprehensive and evidence-based discharge plan. Key elements: (1) Rescue packs (course of steroids + antibiotics to start at home at first sign of exacerbation) reduce hospital admissions. (2) Pulmonary rehabilitation reduces exacerbations and improves quality of life. (3) Vaccination protects against pneumococcal and influenza exacerbation triggers. (4) Inhaler technique check — many patients use inhalers incorrectly.",
+          "nextNodeId": null,
+          "timeAdvanceMin": 30,
+          "scoreDelta": 15,
+          "triggerBadge": "copd-champion",
+          "educationalNote": "COPD discharge bundle: (1) Self-management plan with rescue pack. (2) Pulmonary rehabilitation referral (reduces exacerbations by 50%, improves exercise capacity). (3) Flu and pneumococcal vaccine. (4) Inhaler technique. (5) Smoking cessation support (even if already quit). (6) Home O2 review (reassess need after exacerbation resolves). (7) GP follow-up 2 weeks."
+        },
+        {
+          "id": "discharge-no-plan",
+          "text": "He is medically improved — discharge on his usual medications",
+          "correct": false,
+          "feedback": "Incomplete. Without a self-management plan, this patient is very likely to re-admit. COPD patients with rescue packs and pulmonary rehabilitation have significantly fewer hospital admissions. Missing the discharge bundle is a significant quality of care failure.",
+          "nextNodeId": null,
+          "timeAdvanceMin": 10,
+          "scoreDelta": -15,
+          "educationalNote": "COPD re-admission rates are very high without a comprehensive discharge bundle. Each exacerbation accelerates lung function decline. The discharge bundle is as important as the acute treatment."
+        }
+      ]
+    }
+  ],
+  "diseaseMap": {
+    "presenting": [
+      "Worsening dyspnoea from baseline (3+ days)",
+      "Purulent (yellow/green) sputum — increased volume",
+      "Increased cough",
+      "SpO2 below patient's usual target",
+      "Type 2 respiratory failure (elevated pCO2 + acidosis)",
+      "Known severe COPD (GOLD 3-4)"
+    ],
+    "redFlags": [
+      "SpO2 <88% on controlled oxygen",
+      "pH <7.35 (NIV indication)",
+      "pCO2 >6kPa and worsening",
+      "GCS deterioration",
+      "Respiratory fatigue (accessory muscle use, paradoxical breathing)",
+      "Haemodynamic instability"
+    ],
+    "bestFirstStep": "Controlled oxygen via 24-28% Venturi mask, targeting SpO2 88-92% (NOT high-flow oxygen)",
+    "bestInvestigation": "ABG — determines presence and severity of type 2 respiratory failure, guides NIV decision",
+    "diagnosis": "Infective Exacerbation of COPD with Hypercapnic Respiratory Failure (Type 2 RF)",
+    "treatment": "Controlled O2 (88-92%) + Air-driven bronchodilators (salbutamol + ipratropium nebulised) + Prednisolone 30-40mg 5 days + Amoxicillin 5 days + NIV (BiPAP) if pH <7.35",
+    "followUp": "GP 2 weeks, pulmonary rehabilitation, self-management plan with rescue pack, vaccination review",
+    "complications": [
+      "Respiratory failure requiring intubation",
+      "Cor pulmonale (right heart failure from chronic hypoxia)",
+      "Secondary spontaneous pneumothorax",
+      "Pneumonia",
+      "Pulmonary hypertension"
+    ],
+    "guidelineRef": "NICE NG115 (2019) + BTS COPD Guidelines 2023"
+  },
+  "guideline": {
+    "title": "COPD Exacerbation Management — BTS/NICE Summary",
+    "body": "OXYGEN TARGET\n• SpO2 88-92% (NOT 94-98%)\n• Use Venturi mask: 24% = 2L/min, 28% = 4L/min, 35% = 8L/min\n• NEVER high-flow O2 or O2-driven nebulisers\n\nBRONCHODILATORS\n• Salbutamol 5mg + ipratropium 500mcg nebulised — driven by AIR\n• Repeat salbutamol every 20-30min if needed\n\nSYSTEMIC CORTICOSTEROIDS\n• Prednisolone 30-40mg PO OD for 5 days\n• IV hydrocortisone 200mg if unable to take oral\n\nANTIBIOTICS (if purulent sputum or signs of infection)\n• Amoxicillin 500mg TDS OR doxycycline 200mg/100mg OR clarithromycin 500mg BD\n• 5-day course\n\nNIV (BiPAP) INDICATIONS\n• pH <7.35 with pCO2 >6kPa, not responding to medical therapy\n• Initial settings: IPAP 12-14cmH2O, EPAP 4-5cmH2O\n• ABG at 1 hour on NIV\n\nNIV FAILURE / ITU ESCALATION\n• pH <7.26 on NIV\n• GCS deterioration\n• Haemodynamic instability\n• Patient unable to tolerate NIV\n\nMRC DYSPNOEA SCALE (1-5)\n1 = Only breathless on strenuous exercise\n2 = Breathless hurrying on level ground\n3 = Slower than peers on level ground\n4 = Stops for breath after 100m or after a few minutes\n5 = Too breathless to leave house\n\nGOLD STAGING (FEV1 % predicted)\n1 = ≥80% (mild)\n2 = 50-79% (moderate)\n3 = 30-49% (severe)\n4 = <30% (very severe)",
+    "calculators": []
+  },
+  "availableBadges": [
+    {
+      "id": "oxygen-trap",
+      "label": "O2 Trap Fallen",
+      "icon": "⚠️",
+      "description": "Gave high-flow oxygen to a COPD patient — a critical clinical error",
+      "positive": false
+    },
+    {
+      "id": "niv-master",
+      "label": "NIV Master",
+      "icon": "😮‍💨",
+      "description": "Correctly identified the NIV indication and initiated BiPAP at the right time",
+      "positive": true
+    },
+    {
+      "id": "copd-champion",
+      "label": "COPD Champion",
+      "icon": "🫁",
+      "description": "Comprehensive discharge planning including rescue pack and pulmonary rehabilitation referral",
+      "positive": true
+    }
+  ],
+  "disclaimer": "This game is for educational and entertainment purposes only. It does not constitute medical advice. Always follow local guidelines and senior supervision in clinical practice."
+}

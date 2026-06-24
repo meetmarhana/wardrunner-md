@@ -1,0 +1,725 @@
+﻿{
+  "id": "acs-stemi",
+  "specialty": "Cardiology",
+  "title": "Crushing Chest Pain",
+  "subtitle": "ACS / STEMI",
+  "difficulty": "intermediate",
+  "estimatedMinutes": 20,
+  "patient": {
+    "age": 58,
+    "sex": "M",
+    "chiefComplaint": "Severe crushing chest pain for 45 minutes",
+    "history": "A 58-year-old male presents to the emergency department brought in by ambulance. He describes sudden-onset, severe crushing chest pain that began 45 minutes ago while climbing stairs. The pain is central, radiating to his left arm and jaw. He is diaphoretic and nauseated. He has never had anything like this before.",
+    "initialVitals": {
+      "bp": "165/100",
+      "hr": 98,
+      "rr": 20,
+      "spo2": 96,
+      "temp": 37.1,
+      "gcs": 15
+    },
+    "symptoms": [
+      "Crushing central chest pain",
+      "Radiation to left arm and jaw",
+      "Diaphoresis",
+      "Nausea",
+      "Shortness of breath",
+      "Feeling of impending doom"
+    ],
+    "redFlags": [
+      "Chest pain >20 minutes duration",
+      "Diaphoresis",
+      "Radiation to arm/jaw",
+      "Age >55 with cardiac risk factors",
+      "Hypoxia (SpO2 96%)",
+      "Hypertension on presentation"
+    ],
+    "backgroundHistory": {
+      "pastMedicalHistory": ["Hypertension (diagnosed 8 years ago)", "Ex-smoker (quit 2 years ago, 30 pack-year history)"],
+      "medications": ["Amlodipine 10mg once daily", "Ramipril 5mg once daily"],
+      "allergies": "NKDA",
+      "socialHistory": "Married, works as an accountant. Stopped smoking 2 years ago. Drinks 10 units alcohol per week. Sedentary lifestyle.",
+      "familyHistory": "Father had MI aged 62. Brother had coronary artery bypass grafting at 56.",
+      "reviewOfSystems": "No recent infections. No cough, haemoptysis, or pleuritic pain. No leg swelling or calf pain. No syncope."
+    }
+  },
+  "startNodeId": "node-stabilize",
+  "nodes": [
+    {
+      "id": "node-stabilize",
+      "category": "stabilization",
+      "prompt": "A 58-year-old male arrives by ambulance with 45 minutes of crushing central chest pain radiating to his left arm. He is diaphoretic and pale. BP 165/100, HR 98, RR 20, SpO2 96%, GCS 15. What is your FIRST priority action?",
+      "context": "The patient is distressed and clutching his chest. Paramedics have placed one IV cannula. Time is critical â€” every minute of ongoing ischaemia means more myocardial loss.",
+      "choices": [
+        {
+          "id": "stabilize-correct",
+          "text": "Place on cardiac monitor, attach 12-lead ECG, gain second IV access, and give supplemental oxygen if SpO2 <94%",
+          "correct": true,
+          "feedback": "Correct. Immediate monitoring and a 12-lead ECG are the highest-priority actions in suspected ACS. The ECG must be performed and interpreted within 10 minutes of arrival (ESC 2023 target). SpO2 is 96% â€” supplemental oxygen is not indicated above 94% as it may worsen outcomes in normoxic patients.",
+          "nextNodeId": "node-history",
+          "timeAdvanceMin": 3,
+          "vitalsDelta": { "hr": -2, "spo2": 0 },
+          "scoreDelta": 10,
+          "educationalNote": "Door-to-ECG time of â‰¤10 minutes is a key STEMI performance metric. Routine oxygen supplementation in non-hypoxic ACS patients has been shown to increase myocardial injury in studies such as AVOID and DETO2X-AMI."
+        },
+        {
+          "id": "stabilize-morphine",
+          "text": "Give IV morphine 5mg immediately for pain relief, then arrange investigations",
+          "correct": false,
+          "feedback": "Morphine is not a first-line agent in ACS and has been associated with worse outcomes (CRUSADE registry data suggests delayed P2Y12 absorption and increased mortality). Pain relief is important but should not precede cardiac monitoring and ECG.",
+          "nextNodeId": "node-history",
+          "timeAdvanceMin": 5,
+          "vitalsDelta": { "hr": 5, "spo2": -1 },
+          "scoreDelta": -5,
+          "educationalNote": "The CRUSADE registry and subsequent data suggest morphine use in NSTEMI is associated with higher mortality, possibly due to delayed platelet inhibition from P2Y12 inhibitors. Avoid unless other analgesia has failed."
+        },
+        {
+          "id": "stabilize-bloods",
+          "text": "Take a full history and order blood tests including troponin before doing anything else",
+          "correct": false,
+          "feedback": "Taking a detailed history before establishing monitoring delays critical diagnosis. In suspected STEMI, the ECG must come first â€” the diagnosis and treatment pathway depend on it. Bloods are important but secondary to the ECG.",
+          "nextNodeId": "node-history",
+          "timeAdvanceMin": 8,
+          "vitalsDelta": { "hr": 8, "spo2": -1 },
+          "scoreDelta": -8,
+          "educationalNote": "In STEMI management, time from first medical contact to reperfusion (FMC-to-balloon) should be â‰¤90 minutes. Delays at initial assessment significantly worsen outcomes."
+        },
+        {
+          "id": "stabilize-cxr",
+          "text": "Request an urgent portable chest X-ray to exclude aortic dissection first",
+          "correct": false,
+          "feedback": "While aortic dissection is an important differential, requesting a CXR before the ECG is not the right sequence. The ECG is faster, does not delay you, and provides diagnostic information for the most time-critical condition. Clinical features of dissection (tearing, interscapular pain, pulse differential) are not prominent here.",
+          "nextNodeId": "node-history",
+          "timeAdvanceMin": 10,
+          "vitalsDelta": { "hr": 6, "spo2": -1 },
+          "scoreDelta": -5
+        }
+      ],
+      "isTerminal": false
+    },
+    {
+      "id": "node-history",
+      "category": "history",
+      "prompt": "The patient is now on a monitor. HR 98 sinus rhythm, SpO2 96%. The ECG machine is being attached. While your colleague runs the ECG, which focused history points are MOST critical to establish right now?",
+      "context": "You have approximately 2 minutes before the ECG prints. The patient is anxious but able to talk. His wife is present.",
+      "choices": [
+        {
+          "id": "history-correct",
+          "text": "Time of symptom onset, character of pain, contraindications to thrombolytics/anticoagulation (recent surgery, bleeding, stroke), and allergy status",
+          "correct": true,
+          "feedback": "Excellent. These are the highest-yield history points for immediate ACS management. Time of onset determines reperfusion strategy eligibility. Contraindications to anticoagulation and thrombolytics must be known before treatment. Allergies affect drug choice (e.g., aspirin allergy is rare but critical to identify).",
+          "nextNodeId": "node-ecg",
+          "timeAdvanceMin": 3,
+          "vitalsDelta": { "hr": 0, "spo2": 0 },
+          "scoreDelta": 10,
+          "educationalNote": "The STEMI reperfusion window is: primary PCI preferred if door-to-balloon â‰¤120 min from symptom onset; thrombolysis if PCI not available within 120 min of first medical contact and onset <12 hours. Knowing symptom timing is essential."
+        },
+        {
+          "id": "history-full",
+          "text": "Take a systematic full history including social, family, systems review before proceeding",
+          "correct": false,
+          "feedback": "A comprehensive history is not appropriate at this stage. The ECG is ready and must be interpreted urgently. A focused, targeted history is all that is needed now â€” full history can be completed later once the diagnosis is established and treatment initiated.",
+          "nextNodeId": "node-ecg",
+          "timeAdvanceMin": 12,
+          "vitalsDelta": { "hr": 10, "spo2": -1 },
+          "scoreDelta": -8,
+          "educationalNote": "Time wasted on non-urgent history-taking delays reperfusion. In STEMI, every 10-minute delay in door-to-balloon time increases 30-day mortality by approximately 7.5 deaths per 1,000 patients treated (De Luca et al., Circulation 2004)."
+        },
+        {
+          "id": "history-riskfactors",
+          "text": "Focus only on cardiovascular risk factors to calculate HEART score",
+          "correct": false,
+          "feedback": "Risk factor history is useful for HEART score (helpful in NSTEMI/unstable angina triage) but is not the priority here. The ECG will likely confirm STEMI, bypassing HEART score stratification entirely. Time of onset and contraindications are more immediately actionable.",
+          "nextNodeId": "node-ecg",
+          "timeAdvanceMin": 5,
+          "vitalsDelta": { "hr": 3, "spo2": 0 },
+          "scoreDelta": -3
+        }
+      ],
+      "isTerminal": false
+    },
+    {
+      "id": "node-ecg",
+      "category": "investigation",
+      "prompt": "The 12-lead ECG is printed. You see ST elevation in leads II, III, aVF and V4â€“V6. There is no LBBB. Rate is 98 bpm, sinus rhythm. Reciprocal ST depression in leads I and aVL. How do you interpret this and what do you do next?",
+      "context": "Time since arrival: 8 minutes. The ECG is now in your hands. The patient's pain is 8/10 and he looks pale and sweaty.",
+      "choices": [
+        {
+          "id": "ecg-correct",
+          "text": "This is an inferior-lateral STEMI. Activate the cardiac catheterisation laboratory immediately and call the on-call cardiologist. Give aspirin 300mg loading dose now.",
+          "correct": true,
+          "feedback": "Correct diagnosis and immediate action. ST elevation in II, III, aVF = inferior STEMI (RCA or LCx territory). Extension to V4â€“V6 = lateral involvement, suggesting a large territory at risk. Reciprocal changes in I and aVL confirm true ST elevation (not pericarditis). Immediate cath lab activation and aspirin 300mg are guideline-mandated first steps.",
+          "nextNodeId": "node-troponin",
+          "timeAdvanceMin": 4,
+          "vitalsDelta": { "hr": -3, "spo2": 1 },
+          "scoreDelta": 20,
+          "triggerBadge": "door-to-balloon",
+          "investigations": [
+            {
+              "name": "12-lead ECG",
+              "value": "ST elevation 2â€“4mm in leads II, III, aVF and V4â€“V6. Reciprocal ST depression in leads I and aVL. No LBBB. Sinus rhythm at 98 bpm. No Q waves yet.",
+              "flagged": true
+            }
+          ],
+          "educationalNote": "Inferior STEMI (ST elevation in â‰¥2 contiguous inferior leads: II, III, aVF) is most commonly due to right coronary artery (RCA) occlusion (~80%) or left circumflex (LCx) occlusion (~20%). Right ventricular involvement occurs in ~30â€“50% of inferior STEMIs and has important management implications (avoid nitrates, needs fluid loading)."
+        },
+        {
+          "id": "ecg-wait-troponin",
+          "text": "The ECG is suggestive but wait for troponin result before activating the cath lab â€” you don't want to activate unnecessarily",
+          "correct": false,
+          "feedback": "This is a critical error. STEMI diagnosis is based on ECG criteria alone â€” troponin is NOT required for STEMI diagnosis or cath lab activation. Waiting for troponin delays reperfusion and directly increases myocardial damage and mortality. A positive troponin in STEMI is confirmatory, not diagnostic.",
+          "nextNodeId": "node-troponin",
+          "timeAdvanceMin": 45,
+          "vitalsDelta": { "hr": 15, "spo2": -2 },
+          "scoreDelta": -20,
+          "triggerBadge": "delayed-diagnosis",
+          "educationalNote": "ESC 2023 Guidelines: In STEMI, reperfusion therapy should be initiated as soon as possible based on ECG diagnosis. Troponin results should NEVER delay cath lab activation. The diagnosis of STEMI is clinical + ECG."
+        },
+        {
+          "id": "ecg-pericarditis",
+          "text": "The ST elevation could be pericarditis â€” arrange echo and inflammatory markers before activating cath lab",
+          "correct": false,
+          "feedback": "Pericarditis typically causes diffuse ST elevation in a saddle-shape pattern across multiple non-contiguous leads, with PR depression. Reciprocal ST depression (present here in I and aVL) strongly argues against pericarditis and confirms STEMI. Delaying for echo in a patient with a classic STEMI presentation is dangerous.",
+          "nextNodeId": "node-troponin",
+          "timeAdvanceMin": 30,
+          "vitalsDelta": { "hr": 12, "spo2": -2 },
+          "scoreDelta": -15,
+          "triggerBadge": "delayed-diagnosis",
+          "educationalNote": "Key ECG features distinguishing STEMI from pericarditis: (1) Reciprocal ST depression â€” present in STEMI, absent in pericarditis; (2) Lead distribution â€” regional in STEMI, diffuse in pericarditis; (3) PR depression â€” typical of pericarditis; (4) Morphology â€” upwardly convex (domed) in STEMI vs. saddle-shaped in pericarditis."
+        },
+        {
+          "id": "ecg-thrombolysis",
+          "text": "Diagnose STEMI and give thrombolysis (tenecteplase) immediately without calling the cath lab",
+          "correct": false,
+          "feedback": "Primary PCI is strongly preferred over thrombolysis when it can be achieved within 120 minutes of first medical contact. You are in a hospital with cath lab capability â€” thrombolysis as first-line is not appropriate here. Activate the cath lab first. Thrombolysis is reserved for situations where PCI cannot be delivered within the time window.",
+          "nextNodeId": "node-troponin",
+          "timeAdvanceMin": 8,
+          "vitalsDelta": { "hr": 0, "spo2": 0 },
+          "scoreDelta": -10,
+          "educationalNote": "ESC 2023: Primary PCI is the recommended reperfusion strategy when it can be performed within 120 minutes of first medical contact by an experienced team. Pharmacoinvasive strategy (thrombolysis + transfer for PCI) is used only when timely PCI is not achievable."
+        }
+      ],
+      "isTerminal": false
+    },
+    {
+      "id": "node-troponin",
+      "category": "investigation",
+      "prompt": "Cath lab is being activated. Bloods have been taken. The point-of-care high-sensitivity troponin I comes back at 180 ng/L (normal <26 ng/L). A chest X-ray has been performed. Which additional investigation result changes your management most significantly right now?",
+      "context": "Time since arrival: 14 minutes. Cath lab team is being assembled. The patient still has 8/10 chest pain. BP 160/98, HR 102.",
+      "choices": [
+        {
+          "id": "troponin-rv",
+          "text": "Right-sided ECG leads (V3Râ€“V4R) to assess for right ventricular STEMI",
+          "correct": true,
+          "feedback": "Critical and correct. With inferior STEMI, right ventricular involvement occurs in 30â€“50% of cases and is diagnosed with right-sided leads (V4R is most sensitive). RV STEMI has profound management implications: nitrates and diuretics are contraindicated (can cause catastrophic hypotension), and IV fluid challenges may be needed to maintain preload.",
+          "nextNodeId": "node-diagnosis",
+          "timeAdvanceMin": 3,
+          "vitalsDelta": { "hr": 0, "spo2": 0 },
+          "scoreDelta": 15,
+          "investigations": [
+            {
+              "name": "High-sensitivity Troponin I (0h)",
+              "value": "180 ng/L (normal <26 ng/L) â€” significantly elevated",
+              "flagged": true
+            },
+            {
+              "name": "Right-sided ECG (V3Râ€“V4R)",
+              "value": "ST elevation 1.5mm in V4R â€” consistent with right ventricular STEMI involvement",
+              "flagged": true
+            },
+            {
+              "name": "Chest X-ray (portable)",
+              "value": "Cardiomegaly. No pulmonary oedema. No pneumothorax. Mediastinum not widened. Aortic knuckle normal.",
+              "flagged": false
+            },
+            {
+              "name": "FBC",
+              "value": "Hb 148 g/L, WBC 11.2 x10â¹/L, Platelets 234 x10â¹/L",
+              "flagged": false
+            },
+            {
+              "name": "U&E",
+              "value": "Na 138, K 4.1, Cr 91 Âµmol/L, eGFR 78 ml/min/1.73mÂ²",
+              "flagged": false
+            },
+            {
+              "name": "Coagulation screen",
+              "value": "PT 12.1s, APTT 28s, INR 1.0 â€” normal",
+              "flagged": false
+            },
+            {
+              "name": "Blood glucose",
+              "value": "8.4 mmol/L â€” mildly elevated",
+              "flagged": false
+            }
+          ],
+          "educationalNote": "ST elevation â‰¥1mm in V4R has >90% sensitivity and specificity for RV MI. These patients require careful haemodynamic monitoring. The classic triad of RV MI is: hypotension, elevated JVP, clear lung fields (Kussmaul's sign may be present)."
+        },
+        {
+          "id": "troponin-cxr-focus",
+          "text": "The CXR showing no mediastinal widening effectively rules out aortic dissection â€” no further imaging needed",
+          "correct": false,
+          "feedback": "While a normal CXR reduces the probability of Type A aortic dissection, it does not exclude it â€” sensitivity of CXR for dissection is only ~60â€“70%. However, the clinical picture here (inferior ST elevation with reciprocal changes, diaphoresis, no tearing quality, no pulse differential) is overwhelming for STEMI. The more important missing investigation is right-sided leads for RV involvement.",
+          "nextNodeId": "node-diagnosis",
+          "timeAdvanceMin": 2,
+          "vitalsDelta": { "hr": 2, "spo2": 0 },
+          "scoreDelta": -3
+        },
+        {
+          "id": "troponin-echo",
+          "text": "Request urgent bedside echocardiogram to confirm wall motion abnormality before proceeding to cath lab",
+          "correct": false,
+          "feedback": "While echo can confirm regional wall motion abnormality in STEMI and is useful for assessing LV function and complications, it should NOT delay cath lab transfer. In a confirmed STEMI, echo is not required prior to PCI. Performing echo now wastes critical time. Right-sided ECG leads would be faster and more immediately actionable.",
+          "nextNodeId": "node-diagnosis",
+          "timeAdvanceMin": 20,
+          "vitalsDelta": { "hr": 8, "spo2": -1 },
+          "scoreDelta": -10,
+          "triggerBadge": "overtested"
+        },
+        {
+          "id": "troponin-ctpa",
+          "text": "Order CT pulmonary angiogram â€” SpO2 of 96% and chest pain could indicate pulmonary embolism",
+          "correct": false,
+          "feedback": "CT-PA is contraindicated in confirmed STEMI and would cause catastrophic delay. The clinical picture (inferior ST elevation, reciprocal changes, risk factors, radiation pattern) is diagnostic for STEMI. PE typically presents with pleuritic pain, haemoptysis, and different ECG changes (S1Q3T3 or sinus tachycardia). CT-PA here would likely be harmful â€” contrast load plus delay.",
+          "nextNodeId": "node-diagnosis",
+          "timeAdvanceMin": 45,
+          "vitalsDelta": { "hr": 15, "spo2": -2 },
+          "scoreDelta": -20,
+          "triggerBadge": "patient-harmed"
+        }
+      ],
+      "isTerminal": false
+    },
+    {
+      "id": "node-diagnosis",
+      "category": "diagnosis",
+      "prompt": "Right-sided leads confirm V4R ST elevation â€” this is an inferior-lateral STEMI with right ventricular involvement. Troponin I is 180 ng/L (markedly elevated). The cath lab is ready. Before transfer, which of the following best describes the correct immediate diagnosis and its implications for treatment?",
+      "context": "Time since arrival: 18 minutes. BP has dropped slightly to 148/92. HR 102. The patient asks if he is having a heart attack.",
+      "choices": [
+        {
+          "id": "diagnosis-correct",
+          "text": "Inferior-lateral STEMI with RV involvement. Reperfusion is urgent. Nitrates are CONTRAINDICATED due to RV involvement. Dual antiplatelet therapy and anticoagulation must be given before PCI.",
+          "correct": true,
+          "feedback": "Precisely correct. RV involvement in inferior STEMI critically alters management: (1) GTN/nitrates â†’ avoid â€” will drop preload and cause haemodynamic collapse; (2) Diuretics â†’ avoid; (3) May need IV fluids if BP falls further; (4) DAPT (aspirin + P2Y12 inhibitor) and anticoagulation (heparin) are required before PCI as per ESC 2023 guidelines.",
+          "nextNodeId": "node-treatment",
+          "timeAdvanceMin": 2,
+          "vitalsDelta": { "hr": 0, "spo2": 0 },
+          "scoreDelta": 15,
+          "educationalNote": "RV MI is a preload-dependent state. The RV cannot generate sufficient output to fill the LV without adequate venous return. GTN reduces preload and can cause severe hypotension or shock. If hypotension occurs: 250â€“500ml IV saline challenge and consider early revascularisation."
+        },
+        {
+          "id": "diagnosis-givegtn",
+          "text": "Inferior STEMI. Give sublingual GTN for pain relief while preparing for cath lab transfer.",
+          "correct": false,
+          "feedback": "Giving GTN with confirmed RV involvement is dangerous and potentially fatal. GTN reduces preload, which is the primary driver of RV cardiac output in this setting. Even a small dose can precipitate severe haemodynamic collapse. This patient's BP is already trending down.",
+          "nextNodeId": "node-treatment",
+          "timeAdvanceMin": 3,
+          "vitalsDelta": { "hr": 18, "bp_sys": -35, "spo2": -2 },
+          "scoreDelta": -20,
+          "triggerBadge": "patient-harmed",
+          "educationalNote": "Haemodynamic collapse from GTN in RV MI can be rapid and refractory. If GTN has been given inadvertently: lay flat, give IV fluids, consider inotropes (dobutamine), and expedite revascularisation. Document the error and escalate."
+        },
+        {
+          "id": "diagnosis-nstemi",
+          "text": "This is NSTEMI â€” troponin is elevated but this could be type 2 MI. Manage conservatively with anticoagulation alone.",
+          "correct": false,
+          "feedback": "Incorrect classification. ST elevation on ECG in â‰¥2 contiguous leads with the clinical picture defines STEMI â€” this is not NSTEMI. Type 2 MI (demand ischaemia) is a diagnosis of exclusion and does not fit here. Conservative management is inappropriate for STEMI â€” primary PCI is mandatory. This classification error would cause life-threatening delay.",
+          "nextNodeId": "node-treatment",
+          "timeAdvanceMin": 15,
+          "vitalsDelta": { "hr": 10, "spo2": -1 },
+          "scoreDelta": -15,
+          "triggerBadge": "delayed-diagnosis"
+        }
+      ],
+      "isTerminal": false
+    },
+    {
+      "id": "node-treatment",
+      "category": "treatment",
+      "prompt": "The patient is confirmed to have an inferior-lateral STEMI with RV involvement. No contraindications to antiplatelet or anticoagulant therapy. No allergy to aspirin. No prior P2Y12 inhibitor use. What is the correct pre-PCI drug regimen?",
+      "context": "Time since arrival: 20 minutes. Cath lab is ready. You need to prescribe the pre-PCI loading doses before transfer.",
+      "choices": [
+        {
+          "id": "treatment-correct",
+          "text": "Aspirin 300mg PO stat + Ticagrelor 180mg PO stat + Unfractionated heparin (UFH) 70â€“100 units/kg IV bolus. Withhold GTN.",
+          "correct": true,
+          "feedback": "This is the correct ESC 2023 guideline-recommended pre-PCI regimen for STEMI. Aspirin 300mg loading dose (then 75mg daily). Ticagrelor 180mg loading dose is preferred over clopidogrel in STEMI for its faster onset and superior efficacy (PLATO trial). UFH provides anticoagulation during PCI. Avoid GTN given RV involvement.",
+          "nextNodeId": "node-disposition",
+          "timeAdvanceMin": 4,
+          "vitalsDelta": { "hr": -4, "spo2": 1 },
+          "scoreDelta": 20,
+          "triggerBadge": "guideline-clean",
+          "educationalNote": "PLATO trial (2009): Ticagrelor vs clopidogrel in ACS â€” ticagrelor showed a 16% relative risk reduction in CV death/MI/stroke at 12 months. Ticagrelor is now preferred over clopidogrel in STEMI and high-risk NSTEMI (Class I, ESC 2023). Prasugrel is an alternative if ticagrelor is not available or contraindicated."
+        },
+        {
+          "id": "treatment-clopidogrel",
+          "text": "Aspirin 75mg PO + Clopidogrel 75mg PO + Low molecular weight heparin (LMWH) subcutaneously",
+          "correct": false,
+          "feedback": "Multiple errors here: (1) Aspirin loading dose should be 300mg, not 75mg â€” higher dose for faster platelet inhibition; (2) Clopidogrel loading dose is 600mg, not 75mg; (3) Ticagrelor or prasugrel are preferred over clopidogrel in STEMI (stronger, faster, less variable); (4) LMWH SC is not appropriate peri-PCI â€” IV UFH or bivalirudin is used.",
+          "nextNodeId": "node-disposition",
+          "timeAdvanceMin": 5,
+          "vitalsDelta": { "hr": 3, "spo2": 0 },
+          "scoreDelta": -10,
+          "educationalNote": "Subtherapeutic antiplatelet loading increases the risk of stent thrombosis during and after PCI. Inadequate anticoagulation during PCI is associated with thrombus formation and acute vessel closure."
+        },
+        {
+          "id": "treatment-thrombolysis",
+          "text": "Give IV tenecteplase thrombolysis now â€” this is faster than waiting for PCI",
+          "correct": false,
+          "feedback": "The cath lab is already ready â€” PCI is available within the guideline time window. Thrombolysis has higher rates of re-occlusion, intracranial haemorrhage, and incomplete reperfusion compared to primary PCI. When PCI can be achieved within 120 minutes, it is strongly preferred (Class I recommendation). Giving thrombolysis here would be inappropriate and potentially harmful.",
+          "nextNodeId": "node-disposition",
+          "timeAdvanceMin": 15,
+          "vitalsDelta": { "hr": 5, "spo2": -1 },
+          "scoreDelta": -15,
+          "educationalNote": "Primary PCI vs thrombolysis (DANAMI-2, PRAGUE-2): Primary PCI reduces death, re-MI, and stroke by ~25% compared to thrombolysis when performed in a timely manner. Thrombolysis is a fallback strategy, not a preference when PCI is accessible."
+        },
+        {
+          "id": "treatment-no-heparin",
+          "text": "Aspirin 300mg + Ticagrelor 180mg only â€” heparin is not needed as PCI itself will restore flow",
+          "correct": false,
+          "feedback": "Anticoagulation is an essential component of PCI â€” it prevents thrombus formation on catheter equipment and guidewires, and reduces the risk of procedural complications including acute stent thrombosis. Heparin (or bivalirudin) is mandated for all primary PCI procedures.",
+          "nextNodeId": "node-disposition",
+          "timeAdvanceMin": 4,
+          "vitalsDelta": { "hr": 2, "spo2": 0 },
+          "scoreDelta": -8
+        }
+      ],
+      "isTerminal": false
+    },
+    {
+      "id": "node-disposition",
+      "category": "disposition",
+      "prompt": "The patient has received aspirin 300mg, ticagrelor 180mg, and IV heparin. He is being transferred to the cath lab. Total door-to-balloon time is on track for 55 minutes. After PCI, where should this patient be admitted?",
+      "context": "Post-PCI the interventional cardiologist confirms: culprit lesion was a 100% occlusion of the right coronary artery (RCA). Drug-eluting stent deployed. TIMI 3 flow restored. LV ejection fraction estimated at 45% on ventriculography. The patient's chest pain has resolved.",
+      "choices": [
+        {
+          "id": "disposition-ccu",
+          "text": "Admit to Cardiac Intensive Care Unit (CICU/CCU) for continuous monitoring â€” at least 24â€“48 hours",
+          "correct": true,
+          "feedback": "Correct. Post-STEMI patients with RV involvement, reduced LVEF (45%), and successful PCI require CCU-level monitoring for at least 24â€“48 hours. Risks in the immediate post-PCI period include: reperfusion arrhythmias (VT/VF, accelerated idioventricular rhythm), haemodynamic instability (especially with RV MI), stent thrombosis, and access site complications.",
+          "nextNodeId": "node-monitoring",
+          "timeAdvanceMin": 10,
+          "vitalsDelta": { "hr": -8, "spo2": 2 },
+          "scoreDelta": 15,
+          "educationalNote": "ESC 2023: All STEMI patients should be monitored in a CCU/CICU for a minimum of 24 hours post-PCI, and longer if haemodynamically unstable or with complications. RV MI patients need careful fluid management and monitoring for AV block (occurs in ~10â€“15% of inferior STEMIs)."
+        },
+        {
+          "id": "disposition-ward",
+          "text": "Admit to a general cardiology ward â€” PCI was successful and pain has resolved",
+          "correct": false,
+          "feedback": "Resolution of chest pain does not mean the patient is safe for general ward admission. Post-STEMI complications (arrhythmias, haemodynamic instability, heart failure) typically peak in the first 24â€“48 hours. Reduced LVEF (45%) and RV involvement require intensive monitoring. General ward lacks the capability for rapid response to VF or haemodynamic collapse.",
+          "nextNodeId": "node-monitoring",
+          "timeAdvanceMin": 10,
+          "vitalsDelta": { "hr": 5, "spo2": -1 },
+          "scoreDelta": -10
+        },
+        {
+          "id": "disposition-discharge",
+          "text": "Consider discharge home today with outpatient follow-up â€” STEMI is treated and patient feels well",
+          "correct": false,
+          "feedback": "Discharge on the day of STEMI is not appropriate, even after successful PCI. LVEF is 45% (mildly reduced), RV was involved, and the patient needs DAPT optimisation, ACE inhibitor and beta-blocker titration, cardiac rehabilitation referral, and close monitoring. Very early discharge (<48h) is only considered in uncomplicated STEMI with normal LV function and no RV involvement.",
+          "nextNodeId": "node-monitoring",
+          "timeAdvanceMin": 10,
+          "vitalsDelta": { "hr": 8, "spo2": -2 },
+          "scoreDelta": -20,
+          "triggerBadge": "patient-harmed"
+        }
+      ],
+      "isTerminal": false
+    },
+    {
+      "id": "node-monitoring",
+      "category": "monitoring",
+      "prompt": "The patient is in the CCU 4 hours post-PCI. HR 78, BP 118/74, SpO2 98% on room air, pain-free. A nurse alerts you that the monitor is showing a wide complex regular rhythm at 65 bpm. The patient is conscious and haemodynamically stable. What is this rhythm and how do you manage it?",
+      "context": "The wide complex rhythm looks regular with a rate of 65 bpm. No P waves visible. QRS is broad. The patient says he feels 'a bit funny' but is not in pain and has no chest pain.",
+      "choices": [
+        {
+          "id": "monitoring-aivr",
+          "text": "This is Accelerated Idioventricular Rhythm (AIVR) â€” a reperfusion arrhythmia. It is benign and self-limiting. Continue monitoring; no intervention required.",
+          "correct": true,
+          "feedback": "Correct. AIVR (rate 60â€“100 bpm) is a classic reperfusion arrhythmia seen post-STEMI and post-thrombolysis â€” it is often interpreted as a marker of successful reperfusion. It is haemodynamically well-tolerated in conscious patients and resolves spontaneously. No antiarrhythmic treatment is needed. Do not cardiovert or give amiodarone â€” this could cause harm.",
+          "nextNodeId": "node-end",
+          "timeAdvanceMin": 5,
+          "vitalsDelta": { "hr": -3, "spo2": 0 },
+          "scoreDelta": 15,
+          "educationalNote": "AIVR occurs due to enhanced automaticity in ischaemic Purkinje fibres following reperfusion. It has a rate between that of junctional escape (40â€“60 bpm) and VT (>100 bpm). Unlike VT, it does not require treatment. Distinguishing AIVR from VT is critical â€” treating AIVR with antiarrhythmics can worsen outcomes."
+        },
+        {
+          "id": "monitoring-vt-shock",
+          "text": "This looks like VT â€” perform immediate unsynchronised DC cardioversion at 200J",
+          "correct": false,
+          "feedback": "Unsynchronised defibrillation (for VF or pulseless VT) is not appropriate here. The patient is conscious with a pulse. If this were sustained VT with haemodynamic compromise, synchronised cardioversion would be indicated. However, at 65 bpm this rate strongly suggests AIVR, not VT. Inappropriate cardioversion in a conscious patient causes pain, anxiety, and potential harm.",
+          "nextNodeId": "node-end",
+          "timeAdvanceMin": 5,
+          "vitalsDelta": { "hr": 10, "spo2": -1 },
+          "scoreDelta": -15,
+          "triggerBadge": "patient-harmed",
+          "educationalNote": "VT is defined as a ventricular rhythm >100 bpm lasting >30 seconds or causing haemodynamic instability. AIVR at 60â€“100 bpm is not VT. The treatment thresholds and urgency are very different. Always check rate, patient consciousness, and haemodynamic status before intervening."
+        },
+        {
+          "id": "monitoring-amiodarone",
+          "text": "Give IV amiodarone 300mg over 20â€“60 minutes to suppress the arrhythmia",
+          "correct": false,
+          "feedback": "Amiodarone is not indicated for AIVR. This is a benign self-limiting reperfusion rhythm. Using amiodarone unnecessarily exposes the patient to its significant side effects (hypotension during infusion, phlebitis, thyroid dysfunction). Reserve amiodarone for haemodynamically unstable sustained VT or recurrent VF.",
+          "nextNodeId": "node-end",
+          "timeAdvanceMin": 30,
+          "vitalsDelta": { "hr": 5, "spo2": -1 },
+          "scoreDelta": -10,
+          "triggerBadge": "overtested"
+        },
+        {
+          "id": "monitoring-pacing",
+          "text": "Insert a temporary transvenous pacemaker â€” the wide complex rhythm may deteriorate to complete heart block",
+          "correct": false,
+          "feedback": "Temporary pacing is not indicated for AIVR. Although complete heart block (CHB) is a recognised complication of inferior STEMI (~5â€“10%), prophylactic pacing is not routinely recommended. If CHB develops with haemodynamic compromise, transcutaneous pacing can bridge to transvenous pacing. Current rhythm does not warrant invasive intervention.",
+          "nextNodeId": "node-end",
+          "timeAdvanceMin": 20,
+          "vitalsDelta": { "hr": 0, "spo2": 0 },
+          "scoreDelta": -8,
+          "educationalNote": "AV block in inferior STEMI is usually at the level of the AV node (vagally mediated or ischaemia of AV nodal artery), tends to be transient, and often responds to atropine. Anterior STEMI heart block (infra-Hisian) is more likely to require temporary pacing as it is more complete and less likely to resolve."
+        }
+      ],
+      "isTerminal": false
+    },
+    {
+      "id": "node-end",
+      "category": "monitoring",
+      "prompt": "The AIVR self-terminates after 8 minutes. The patient's rhythm returns to sinus at 72 bpm. 24 hours post-PCI: BP 122/76, HR 72, SpO2 98%, pain-free. Echo confirms LVEF 44%, inferior wall hypokinesia, no pericardial effusion. You are preparing his discharge medications for when he leaves in 2 days. Which medication bundle is correct for post-STEMI secondary prevention?",
+      "context": "The patient wants to know what tablets he will need to take long-term. He is already on amlodipine and ramipril.",
+      "choices": [
+        {
+          "id": "end-correct",
+          "text": "Continue aspirin 75mg OD lifelong + ticagrelor 90mg BD for 12 months, add bisoprolol (beta-blocker), increase ramipril (ACE inhibitor), add high-intensity statin (atorvastatin 80mg). Consider eplerenone if LVEF â‰¤40% â€” not needed here as LVEF 44%.",
+          "correct": true,
+          "feedback": "Excellent. This is the complete post-STEMI secondary prevention bundle per ESC 2023: (1) Dual antiplatelet therapy (DAPT) for 12 months â€” aspirin + ticagrelor 90mg BD; (2) Beta-blocker â€” reduces sudden death and remodelling; (3) ACE inhibitor â€” reduces remodelling, all-cause mortality; (4) High-intensity statin â€” atorvastatin 80mg, target LDL <1.4 mmol/L; (5) Mineralocorticoid receptor antagonist (eplerenone/spironolactone) if LVEF â‰¤40% â€” not indicated here. Amlodipine can continue. Clopidogrel is switched to ticagrelor.",
+          "nextNodeId": null,
+          "timeAdvanceMin": 0,
+          "vitalsDelta": { "hr": 0, "spo2": 0 },
+          "scoreDelta": 20,
+          "triggerBadge": "guideline-clean",
+          "educationalNote": "Post-STEMI secondary prevention targets: LDL <1.4 mmol/L (consider PCSK9 inhibitor if not achieved on maximally tolerated statin); blood pressure <130/80; smoking cessation; cardiac rehabilitation referral; annual influenza vaccination. LVEF should be reassessed at 6â€“12 weeks â€” if still â‰¤35%, consider ICD implantation assessment."
+        },
+        {
+          "id": "end-no-beta",
+          "text": "DAPT (aspirin + clopidogrel) + statin only. Beta-blockers are not needed as the patient is haemodynamically stable.",
+          "correct": false,
+          "feedback": "Two errors: (1) Ticagrelor is preferred over clopidogrel post-STEMI (PLATO trial); (2) Beta-blockers are indicated post-STEMI regardless of haemodynamic stability â€” they reduce ventricular remodelling, arrhythmia risk, and mortality. The patient's LVEF of 44% further supports beta-blocker use. Omitting beta-blockers is against ESC 2023 guidelines.",
+          "nextNodeId": null,
+          "timeAdvanceMin": 0,
+          "vitalsDelta": { "hr": 0, "spo2": 0 },
+          "scoreDelta": -10
+        },
+        {
+          "id": "end-stop-acei",
+          "text": "DAPT + beta-blocker + statin. Stop ramipril as blood pressure is now controlled.",
+          "correct": false,
+          "feedback": "ACE inhibitors (or ARBs if ACE-I intolerant) are indicated post-STEMI for all patients, regardless of blood pressure, especially with reduced LVEF. They reduce ventricular remodelling, heart failure progression, and mortality. Stopping ramipril because BP has normalised misunderstands the mechanism â€” this drug is here for myocardial protection, not just BP control.",
+          "nextNodeId": null,
+          "timeAdvanceMin": 0,
+          "vitalsDelta": { "hr": 0, "spo2": 0 },
+          "scoreDelta": -8
+        }
+      ],
+      "isTerminal": true
+    }
+  ],
+  "diseaseMap": {
+    "condition": "ST-Elevation Myocardial Infarction (STEMI)",
+    "icd10": "I21.9",
+    "presentingSymptoms": [
+      "Crushing or pressure-like central chest pain",
+      "Radiation to left arm, jaw, or epigastrium",
+      "Diaphoresis (sweating)",
+      "Nausea and vomiting",
+      "Dyspnoea",
+      "Sense of impending doom",
+      "Syncope or pre-syncope (particularly with inferior STEMI and bradycardia)"
+    ],
+    "atypicalPresentations": [
+      "Epigastric pain alone (especially inferior STEMI)",
+      "Jaw or arm pain without chest pain",
+      "Silent MI (diabetics, elderly, women)",
+      "Acute heart failure as the presenting feature"
+    ],
+    "redFlags": [
+      "Chest pain >20 minutes duration",
+      "Diaphoresis with chest pain",
+      "Haemodynamic instability (hypotension, shock)",
+      "New LBBB",
+      "ST elevation on ECG",
+      "Elevated troponin",
+      "Pulmonary oedema",
+      "Bradycardia with inferior ST elevation (vagal or AV block)"
+    ],
+    "bestFirstStep": "12-lead ECG within 10 minutes of first medical contact",
+    "bestInvestigation": "12-lead ECG (diagnostic) + high-sensitivity troponin (confirmatory, does not delay treatment)",
+    "diagnosis": "STEMI is a clinical-ECG diagnosis: ST elevation â‰¥1mm in â‰¥2 contiguous limb leads OR â‰¥2mm in precordial leads, or new LBBB in the appropriate clinical context. Troponin elevation confirms myocardial necrosis but is NOT required to initiate reperfusion.",
+    "treatment": {
+      "immediate": [
+        "12-lead ECG and monitoring",
+        "IV access (x2)",
+        "Aspirin 300mg loading dose PO",
+        "P2Y12 inhibitor loading dose (ticagrelor 180mg preferred, or prasugrel 60mg if not on anticoagulation and no prior stroke/TIA)",
+        "Anticoagulation: UFH 70â€“100 units/kg IV bolus (max 5000 units) OR bivalirudin",
+        "Activate cardiac catheterisation laboratory",
+        "Supplemental O2 only if SpO2 <94%"
+      ],
+      "reperfusion": [
+        "Primary PCI (preferred): target door-to-balloon â‰¤60 min (in-hospital) or FMC-to-balloon â‰¤90 min",
+        "Thrombolysis (if PCI not available within 120 min): tenecteplase or alteplase â€” followed by transfer to PCI centre"
+      ],
+      "antiplateletAndAnticoagulation": "DAPT (dual antiplatelet therapy) = aspirin + P2Y12 inhibitor for 12 months post-STEMI unless bleeding risk prohibits. Anticoagulation during PCI: UFH or bivalirudin.",
+      "avoidInRVMI": [
+        "Nitrates (GTN, isosorbide dinitrate) â€” reduce preload, cause haemodynamic collapse",
+        "Diuretics â€” reduce preload",
+        "Morphine â€” use with caution (affects P2Y12 inhibitor absorption)"
+      ],
+      "secondaryPrevention": [
+        "Aspirin 75mg OD lifelong",
+        "P2Y12 inhibitor (ticagrelor 90mg BD) for 12 months",
+        "High-intensity statin (atorvastatin 80mg) â€” target LDL <1.4 mmol/L",
+        "Beta-blocker (bisoprolol, carvedilol, metoprolol succinate)",
+        "ACE inhibitor or ARB",
+        "Eplerenone if LVEF â‰¤40% and symptoms of heart failure",
+        "Cardiac rehabilitation",
+        "Smoking cessation, lifestyle modification"
+      ]
+    },
+    "followUp": "Cardiology outpatient review at 4â€“6 weeks post-discharge. Echo at 6â€“12 weeks to reassess LVEF. If LVEF â‰¤35%, assess for ICD implantation. Annual review thereafter. Driving restrictions apply (notify DVLA; group 1 licence: do not drive for 1 week post-PCI if successful; group 2 HGV: 6 weeks minimum).",
+    "complications": [
+      "Cardiogenic shock (7â€“10% of STEMI)",
+      "Ventricular fibrillation / VT (24 hours peak risk)",
+      "Complete heart block (especially inferior STEMI â€” AV node ischaemia)",
+      "Acute mitral regurgitation (papillary muscle rupture)",
+      "Ventricular septal defect (mechanical complication, 1â€“3 days post-MI)",
+      "Free wall rupture (2â€“5 days, often fatal)",
+      "Left ventricular thrombus (anterior STEMI with apical akinesia)",
+      "Pericarditis (Dressler's syndrome â€” weeks to months post-MI)",
+      "Heart failure and remodelling",
+      "Reinfarction / stent thrombosis"
+    ],
+    "guidelineRef": "ESC 2023 ACS Guidelines â€” European Heart Journal (2023) 44(47):4921â€“5004"
+  },
+  "guideline": {
+    "name": "HEART Score",
+    "description": "The HEART score stratifies chest pain patients in the emergency department for short-term major adverse cardiac events (MACE). It is most useful in undifferentiated chest pain or suspected NSTEMI/unstable angina â€” not for confirmed STEMI (which requires immediate action regardless of score).",
+    "fields": {
+      "history": {
+        "label": "History",
+        "description": "Suspicion based on history alone",
+        "options": [
+          { "score": 0, "description": "Slightly suspicious â€” atypical features, no classic ACS history" },
+          { "score": 1, "description": "Moderately suspicious â€” mixed features" },
+          { "score": 2, "description": "Highly suspicious â€” classic presentation (crushing central pain, radiation, diaphoresis, nausea)" }
+        ]
+      },
+      "ecg": {
+        "label": "ECG",
+        "description": "ECG findings",
+        "options": [
+          { "score": 0, "description": "Normal ECG" },
+          { "score": 1, "description": "Non-specific repolarisation disturbance (LBBB, LVH, digoxin changes, early repolarisation)" },
+          { "score": 2, "description": "Significant ST deviation â€” new ST changes, T-wave inversions in multiple leads" }
+        ]
+      },
+      "age": {
+        "label": "Age",
+        "description": "Patient age",
+        "options": [
+          { "score": 0, "description": "Age <45 years" },
+          { "score": 1, "description": "Age 45â€“64 years" },
+          { "score": 2, "description": "Age â‰¥65 years" }
+        ]
+      },
+      "riskFactors": {
+        "label": "Risk Factors",
+        "description": "Cardiovascular risk factors (hypertension, hypercholesterolaemia, diabetes, obesity BMI >30, smoking, family history of CAD, known atherosclerotic disease)",
+        "options": [
+          { "score": 0, "description": "No known risk factors" },
+          { "score": 1, "description": "1â€“2 risk factors" },
+          { "score": 2, "description": "â‰¥3 risk factors OR history of atherosclerotic disease (prior MI, PCI, CABG, stroke, peripheral arterial disease)" }
+        ]
+      },
+      "troponin": {
+        "label": "Troponin",
+        "description": "Initial troponin level relative to normal upper limit of reference range (URL)",
+        "options": [
+          { "score": 0, "description": "â‰¤ normal limit (â‰¤1x URL)" },
+          { "score": 1, "description": "1â€“3x URL" },
+          { "score": 2, "description": ">3x URL" }
+        ]
+      }
+    },
+    "formula": "HEART score = history + ecg + age + riskFactors + troponin",
+    "maxScore": 10,
+    "interpretation": [
+      {
+        "range": "0â€“3",
+        "risk": "Low risk",
+        "maceRisk": "<2% 30-day MACE",
+        "recommendation": "Consider early discharge with outpatient follow-up. No routine stress testing needed in very low-risk patients."
+      },
+      {
+        "range": "4â€“6",
+        "risk": "Moderate risk",
+        "maceRisk": "12â€“16% 30-day MACE",
+        "recommendation": "Admit for observation, serial troponins, and non-invasive stress testing or coronary CTA."
+      },
+      {
+        "range": "7â€“10",
+        "risk": "High risk",
+        "maceRisk": ">50% 30-day MACE",
+        "recommendation": "Early invasive strategy â€” refer for coronary angiography. Do not discharge without cardiology review."
+      }
+    ],
+    "caveat": "The HEART score is validated for undifferentiated chest pain triage. In confirmed STEMI (ST elevation on ECG), do not use HEART score to guide management â€” reperfusion must be activated immediately regardless of score.",
+    "thisPatientScore": {
+      "history": 2,
+      "ecg": 2,
+      "age": 1,
+      "riskFactors": 2,
+      "troponin": 2,
+      "total": 9,
+      "interpretation": "High risk â€” but moot in this case as ECG confirms STEMI requiring immediate PCI"
+    }
+  },
+  "availableBadges": [
+    {
+      "id": "door-to-balloon",
+      "label": "Door to Balloon",
+      "description": "Activated the cath lab within the guideline time window, achieving door-to-balloon â‰¤90 minutes.",
+      "icon": "clock",
+      "positive": true
+    },
+    {
+      "id": "guideline-clean",
+      "label": "Guideline Clean",
+      "description": "Prescribed the correct evidence-based drug regimen at every decision point, consistent with ESC 2023 ACS Guidelines.",
+      "icon": "checkmark",
+      "positive": true
+    },
+    {
+      "id": "overtested",
+      "label": "Over-Tester",
+      "description": "Ordered investigations that were not clinically indicated, causing delay or patient harm.",
+      "icon": "warning",
+      "positive": false
+    },
+    {
+      "id": "delayed-diagnosis",
+      "label": "Delayed Diagnosis",
+      "description": "A decision you made delayed the diagnosis of STEMI and consequently delayed reperfusion therapy.",
+      "icon": "clock-warning",
+      "positive": false
+    },
+    {
+      "id": "patient-harmed",
+      "label": "Patient Harmed",
+      "description": "A clinical decision directly caused patient harm â€” inappropriate drug, contraindicated treatment, or dangerous delay.",
+      "icon": "danger",
+      "positive": false
+    }
+  ],
+  "disclaimer": "This case is designed for medical education and clinical reasoning training only. It is not a substitute for clinical guidelines, senior supervision, or real patient care. Always refer to current local and national protocols. Drug doses and management pathways should be verified against current British National Formulary (BNF) and relevant clinical guidelines before application to real patients. ESC 2023 ACS Guideline reference: Eur Heart J. 2023;44(47):4921â€“5004."
+}
+

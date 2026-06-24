@@ -1,0 +1,492 @@
+{
+  "id": "cirrhosis-complication",
+  "specialty": "Internal Medicine",
+  "title": "Distended Abdomen and Yellow Eyes",
+  "subtitle": "Decompensated Cirrhosis / SBP",
+  "difficulty": "advanced",
+  "estimatedMinutes": 25,
+  "patient": {
+    "age": 52,
+    "sex": "M",
+    "chiefComplaint": "3 days of worsening abdominal distension, jaundice, and confusion",
+    "history": "A 52-year-old male with known alcoholic liver cirrhosis presents with 3 days of worsening abdominal distension, increased jaundice, and a 1-day history of confusion. His wife reports he has not been his usual self — forgetful, slow to respond, and mildly aggressive. He had a variceal banding procedure 6 months ago and has not bled. He denies taking any new medications and claims he stopped drinking 2 weeks ago.",
+    "initialVitals": {
+      "bp": "100/68",
+      "hr": 108,
+      "rr": 22,
+      "spo2": 96,
+      "temp": 38.4,
+      "gcs": 13
+    },
+    "symptoms": [
+      "Worsening abdominal distension (tense ascites)",
+      "Jaundice — yellowing of eyes and skin",
+      "Confusion and altered behaviour (hepatic encephalopathy)",
+      "Low-grade fever (38.4°C)",
+      "Reduced urine output",
+      "Fatigue and anorexia for 1 week"
+    ],
+    "redFlags": [
+      "Fever in cirrhosis — always assume SBP until proven otherwise",
+      "GCS 13 — hepatic encephalopathy must be graded and precipitant sought",
+      "Tachycardia and relative hypotension — haemodynamic compromise",
+      "Tense ascites — requires urgent diagnostic paracentesis",
+      "Known variceal history — GI bleed must be excluded as HE precipitant"
+    ],
+    "backgroundHistory": {
+      "pastMedicalHistory": [
+        "Alcoholic liver cirrhosis (Child-Pugh C, MELD 22)",
+        "Previous oesophageal variceal haemorrhage — banded 6 months ago",
+        "Ascites managed with spironolactone and furosemide",
+        "No prior episode of SBP"
+      ],
+      "medications": [
+        "Spironolactone 100mg once daily",
+        "Furosemide 40mg once daily",
+        "Propranolol 40mg twice daily (variceal prophylaxis)",
+        "Lactulose 10mL three times daily"
+      ],
+      "allergies": "NKDA",
+      "socialHistory": "Unemployed. Lives with wife. Smokes 15 cigarettes per day. Alcohol: claims 2 weeks abstinence; previously 10–15 units/day for 20+ years.",
+      "familyHistory": "Father had liver disease (unknown cause). Mother alive and well.",
+      "reviewOfSystems": "No haematemesis or melaena. No haematuria. No diarrhoea. Wife reports he missed his lactulose yesterday. No recent new medications. No NSAID use."
+    }
+  },
+  "startNodeId": "node-stabilize",
+  "nodes": [
+    {
+      "id": "node-stabilize",
+      "category": "stabilization",
+      "prompt": "A 52-year-old man with known alcoholic cirrhosis presents with 3 days of tense ascites, confusion (GCS 13), fever 38.4°C, and BP 100/68. What is your immediate priority?",
+      "context": "The patient is jaundiced, mildly confused, and has a visibly distended abdomen. He is on continuous pulse oximetry. His wife provides the history.",
+      "choices": [
+        {
+          "id": "stabilize-correct",
+          "text": "IV access ×2, bloods (FBC, U&E, LFT, coagulation, CRP, ammonia, group and save), urinalysis, and plan urgent diagnostic paracentesis — DO NOT give diuretics yet",
+          "correct": true,
+          "feedback": "Correct. This patient has decompensated cirrhosis with suspected SBP (fever + ascites + confusion). The diagnostic paracentesis is the most critical early action and must not be delayed. IV access and urgent bloods are needed to assess severity. Diuretics must be withheld until SBP is excluded — they worsen renal function in SBP and can precipitate hepatorenal syndrome.",
+          "nextNodeId": "node-he-assessment",
+          "timeAdvanceMin": 5,
+          "vitalsDelta": { "hr": 0, "spo2": 1 },
+          "scoreDelta": 10,
+          "educationalNote": "In decompensated cirrhosis, fever must always prompt diagnostic paracentesis to exclude SBP. Spontaneous Bacterial Peritonitis (SBP) = neutrophil count >250/mm³ in ascitic fluid in the absence of intra-abdominal source of infection. It occurs in 10–30% of cirrhotic inpatients with ascites and carries 20–30% mortality per episode."
+        },
+        {
+          "id": "stabilize-diuretics",
+          "text": "The ascites is tense and causing discomfort — give furosemide 80mg IV to relieve the distension",
+          "correct": false,
+          "feedback": "Giving diuretics before excluding SBP is dangerous. In SBP, diuretics reduce circulating volume, impair renal perfusion, and dramatically increase the risk of hepatorenal syndrome (HRS). Furosemide must be withheld until the diagnosis of SBP is established and appropriate treatment started.",
+          "nextNodeId": "node-he-assessment",
+          "timeAdvanceMin": 5,
+          "vitalsDelta": { "hr": 8, "spo2": 0, "bp": -8 },
+          "scoreDelta": -15,
+          "triggerBadge": "patient-harmed",
+          "educationalNote": "Diuretics in SBP → reduced effective circulating volume → renal vasoconstriction → AKI/HRS. The Sort trial (2015) showed albumin infusion reduces HRS in SBP; diuretics do the opposite. HRS type 1 (now called AKI-HRS) complicates up to 30% of SBP episodes without prophylactic albumin."
+        },
+        {
+          "id": "stabilize-antibiotics-empirical",
+          "text": "Start cefotaxime empirically before any investigations — SBP is likely given the clinical picture",
+          "correct": false,
+          "feedback": "Starting antibiotics before diagnostic paracentesis risks missing the diagnosis (cannot confirm SBP without an ascitic neutrophil count) and prevents microbiological culture of the ascitic fluid. The paracentesis must come first — it takes only minutes and should not delay antibiotics by more than 30–60 minutes. Empirical treatment without diagnostic paracentesis is poor practice.",
+          "nextNodeId": "node-he-assessment",
+          "timeAdvanceMin": 8,
+          "vitalsDelta": { "hr": -3, "spo2": 0 },
+          "scoreDelta": -8
+        }
+      ],
+      "isTerminal": false
+    },
+    {
+      "id": "node-he-assessment",
+      "category": "diagnosis",
+      "prompt": "Bloods are sent. The patient is confused, slow, and flapping (asterixis present). GCS 13. Which grade of hepatic encephalopathy (HE) does this represent, and what are the common precipitants you must actively exclude?",
+      "context": "The patient can follow commands but is disorientated in time. He has a coarse tremor. His wife confirms a 1-day history of confusion. Ammonia is pending.",
+      "choices": [
+        {
+          "id": "he-correct",
+          "text": "Grade 2–3 HE (West Haven criteria): disorientation, asterixis present. Precipitants to exclude: infection (SBP), GI bleeding, constipation (missed lactulose), dehydration, electrolyte imbalance, drugs (opioids, benzodiazepines), renal failure.",
+          "correct": true,
+          "feedback": "Correct grading and comprehensive precipitant list. West Haven Grade 2 = disorientation, asterixis, drowsiness; Grade 3 = marked confusion, semi-stupor but arousable. In any patient with HE, every precipitant must be systematically excluded — particularly infection (most common), GI bleed, constipation, and drugs. His missed lactulose and the fever make SBP and constipation both likely precipitants here.",
+          "nextNodeId": "node-paracentesis",
+          "timeAdvanceMin": 5,
+          "vitalsDelta": { "hr": 0, "spo2": 0 },
+          "scoreDelta": 12,
+          "investigations": [
+            { "name": "Ammonia", "value": "148 µmol/L (normal <47) — markedly elevated", "flagged": true },
+            { "name": "FBC", "value": "WBC 14.2 ×10⁹/L, Hb 102 g/L (anaemia), Platelets 68 ×10⁹/L (low — portal hypertension)", "flagged": true },
+            { "name": "U&E", "value": "Na 128 mmol/L (hyponatraemia), K 3.2, Creatinine 168 µmol/L (AKI), Urea 12.4", "flagged": true },
+            { "name": "LFT", "value": "Bilirubin 185 µmol/L (severely elevated), ALT 68 (low — end-stage), ALP 224, Albumin 22 g/L (severely low)", "flagged": true },
+            { "name": "Coagulation", "value": "PT 22s (INR 2.8 — severely prolonged), APTT 55s", "flagged": true },
+            { "name": "CRP", "value": "142 mg/L — elevated", "flagged": true }
+          ],
+          "educationalNote": "West Haven Criteria for HE: Grade 1 — trivial lack of awareness, shortened attention; Grade 2 — disorientation for time, obvious personality change, asterixis; Grade 3 — somnolent but arousable, gross disorientation, marked confusion; Grade 4 — coma. Covert HE (minimal HE) precedes overt HE and impairs driving/quality of life without obvious symptoms."
+        },
+        {
+          "id": "he-grade4",
+          "text": "This is Grade 4 HE (coma) — he needs immediate intubation for airway protection",
+          "correct": false,
+          "feedback": "Grade 4 HE requires coma (unresponsive to pain). This patient has GCS 13 and responds to commands — he is Grade 2–3. Intubation at this stage is premature and would deprive him of hepatic encephalopathy-specific treatments (lactulose, rifaximin, treating precipitants) that may reverse the confusion without intubation. Over-escalation is harmful here.",
+          "nextNodeId": "node-paracentesis",
+          "timeAdvanceMin": 8,
+          "vitalsDelta": { "hr": 5, "spo2": 0 },
+          "scoreDelta": -10
+        },
+        {
+          "id": "he-benzos",
+          "text": "He is agitated and confused — give lorazepam 1mg IV to calm him down and allow examination",
+          "correct": false,
+          "feedback": "Benzodiazepines are absolutely contraindicated in hepatic encephalopathy. They worsen encephalopathy by potentiating GABA-A receptor activity — the same mechanism responsible for the metabolic HE itself. Benzodiazepines can precipitate coma in a cirrhotic patient. Use lactulose and address precipitants instead. Physical restraint or a quiet environment is preferable to pharmacological sedation.",
+          "nextNodeId": "node-paracentesis",
+          "timeAdvanceMin": 6,
+          "vitalsDelta": { "hr": 3, "spo2": -2 },
+          "scoreDelta": -20,
+          "triggerBadge": "patient-harmed",
+          "educationalNote": "Benzodiazepines in HE cause catastrophic worsening. The liver cannot metabolise benzodiazepines effectively in cirrhosis — prolonged and unpredictable sedation results. The only safe indication for benzodiazepines in cirrhosis is acute alcohol withdrawal seizures, where the benefit outweighs the risk. For HE agitation: treat the cause, use lactulose, and consider low-dose haloperidol if sedation is truly necessary."
+        }
+      ],
+      "isTerminal": false
+    },
+    {
+      "id": "node-paracentesis",
+      "category": "investigation",
+      "prompt": "The bloods are alarming: INR 2.8, platelets 68. You are about to perform a diagnostic paracentesis. A medical student asks if you need to correct the coagulopathy first with FFP and platelets. What do you tell them?",
+      "context": "The patient has coagulopathy (INR 2.8) and moderate thrombocytopaenia (68 ×10⁹/L). The ultrasound confirms large volume ascites with free fluid in all quadrants. You are preparing the paracentesis kit.",
+      "choices": [
+        {
+          "id": "paracentesis-correct",
+          "text": "No — routine correction of INR and platelets before paracentesis is NOT required and is not evidence-based. Diagnostic paracentesis is safe in cirrhosis despite coagulopathy. Proceed immediately with the paracentesis. Send fluid for: neutrophil count, MC&S, protein, albumin, cytology.",
+          "correct": true,
+          "feedback": "Correct and important teaching point. Multiple studies and BSG/EASL guidelines confirm that routine pre-paracentesis correction of INR or platelets is not required for diagnostic or therapeutic paracentesis in cirrhosis, even with INR >3 or platelets <50. Coagulopathy in cirrhosis is a complex rebalancing of pro- and anti-coagulant factors — it does not reliably predict bleeding risk during paracentesis. Needlessly correcting adds cost, transfusion reactions, and delay.",
+          "nextNodeId": "node-sbp-diagnosis",
+          "timeAdvanceMin": 15,
+          "vitalsDelta": { "hr": -5, "spo2": 0 },
+          "scoreDelta": 15,
+          "investigations": [
+            { "name": "Ascitic fluid neutrophil count", "value": "820 cells/mm³ (normal <250) — DIAGNOSTIC OF SBP", "flagged": true },
+            { "name": "Ascitic fluid culture", "value": "Sent — results pending 48–72 hours. (Gram stain: gram-negative rods)", "flagged": true },
+            { "name": "Ascitic fluid protein", "value": "8 g/L (exudate pattern)", "flagged": false },
+            { "name": "SAAG (Serum-Ascitic Albumin Gradient)", "value": "Albumin serum 22 - Albumin ascites 5 = 17 g/L (>11 = portal hypertension)", "flagged": false }
+          ],
+          "educationalNote": "EASL 2018 and BSG guidelines: Paracentesis does not require FFP or platelets regardless of the INR or platelet count. The rate of significant haemorrhage from diagnostic paracentesis in cirrhosis is <1 in 1000 procedures. Pre-procedure transfusion wastes blood products and delays treatment without evidence of benefit."
+        },
+        {
+          "id": "paracentesis-ffp",
+          "text": "Correct the INR to <1.5 with 4 units FFP and transfuse platelets to >50 before proceeding — the bleeding risk is too high",
+          "correct": false,
+          "feedback": "This is a common misconception. There is no evidence that correcting INR or platelets before paracentesis reduces bleeding complications in cirrhosis. INR in cirrhosis does not reflect true haemostatic status — pro- and anti-coagulant factors are simultaneously reduced. FFP administration may actually worsen portal hypertension by expanding intravascular volume. Delay is the bigger risk here.",
+          "nextNodeId": "node-sbp-diagnosis",
+          "timeAdvanceMin": 120,
+          "vitalsDelta": { "hr": 5, "spo2": -1 },
+          "scoreDelta": -12,
+          "triggerBadge": "delayed-diagnosis",
+          "educationalNote": "The coagulation cascade tests (PT/INR, APTT) do not capture the in vivo haemostatic balance in cirrhosis. Thromboelastography (TEG/ROTEM) better reflects true clotting status. Studies show similar haemostatic function in cirrhotics and controls on viscoelastic testing, despite dramatically abnormal conventional coagulation tests."
+        },
+        {
+          "id": "paracentesis-skip",
+          "text": "The diagnosis of SBP is clinically obvious — skip the paracentesis and start antibiotics now",
+          "correct": false,
+          "feedback": "SBP cannot be diagnosed without paracentesis. The definition requires neutrophil count >250/mm³ in ascitic fluid. Other conditions mimic SBP (secondary peritonitis, culture-negative neutrocytic ascites). Ascitic culture before antibiotics is essential for organism-directed de-escalation. Paracentesis is mandatory — it is both diagnostic and provides baseline culture data.",
+          "nextNodeId": "node-sbp-diagnosis",
+          "timeAdvanceMin": 10,
+          "vitalsDelta": { "hr": 3, "spo2": 0 },
+          "scoreDelta": -10
+        }
+      ],
+      "isTerminal": false
+    },
+    {
+      "id": "node-sbp-diagnosis",
+      "category": "diagnosis",
+      "prompt": "Ascitic fluid neutrophil count returns at 820/mm³ — SBP is confirmed. What is the correct first-line treatment for SBP, and what additional therapy must be given to prevent hepatorenal syndrome?",
+      "context": "Creatinine is 168 µmol/L (elevated, baseline unknown — likely pre-renal AKI or early HRS). Albumin 22 g/L. Urine output has been 20mL in the past 2 hours. Time to start treatment.",
+      "choices": [
+        {
+          "id": "sbp-correct",
+          "text": "Cefotaxime 2g IV three times daily for 5 days (first-line SBP antibiotic) PLUS albumin 1.5g/kg IV on Day 1 and 1g/kg IV on Day 3 to prevent hepatorenal syndrome (SORT trial).",
+          "correct": true,
+          "feedback": "Correct and complete. Cefotaxime 2g TDS IV for 5 days is the EASL-recommended first-line treatment for SBP — it covers the causative gram-negative organisms (E. coli, Klebsiella) and gram-positives. Albumin infusion (1.5g/kg day 1, 1g/kg day 3) is mandatory alongside antibiotics — the SORT trial (1999) showed a 67% relative risk reduction in HRS development and a 40% relative risk reduction in mortality when albumin was given with antibiotics.",
+          "nextNodeId": "node-he-treatment",
+          "timeAdvanceMin": 5,
+          "vitalsDelta": { "hr": -5, "spo2": 1 },
+          "scoreDelta": 20,
+          "triggerBadge": "sbp-protocol",
+          "educationalNote": "SORT trial (Sort et al., NEJM 1999): Albumin + cefotaxime vs cefotaxime alone in SBP — albumin group had 10% vs 33% HRS rate, and 10% vs 29% in-hospital mortality. Albumin works by expanding circulating volume, preventing the renal vasoconstriction triggered by systemic inflammation and reduced effective arterial blood volume."
+        },
+        {
+          "id": "sbp-oral-ciprofloxacin",
+          "text": "Oral ciprofloxacin 500mg twice daily — it has good gram-negative cover and avoids the need for IV access",
+          "correct": false,
+          "feedback": "Oral ciprofloxacin is not appropriate for SBP with systemic illness (fever, tachycardia, confusion, AKI). Oral bioavailability is unreliable in shocked/unwell patients with gut oedema. IV cefotaxime (or IV amoxicillin-clavulanate) is the standard of care. Additionally, this answer omits albumin — the critically important adjunct that prevents HRS.",
+          "nextNodeId": "node-he-treatment",
+          "timeAdvanceMin": 6,
+          "vitalsDelta": { "hr": 5, "spo2": -1 },
+          "scoreDelta": -12,
+          "educationalNote": "Oral ciprofloxacin may be used only in patients without systemic signs, vomiting, or renal impairment — so-called 'uncomplicated SBP'. This patient has fever, confusion, AKI, and tachycardia — IV therapy is mandatory."
+        },
+        {
+          "id": "sbp-antibiotics-only",
+          "text": "Cefotaxime 2g IV TDS for 5 days — antibiotics alone are sufficient; albumin is expensive and not always available",
+          "correct": false,
+          "feedback": "Omitting albumin in SBP is a significant error. The SORT trial demonstrated a clear mortality benefit from albumin. Hepatorenal syndrome is a common and often fatal complication of SBP — albumin markedly reduces its incidence. Cost and availability do not justify withholding a treatment with a 40% relative mortality reduction. Albumin must be prescribed alongside antibiotics.",
+          "nextNodeId": "node-he-treatment",
+          "timeAdvanceMin": 5,
+          "vitalsDelta": { "hr": 5, "spo2": -1 },
+          "scoreDelta": -10
+        },
+        {
+          "id": "sbp-meropenem",
+          "text": "Start meropenem 1g IV TDS — the patient looks very unwell and a carbapenem gives broader cover",
+          "correct": false,
+          "feedback": "Meropenem is not first-line for SBP. Cefotaxime (or amoxicillin-clavulanate) has established evidence from multiple RCTs and is guideline-recommended. Carbapenems should be reserved for patients with nosocomial SBP (hospital-acquired), known ESBL carriage, or failure to respond to cefotaxime. Escalating to carbapenems empirically promotes antibiotic resistance and is against stewardship principles.",
+          "nextNodeId": "node-he-treatment",
+          "timeAdvanceMin": 5,
+          "vitalsDelta": { "hr": -3, "spo2": 0 },
+          "scoreDelta": -5
+        }
+      ],
+      "isTerminal": false
+    },
+    {
+      "id": "node-he-treatment",
+      "category": "treatment",
+      "prompt": "SBP treatment is started. Hepatic encephalopathy Grade 2–3 is the other major problem. The SBP is likely the precipitant. What specific treatments do you initiate for the HE?",
+      "context": "The patient remains confused (GCS 13) and has asterixis. Ammonia 148 µmol/L. He missed his lactulose yesterday. Creatinine is rising (now 188 µmol/L).",
+      "choices": [
+        {
+          "id": "he-treatment-correct",
+          "text": "Lactulose 25–30mL orally three times daily (titrate to 2–3 soft stools/day) + rifaximin 550mg BD as long-term secondary prevention. Treat the precipitant (SBP — already started). Stop nephrotoxins. Avoid benzodiazepines and opioids.",
+          "correct": true,
+          "feedback": "Correct and comprehensive. Lactulose is first-line for overt HE — it acidifies the gut, converts NH3 to NH4+ (which cannot cross the gut wall), and promotes stool frequency. Target 2–3 soft stools per day. Rifaximin 550mg BD is a non-absorbable antibiotic that reduces gut ammonia production and prevents recurrent HE (RFHE trial: 58% relative reduction in recurrence). Treating the precipitant (SBP) is equally important.",
+          "nextNodeId": "node-aki-management",
+          "timeAdvanceMin": 8,
+          "vitalsDelta": { "hr": -3, "spo2": 0 },
+          "scoreDelta": 15,
+          "educationalNote": "Rifaximin + lactulose reduces HE recurrence more effectively than lactulose alone (Bass et al., NEJM 2010). Rifaximin acts locally in the gut with minimal systemic absorption — it is safe in severe liver disease. BCAA (branched-chain amino acid) supplementation may be used if rifaximin is unavailable. Protein restriction is no longer recommended in HE — it worsens outcomes and promotes sarcopenia."
+        },
+        {
+          "id": "he-protein-restrict",
+          "text": "Restrict dietary protein to <40g/day — nitrogen from protein is converted to ammonia and worsens HE",
+          "correct": false,
+          "feedback": "Protein restriction is outdated and harmful. EASL and ESPEN guidelines explicitly state that protein restriction is NOT recommended in HE. Cirrhotic patients are already sarcopenic and malnourished — protein restriction worsens this and increases mortality. Normal or increased protein intake (1.2–1.5g/kg/day) is recommended. Ammonia management should focus on lactulose and rifaximin, not dietary protein restriction.",
+          "nextNodeId": "node-aki-management",
+          "timeAdvanceMin": 5,
+          "vitalsDelta": { "hr": 3, "spo2": 0 },
+          "scoreDelta": -8,
+          "educationalNote": "Sarcopenia is present in >50% of cirrhotic patients and is an independent predictor of mortality, post-transplant outcomes, and HE episodes. Adequate protein intake is protective. The historical fear of 'protein-induced HE' has been disproved by multiple RCTs."
+        },
+        {
+          "id": "he-neomycin",
+          "text": "Give neomycin 1g QDS orally — it reduces gut bacteria and ammonia production effectively",
+          "correct": false,
+          "feedback": "Neomycin is no longer recommended for HE in modern guidelines. It causes dose-dependent nephrotoxicity and ototoxicity — particularly dangerous in this patient who already has AKI. Rifaximin has replaced neomycin as the preferred gut-acting antibiotic for HE because it is safer and equally effective.",
+          "nextNodeId": "node-aki-management",
+          "timeAdvanceMin": 5,
+          "vitalsDelta": { "hr": 3, "spo2": -1 },
+          "scoreDelta": -10,
+          "triggerBadge": "patient-harmed",
+          "educationalNote": "Neomycin was historically used for HE but its nephrotoxicity (even with minimal systemic absorption in intestinal disease) and ototoxicity make it inappropriate in modern practice, especially in patients with AKI. Rifaximin is the evidence-based replacement."
+        }
+      ],
+      "isTerminal": false
+    },
+    {
+      "id": "node-aki-management",
+      "category": "treatment",
+      "prompt": "Creatinine is now 195 µmol/L (rising). Urine output remains low at 20–25mL/hr. Urine sodium is <10 mmol/L. The renal team asks if this is hepatorenal syndrome or pre-renal AKI. How do you differentiate, and what is the immediate management?",
+      "context": "No evidence of GI bleeding. Urine dipstick: no blood, no protein. No NSAIDs taken. The patient is on spironolactone and furosemide (currently held since admission). Diuretics were stopped on admission.",
+      "choices": [
+        {
+          "id": "aki-correct",
+          "text": "Pre-renal AKI vs HRS: both share low urine sodium (<10 mmol/L). Distinguish by fluid challenge: give albumin (preferred over saline) 1g/kg over 24–48 hours. If creatinine improves → pre-renal. If creatinine continues rising despite albumin and no other cause identified → HRS (AKI-HRS). Hold all nephrotoxins. Consider terlipressin if HRS confirmed.",
+          "correct": true,
+          "feedback": "Correct distinction and management. Pre-renal AKI and HRS both cause low urine sodium and oliguria. A fluid challenge (albumin 1g/kg, not saline, per EASL 2018) over 48 hours is used to differentiate — response suggests pre-renal AKI. If no response and all other causes excluded = HRS (AKI-HRS). Terlipressin (1mg IV 4–6 hourly) + albumin is first-line for HRS type 1 (CONFIRM trial).",
+          "nextNodeId": "node-nutrition-disposition",
+          "timeAdvanceMin": 10,
+          "vitalsDelta": { "hr": -3, "spo2": 0 },
+          "scoreDelta": 15,
+          "educationalNote": "AKI-HRS (formerly HRS type 1) diagnostic criteria (ICA 2015): cirrhosis with ascites + AKI (creatinine rise ≥26.5 µmol/L in 48h or ≥50% from baseline) + no sustained improvement after 2 days of diuretic withdrawal and albumin challenge + no nephrotoxin exposure + no parenchymal kidney disease. Terlipressin + albumin achieves HRS reversal in ~40–50% of cases."
+        },
+        {
+          "id": "aki-saline",
+          "text": "Give 1 litre Normal Saline IV bolus as a fluid challenge to test for pre-renal AKI",
+          "correct": false,
+          "feedback": "Saline is inappropriate for the fluid challenge in cirrhosis with AKI. In cirrhosis, saline expands the extracellular compartment disproportionately, worsening ascites and peripheral oedema without improving effective circulating volume. Albumin is the preferred fluid for fluid challenge in cirrhosis-related AKI (EASL 2018 guidelines: albumin 1g/kg for 48 hours).",
+          "nextNodeId": "node-nutrition-disposition",
+          "timeAdvanceMin": 8,
+          "vitalsDelta": { "hr": 3, "spo2": -1 },
+          "scoreDelta": -8
+        },
+        {
+          "id": "aki-dialysis",
+          "text": "The creatinine is rising rapidly — refer urgently for immediate dialysis",
+          "correct": false,
+          "feedback": "Dialysis is premature before a fluid challenge to exclude pre-renal AKI and before attempting terlipressin for potential HRS. Renal replacement therapy in cirrhosis is reserved for patients with AKI-HRS unresponsive to terlipressin + albumin, or those with other RRT indications (hyperkalaemia, severe acidosis, pulmonary oedema). Premature dialysis referral skips treatable reversible causes.",
+          "nextNodeId": "node-nutrition-disposition",
+          "timeAdvanceMin": 15,
+          "vitalsDelta": { "hr": 5, "spo2": 0 },
+          "scoreDelta": -10
+        }
+      ],
+      "isTerminal": false
+    },
+    {
+      "id": "node-nutrition-disposition",
+      "category": "disposition",
+      "prompt": "After 48 hours: the patient's GCS has improved to 15. Creatinine is stabilising at 185 µmol/L (improved response to albumin — likely pre-renal AKI). SBP antibiotics are on Day 2. He asks when he can eat. Where should this patient be admitted, and what nutritional guidance do you give?",
+      "context": "The patient is lucid and asking about food. His wife wants to bring him homemade soup. The SBP antibiotics are running. Noradrenaline was never required — haemodynamics have stabilised.",
+      "choices": [
+        {
+          "id": "nutrition-correct",
+          "text": "Admit to hepatology ward for ongoing monitoring. Nutrition: encourage normal protein intake (1.2–1.5g/kg/day) — protein restriction is harmful. High-calorie diet. Consider overnight enteral feeding if oral intake remains poor. Refer dietitian urgently. Avoid alcohol completely.",
+          "correct": true,
+          "feedback": "Correct disposition and nutrition guidance. Cirrhotic patients with HE require hepatology ward admission for ongoing monitoring of: antibiotic response (repeat paracentesis at 48 hours), renal function, HE grade, and liver function. Nutrition: adequate protein is essential — NOT restricted. EASL guidelines recommend 1.2–1.5g protein/kg/day and 35–40 kcal/kg/day. Late evening snacks reduce overnight fasting and reduce HE risk.",
+          "nextNodeId": null,
+          "timeAdvanceMin": 0,
+          "vitalsDelta": { "hr": 0, "spo2": 0 },
+          "scoreDelta": 15,
+          "triggerBadge": "guideline-clean",
+          "educationalNote": "Malnutrition is present in >80% of cirrhotic inpatients. Sarcopenia is independently associated with increased mortality, HE risk, and post-transplant complications. Overnight fasting in cirrhosis triggers catabolism similar to a 3-day fast in healthy individuals. Late evening snacks (complex carbohydrates) and early morning meals reduce catabolism and improve HE outcomes."
+        },
+        {
+          "id": "nutrition-restrict",
+          "text": "Admit to hepatology ward. Strict NPO until HE fully resolved — risk of aspiration. Low protein diet (30g/day) to minimise ammonia burden.",
+          "correct": false,
+          "feedback": "Two errors: (1) NPO is not required if the patient is awake, alert, and protecting his airway (GCS now 15); (2) Low protein diet is contraindicated — it worsens sarcopenia and outcomes. The patient should eat as normally as possible. Dietary restriction is only required if aspiration risk is high (GCS <13) or specific medical reason exists.",
+          "nextNodeId": null,
+          "timeAdvanceMin": 0,
+          "vitalsDelta": { "hr": 3, "spo2": 0 },
+          "scoreDelta": -12
+        },
+        {
+          "id": "nutrition-discharge",
+          "text": "The patient is improved — discharge home with GP follow-up in 1 week",
+          "correct": false,
+          "feedback": "Premature discharge is dangerous. SBP antibiotics have 3 more days to run (total 5 days). Creatinine is still elevated (185 µmol/L). A repeat paracentesis at 48 hours is required to confirm response (target neutrophil count <250/mm³). SBP has a 20–30% hospital mortality — this patient needs inpatient monitoring until fully stabilised.",
+          "nextNodeId": null,
+          "timeAdvanceMin": 0,
+          "vitalsDelta": { "hr": 5, "spo2": -1 },
+          "scoreDelta": -15,
+          "triggerBadge": "patient-harmed"
+        }
+      ],
+      "isTerminal": true
+    }
+  ],
+  "diseaseMap": {
+    "condition": "Spontaneous Bacterial Peritonitis (SBP) and Decompensated Cirrhosis",
+    "icd10": "K65.2",
+    "presentingSymptoms": [
+      "Fever in a patient with known ascites",
+      "Worsening abdominal pain or tenderness",
+      "New or worsening hepatic encephalopathy",
+      "Deteriorating renal function",
+      "General malaise and clinical deterioration without an obvious cause"
+    ],
+    "atypicalPresentations": [
+      "SBP without fever or abdominal pain (especially in elderly)",
+      "HE as the only presenting feature",
+      "Haemodynamic deterioration without localising signs"
+    ],
+    "redFlags": [
+      "Fever + ascites = SBP until proven otherwise — paracentesis mandatory",
+      "HE in a known cirrhotic — always seek precipitant",
+      "Rising creatinine — HRS vs pre-renal AKI",
+      "Low platelets + prolonged INR — bleeding risk",
+      "Hyponatraemia <130 — marker of severe liver disease"
+    ],
+    "bestFirstStep": "Diagnostic paracentesis (no need to correct coagulopathy first)",
+    "bestInvestigation": "Ascitic fluid neutrophil count (SBP = >250/mm³)",
+    "diagnosis": "SBP is defined as ascitic neutrophil count >250/mm³ in the absence of intra-abdominal source of secondary peritonitis. No organism is isolated in approximately 40% of SBP (culture-negative neutrocytic ascites — treat the same way).",
+    "treatment": {
+      "sbp": [
+        "Cefotaxime 2g IV TDS for 5 days (first-line)",
+        "Albumin 1.5g/kg IV on Day 1 + 1g/kg IV on Day 3 (prevents HRS — mandatory)",
+        "Repeat paracentesis at 48 hours to confirm response (target PMN <250/mm³)",
+        "Norfloxacin 400mg OD for long-term SBP secondary prophylaxis (or ciprofloxacin)"
+      ],
+      "hepaticEncephalopathy": [
+        "Lactulose 25–30mL TDS (target 2–3 soft stools/day)",
+        "Rifaximin 550mg BD for secondary prevention",
+        "Treat precipitants: infection, GI bleed, constipation, drugs, renal failure, electrolytes",
+        "Avoid benzodiazepines and opioids",
+        "Adequate nutrition — protein 1.2–1.5g/kg/day"
+      ],
+      "hrsManagement": [
+        "Terlipressin 1mg IV 4–6 hourly + albumin 1g/kg/day",
+        "Stop all nephrotoxins (NSAIDs, aminoglycosides, ACE inhibitors in acute setting)",
+        "Hold diuretics",
+        "Noradrenaline as alternative to terlipressin in ICU setting"
+      ]
+    },
+    "followUp": "Repeat paracentesis at 48 hours (confirm PMN <250 = SBP response). Long-term secondary SBP prophylaxis with norfloxacin or ciprofloxacin. Refer to hepatology/liver transplant team. Assess MELD score for transplant listing. Discuss alcohol cessation support.",
+    "complications": [
+      "Hepatorenal syndrome (AKI-HRS) — complicates 30% of SBP without albumin",
+      "Multi-organ failure",
+      "Upper GI bleeding (variceal)",
+      "Coagulopathy and DIC",
+      "Hepatic encephalopathy progression to Grade 4",
+      "Death (SBP in-hospital mortality 20–30% per episode)"
+    ],
+    "guidelineRef": "EASL Clinical Practice Guidelines on the Management of Ascites in Cirrhosis — J Hepatol (2022) 77(2):660–693"
+  },
+  "guideline": {
+    "name": "West Haven Criteria for Hepatic Encephalopathy",
+    "description": "The West Haven Criteria grade the severity of overt hepatic encephalopathy based on cognitive, behavioural, and neuromuscular findings. Covert HE (minimal HE + Grade 1) is diagnosed with psychometric testing.",
+    "fields": {
+      "grade": {
+        "label": "HE Grade",
+        "description": "Clinical grading from West Haven Criteria",
+        "options": [
+          { "score": 0, "description": "No HE — normal cognition and behaviour" },
+          { "score": 1, "description": "Covert/Grade 1: Trivial lack of awareness, euphoria or anxiety, shortened attention span, impaired arithmetic. Asterixis may be present." },
+          { "score": 2, "description": "Grade 2: Lethargy or apathy, disorientation to time, obvious personality change, asterixis present, inappropriate behaviour" },
+          { "score": 3, "description": "Grade 3: Somnolent but arousable, gross disorientation, bizarre behaviour, muscle rigidity, asterixis usually present" },
+          { "score": 4, "description": "Grade 4: Coma — does not respond to verbal or painful stimuli" }
+        ]
+      }
+    },
+    "formula": "West Haven Grade based on clinical assessment",
+    "maxScore": 4,
+    "interpretation": [
+      { "range": "0", "risk": "No HE", "recommendation": "No specific treatment. Monitor for precipitants." },
+      { "range": "1–2", "risk": "Covert/Mild HE", "recommendation": "Lactulose + treat precipitant. Rifaximin for secondary prevention. Advise against driving." },
+      { "range": "3", "risk": "Severe HE", "recommendation": "Hospital admission. IV lactulose if oral intake poor. Treat precipitant aggressively. HDU consideration." },
+      { "range": "4", "risk": "Coma", "recommendation": "ICU. Airway protection (intubation). IV lactulose via NG tube. Treat reversible precipitants. Liver transplant assessment." }
+    ],
+    "thisPatientScore": {
+      "grade": 2,
+      "interpretation": "Grade 2 HE — disorientation, asterixis, slow responses. Precipitant: SBP (primary) + missed lactulose (secondary). Treat both."
+    }
+  },
+  "availableBadges": [
+    {
+      "id": "sbp-protocol",
+      "label": "SBP Protocol Perfect",
+      "description": "Performed diagnostic paracentesis without unnecessary coagulopathy correction, and prescribed cefotaxime plus albumin per EASL guidelines.",
+      "icon": "checkmark",
+      "positive": true
+    },
+    {
+      "id": "guideline-clean",
+      "label": "Guideline Clean",
+      "description": "Avoided all contraindicated treatments in decompensated cirrhosis — no benzodiazepines, no premature diuretics, no protein restriction.",
+      "icon": "checkmark",
+      "positive": true
+    },
+    {
+      "id": "delayed-diagnosis",
+      "label": "Delayed Diagnosis",
+      "description": "Unnecessary delay before diagnostic paracentesis — the cornerstone of SBP management.",
+      "icon": "clock-warning",
+      "positive": false
+    },
+    {
+      "id": "patient-harmed",
+      "label": "Patient Harmed",
+      "description": "A contraindicated treatment was given — benzodiazepines in HE, diuretics before SBP exclusion, or premature discharge before completing treatment.",
+      "icon": "danger",
+      "positive": false
+    }
+  ],
+  "disclaimer": "This case is designed for medical education and clinical reasoning training only. It is not a substitute for clinical guidelines, senior supervision, or real patient care. Always refer to current local and national protocols. Drug doses and management pathways should be verified against current British National Formulary (BNF) and relevant clinical guidelines before application to real patients. EASL guidelines reference: J Hepatol (2022) 77(2):660–693."
+}

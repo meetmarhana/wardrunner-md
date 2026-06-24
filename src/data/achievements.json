@@ -1,0 +1,288 @@
+[
+  {
+    "id": "first-save",
+    "title": "First Save",
+    "description": "Complete your first case",
+    "icon": "🩺",
+    "xpReward": 50,
+    "condition": "Complete 1 case",
+    "category": "progression"
+  },
+  {
+    "id": "ten-cases",
+    "title": "10 Cases Cleared",
+    "description": "Complete 10 cases",
+    "icon": "🏆",
+    "xpReward": 100,
+    "condition": "Complete 10 cases",
+    "category": "progression"
+  },
+  {
+    "id": "fifty-saves",
+    "title": "50 Patients Saved",
+    "description": "Pass 50 cases",
+    "icon": "💯",
+    "xpReward": 500,
+    "condition": "Pass 50 cases",
+    "category": "mastery"
+  },
+  {
+    "id": "intern-badge",
+    "title": "Promoted to Intern",
+    "description": "Reach level 2",
+    "icon": "📋",
+    "xpReward": 100,
+    "condition": "Reach level 2",
+    "category": "progression"
+  },
+  {
+    "id": "resident-badge",
+    "title": "Now a Resident",
+    "description": "Reach level 3",
+    "icon": "🩻",
+    "xpReward": 200,
+    "condition": "Reach level 3",
+    "category": "progression"
+  },
+  {
+    "id": "attending-badge",
+    "title": "Attending Physician",
+    "description": "Reach level 6",
+    "icon": "👨‍⚕️",
+    "xpReward": 500,
+    "condition": "Reach level 6",
+    "category": "mastery"
+  },
+  {
+    "id": "professor-badge",
+    "title": "Professor",
+    "description": "Reach level 7",
+    "icon": "🎓",
+    "xpReward": 1000,
+    "condition": "Reach level 7",
+    "category": "mastery"
+  },
+  {
+    "id": "stemi-slayer",
+    "title": "STEMI Slayer",
+    "description": "Complete the ACS/STEMI case with grade A",
+    "icon": "❤️",
+    "xpReward": 150,
+    "condition": "Complete the ACS/STEMI case with an A grade",
+    "category": "clinical"
+  },
+  {
+    "id": "guideline-master",
+    "title": "Guideline Master",
+    "description": "Score 90+ on Guideline in any case",
+    "icon": "📚",
+    "xpReward": 100,
+    "condition": "Achieve a Guideline score of 90 or higher in any single case",
+    "category": "clinical"
+  },
+  {
+    "id": "clinical-detective",
+    "title": "Clinical Detective",
+    "description": "Score 90+ on Diagnostic in any case",
+    "icon": "🔍",
+    "xpReward": 100,
+    "condition": "Achieve a Diagnostic score of 90 or higher in any single case",
+    "category": "clinical"
+  },
+  {
+    "id": "budget-boss",
+    "title": "Budget Boss",
+    "description": "Score 90+ on Cost in any case",
+    "icon": "💰",
+    "xpReward": 100,
+    "condition": "Achieve a Cost score of 90 or higher in any single case",
+    "category": "clinical"
+  },
+  {
+    "id": "speed-demon",
+    "title": "Speed Demon",
+    "description": "Score 90+ on Time in any case",
+    "icon": "⚡",
+    "xpReward": 100,
+    "condition": "Achieve a Time score of 90 or higher in any single case",
+    "category": "speed"
+  },
+  {
+    "id": "perfect-run",
+    "title": "Perfect Run",
+    "description": "Score A on all 5 score categories in one case",
+    "icon": "⭐",
+    "xpReward": 300,
+    "condition": "Receive a grade of A across all five scoring categories in a single case",
+    "category": "mastery",
+    "secret": true
+  },
+  {
+    "id": "icu-transfer-avoided",
+    "title": "Saved Without ICU",
+    "description": "Pass a critical case without triggering ICU transfer",
+    "icon": "🏥",
+    "xpReward": 150,
+    "condition": "Complete a critical-severity case without triggering an ICU transfer event",
+    "category": "clinical"
+  },
+  {
+    "id": "no-harm-done",
+    "title": "No Harm Done",
+    "description": "Complete a case with patient safety score 100",
+    "icon": "🛡️",
+    "xpReward": 150,
+    "condition": "Finish any case with a perfect patient safety score of 100",
+    "category": "safety"
+  },
+  {
+    "id": "patient-safety-hero",
+    "title": "Patient Safety Hero",
+    "description": "Keep safety score ≥80 in 5 consecutive cases",
+    "icon": "🦸",
+    "xpReward": 200,
+    "condition": "Maintain a patient safety score of 80 or above across 5 consecutive cases",
+    "category": "safety"
+  },
+  {
+    "id": "do-no-harm",
+    "title": "Primum Non Nocere",
+    "description": "Complete any case without a single wrong answer",
+    "icon": "⚕️",
+    "xpReward": 250,
+    "condition": "Finish a case without selecting any incorrect answer choices",
+    "category": "safety",
+    "secret": true
+  },
+  {
+    "id": "bounced-back",
+    "title": "Bounced Back",
+    "description": "Recover from a critical patient state to stable",
+    "icon": "💪",
+    "xpReward": 100,
+    "condition": "Turn a patient's status from critical back to stable within a single case",
+    "category": "clinical"
+  },
+  {
+    "id": "aortic-ace",
+    "title": "Aortic Ace",
+    "description": "Complete Aortic Dissection without the thrombolysis trap",
+    "icon": "🔪",
+    "xpReward": 200,
+    "condition": "Complete the Aortic Dissection case without incorrectly ordering thrombolytics",
+    "category": "mastery",
+    "secret": true
+  },
+  {
+    "id": "rapid-responder",
+    "title": "Rapid Responder",
+    "description": "Complete any case in under 10 game-minutes",
+    "icon": "⏱️",
+    "xpReward": 150,
+    "condition": "Finish any case with fewer than 10 in-game minutes elapsed",
+    "category": "speed"
+  },
+  {
+    "id": "night-shift-first",
+    "title": "First Night Shift",
+    "description": "Complete your first Night Shift",
+    "icon": "🌙",
+    "xpReward": 100,
+    "condition": "Finish a Night Shift scenario",
+    "category": "progression"
+  },
+  {
+    "id": "night-shift-no-deaths",
+    "title": "Zero Death Shift",
+    "description": "Complete a Night Shift with no patient deaths",
+    "icon": "🛡️",
+    "xpReward": 200,
+    "condition": "Finish a Night Shift with all patients alive (saved or harmed)",
+    "category": "safety"
+  },
+  {
+    "id": "night-shift-perfect",
+    "title": "No Patient Left Behind",
+    "description": "Save all 4 patients in a Night Shift",
+    "icon": "⭐",
+    "xpReward": 300,
+    "condition": "Disposition all 4 patients with a saved outcome in a single Night Shift",
+    "category": "mastery",
+    "secret": false
+  },
+  {
+    "id": "night-shift-triage-master",
+    "title": "Triage Master",
+    "description": "Score 80+ on Triage in a Night Shift",
+    "icon": "🎯",
+    "xpReward": 150,
+    "condition": "Achieve an average triage score of 80 or above across all patients in a Night Shift",
+    "category": "clinical"
+  },
+  {
+    "id": "night-shift-code-blue",
+    "title": "Code Blue Survivor",
+    "description": "Save a patient who had already deteriorated to critical",
+    "icon": "💙",
+    "xpReward": 200,
+    "condition": "Disposition a patient as saved even after they deteriorated during the shift",
+    "category": "mastery",
+    "secret": true
+  },
+  {
+    "id": "icu-first-save",
+    "title": "ICU First Save",
+    "description": "Complete the ICU Cross-Cover scenario with at least one patient saved",
+    "icon": "🫁",
+    "xpReward": 150,
+    "condition": "Save at least one patient in the ICU Cross-Cover scenario",
+    "category": "progression"
+  },
+  {
+    "id": "hyperkalemia-hero",
+    "title": "Hyperkalaemia Hero",
+    "description": "Save Margaret Liu by treating hyperkalaemia in the correct sequence",
+    "icon": "⚡",
+    "xpReward": 200,
+    "condition": "Disposition the hyperkalaemia patient as saved in the ICU Cross-Cover scenario",
+    "category": "clinical"
+  },
+  {
+    "id": "ward-call-warrior",
+    "title": "Ward Call Warrior",
+    "description": "Complete the Ward Calls — Intern Night scenario",
+    "icon": "📟",
+    "xpReward": 150,
+    "condition": "Disposition all patients in the Ward Calls scenario",
+    "category": "progression"
+  },
+  {
+    "id": "perfect-triage-any",
+    "title": "Perfect Triage",
+    "description": "Score 90+ on Triage Order in any Night Shift scenario",
+    "icon": "🎯",
+    "xpReward": 250,
+    "condition": "Achieve a triage order score of 90 or above in any single Night Shift scenario",
+    "category": "clinical",
+    "secret": false
+  },
+  {
+    "id": "three-shifts-cleared",
+    "title": "Tri-Shift Legend",
+    "description": "Complete all 3 Night Shift scenarios at least once",
+    "icon": "🌙",
+    "xpReward": 500,
+    "condition": "Complete all three Night Shift scenarios: ED, ICU, and Ward Calls",
+    "category": "mastery",
+    "secret": true
+  },
+  {
+    "id": "no-death-night",
+    "title": "No Death Night",
+    "description": "Complete any Night Shift scenario without a single patient death",
+    "icon": "🛡️",
+    "xpReward": 150,
+    "condition": "Disposition all patients in any scenario with no deaths (saved or harmed, not dead)",
+    "category": "safety"
+  }
+]

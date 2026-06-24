@@ -1,0 +1,638 @@
+{
+  "id": "sepsis",
+  "specialty": "Internal Medicine",
+  "title": "Fever, Hypotension, and Altered Consciousness",
+  "subtitle": "Sepsis / Septic Shock",
+  "difficulty": "advanced",
+  "estimatedMinutes": 25,
+  "patient": {
+    "age": 65,
+    "sex": "F",
+    "chiefComplaint": "24 hours of fever, confusion, and low blood pressure",
+    "history": "A 65-year-old female nursing home resident is brought in by ambulance. Staff report she has been febrile and increasingly confused for 24 hours. She has a known history of recurrent urinary tract infections and type 2 diabetes. On arrival she is disorientated, tachycardic, tachypnoeic, and hypotensive.",
+    "initialVitals": {
+      "bp": "82/50",
+      "hr": 128,
+      "rr": 26,
+      "spo2": 94,
+      "temp": 39.8,
+      "gcs": 12
+    },
+    "symptoms": [
+      "Fever (39.8°C)",
+      "Confusion and disorientation",
+      "Hypotension (BP 82/50)",
+      "Tachycardia (HR 128)",
+      "Tachypnoea (RR 26)",
+      "Reduced SpO2 (94%)",
+      "Generalised malaise and weakness"
+    ],
+    "redFlags": [
+      "GCS 12 — altered consciousness",
+      "RR 26 — tachypnoea (qSOFA criterion)",
+      "SBP 82 — hypotension (qSOFA criterion, <100)",
+      "qSOFA score 3/3 — high risk of deterioration",
+      "Temperature 39.8°C — fever in elderly = serious infection until proven otherwise",
+      "Known UTI history in diabetic patient — immunocompromised"
+    ],
+    "backgroundHistory": {
+      "pastMedicalHistory": [
+        "Type 2 diabetes mellitus (on metformin and insulin)",
+        "Recurrent urinary tract infections (3 in the past year)",
+        "Hypertension",
+        "Mild chronic kidney disease (baseline creatinine 105 µmol/L)"
+      ],
+      "medications": [
+        "Metformin 500mg twice daily",
+        "Insulin glargine 20 units at night",
+        "Amlodipine 5mg once daily",
+        "Ramipril 5mg once daily"
+      ],
+      "allergies": "NKDA",
+      "socialHistory": "Lives in a nursing home. Widowed. Functionally independent with ADLs prior to this illness. Non-smoker. No alcohol.",
+      "familyHistory": "Not contributory.",
+      "reviewOfSystems": "No cough or sputum. No vomiting or diarrhoea. Nursing staff noted reduced urine output over the past 12 hours. No obvious skin rash. No neck stiffness reported."
+    }
+  },
+  "startNodeId": "node-stabilize",
+  "nodes": [
+    {
+      "id": "node-stabilize",
+      "category": "stabilization",
+      "prompt": "A 65-year-old female nursing home resident arrives with 24 hours of fever and confusion. BP 82/50, HR 128, RR 26, SpO2 94%, Temp 39.8°C, GCS 12. She looks acutely unwell. What is your IMMEDIATE first priority?",
+      "context": "The patient is disorientated and cannot give a coherent history. She has one peripheral IV cannula inserted by paramedics. The resus bay is available.",
+      "choices": [
+        {
+          "id": "stabilize-correct",
+          "text": "Apply high-flow oxygen, gain second large-bore IV access, attach continuous cardiac monitoring, call for senior help, and initiate the sepsis pathway urgently",
+          "correct": true,
+          "feedback": "Correct. This patient has qSOFA 3/3 (confusion, RR>22, SBP<100) — she is at high risk of sepsis with organ dysfunction. Immediate priorities are: airway protection and oxygen (SpO2 94%), IV access ×2, monitoring (HR, BP, SpO2), and urgent senior involvement. Activating the sepsis pathway triggers the SEP-1 bundle which must be completed within 1 hour.",
+          "nextNodeId": "node-sepsis-recognition",
+          "timeAdvanceMin": 4,
+          "vitalsDelta": { "hr": -3, "spo2": 2 },
+          "scoreDelta": 10,
+          "educationalNote": "qSOFA (quick SOFA) criteria: (1) Altered mentation, (2) RR ≥22/min, (3) SBP ≤100 mmHg. A score of ≥2 identifies patients with suspected infection who are at high risk of poor outcomes. Full SOFA score requires lab values (creatinine, bilirubin, PaO2/FiO2, platelets). Sepsis-3 definition: life-threatening organ dysfunction caused by a dysregulated host response to infection."
+        },
+        {
+          "id": "stabilize-history",
+          "text": "Take a detailed history from the nursing home staff and complete a full examination before starting any treatment",
+          "correct": false,
+          "feedback": "History-taking is important but cannot precede stabilisation in a critically unwell patient. This patient is in probable septic shock — every minute without resuscitation increases mortality. Organ dysfunction is already evident (GCS 12, hypotension, tachycardia). Start resuscitation in parallel with history-gathering.",
+          "nextNodeId": "node-sepsis-recognition",
+          "timeAdvanceMin": 15,
+          "vitalsDelta": { "hr": 10, "spo2": -2, "bp": -8 },
+          "scoreDelta": -10,
+          "educationalNote": "In septic shock, for every hour of delay in antibiotic administration, mortality increases by approximately 7% (Kumar et al., Crit Care Med 2006). Resuscitation and investigation must occur simultaneously."
+        },
+        {
+          "id": "stabilize-antibiotics-first",
+          "text": "Give broad-spectrum antibiotics immediately before doing anything else — time to antibiotics is the most important metric",
+          "correct": false,
+          "feedback": "While early antibiotics are critical, giving them without first establishing monitoring, securing IV access ×2, and obtaining blood cultures (which must precede antibiotics) is premature. The SEP-1 bundle requires blood cultures before antibiotics. Stabilisation and parallel workup (cultures, bloods, cultures) is the correct approach.",
+          "nextNodeId": "node-sepsis-recognition",
+          "timeAdvanceMin": 6,
+          "vitalsDelta": { "hr": -2, "spo2": 0 },
+          "scoreDelta": -5,
+          "educationalNote": "The SEP-1 bundle (CMS Core Measure) requires: (1) Blood cultures before antibiotics, (2) Antibiotics within 1 hour, (3) Lactate measured, (4) Fluid resuscitation 30mL/kg if hypotensive or lactate ≥4. Blood cultures before antibiotics is a quality standard — antibiotics will sterilise cultures within 15–30 minutes of administration."
+        },
+        {
+          "id": "stabilize-fluids-only",
+          "text": "Start aggressive IV fluid resuscitation immediately — 1 litre Normal Saline wide open — and reassess",
+          "correct": false,
+          "feedback": "Fluid resuscitation is essential but should not precede monitoring, second IV access, and oxygen. Unmonitored aggressive fluids without baseline assessment risks fluid overload, particularly in a patient with CKD. The full sepsis stabilisation bundle (monitoring, O2, access, cultures, antibiotics, lactate) must be initiated simultaneously.",
+          "nextNodeId": "node-sepsis-recognition",
+          "timeAdvanceMin": 5,
+          "vitalsDelta": { "hr": -2, "spo2": 1 },
+          "scoreDelta": -3
+        }
+      ],
+      "isTerminal": false
+    },
+    {
+      "id": "node-sepsis-recognition",
+      "category": "diagnosis",
+      "prompt": "The patient is on oxygen and monitoring. HR 128, BP 82/50, RR 26, SpO2 97% (on 15L O2), GCS 12. You assess her qSOFA and SOFA scores. Which formal diagnosis best describes her current clinical status and what does it mandate?",
+      "context": "Lab results pending. You have obtained a brief history from the nursing home — she was well two days ago, then developed dysuria, then progressive confusion and fever. No chest symptoms. No vomiting.",
+      "choices": [
+        {
+          "id": "recognition-correct",
+          "text": "Septic shock (Sepsis-3): she has sepsis plus vasopressor-requiring hypotension or lactate >2 despite fluids. SEP-1 bundle must be completed within 1 hour: blood cultures ×2, broad-spectrum antibiotics, 30mL/kg crystalloid, lactate measurement.",
+          "correct": true,
+          "feedback": "Correct. Septic shock (Sepsis-3 definition): sepsis with circulatory failure evidenced by persistent hypotension requiring vasopressors to maintain MAP ≥65, or lactate >2 mmol/L. The SEP-1 bundle — all 4 elements within 1 hour — is the evidence-based standard of care. This patient almost certainly has urosepsis given her history.",
+          "nextNodeId": "node-cultures",
+          "timeAdvanceMin": 3,
+          "vitalsDelta": { "hr": 0, "spo2": 0 },
+          "scoreDelta": 15,
+          "educationalNote": "Sepsis-3 (Singer et al., JAMA 2016): Sepsis = organ dysfunction (SOFA ≥2) due to infection. Septic shock = sepsis + vasopressor requirement to maintain MAP ≥65 mmHg + lactate >2 mmol/L despite adequate fluid resuscitation. The older SIRS criteria (tachycardia, tachypnoea, fever, WBC abnormality) are no longer sufficient for sepsis definition."
+        },
+        {
+          "id": "recognition-infection",
+          "text": "This is a straightforward UTI with fever — treat with oral antibiotics and observe. The confusion is likely due to the fever in an elderly patient.",
+          "correct": false,
+          "feedback": "This is dangerously under-triaged. BP 82/50 and GCS 12 are not explained by uncomplicated UTI. This patient meets qSOFA 3/3 and has evidence of organ dysfunction (neurological, haemodynamic). Treating with oral antibiotics and observation would be catastrophic. She requires septic shock management.",
+          "nextNodeId": "node-cultures",
+          "timeAdvanceMin": 20,
+          "vitalsDelta": { "hr": 15, "spo2": -3, "bp": -10 },
+          "scoreDelta": -20,
+          "triggerBadge": "delayed-diagnosis",
+          "educationalNote": "Elderly patients with UTI can rapidly progress to urosepsis and septic shock. The combination of fever, confusion (GCS change), tachycardia, tachypnoea, and hypotension constitutes septic shock until proven otherwise. Under-triage of septic shock carries >30% mortality."
+        },
+        {
+          "id": "recognition-sirs",
+          "text": "This patient meets SIRS criteria (fever, tachycardia, tachypnoea) — start sepsis protocol but this may be severe sepsis rather than septic shock",
+          "correct": false,
+          "feedback": "The Sepsis-3 definition (2016) replaced SIRS-based definitions. SIRS is no longer the diagnostic standard for sepsis. This patient has organ dysfunction (GCS 12, BP 82/50 — MAP ~60 mmHg) which defines septic shock under Sepsis-3. The distinction matters for treatment urgency — septic shock requires immediate vasopressor consideration.",
+          "nextNodeId": "node-cultures",
+          "timeAdvanceMin": 5,
+          "vitalsDelta": { "hr": 5, "spo2": -1 },
+          "scoreDelta": -5,
+          "educationalNote": "Sepsis-3 retired the 'severe sepsis' terminology. The two diagnoses are now simply 'sepsis' (organ dysfunction) and 'septic shock' (sepsis + circulatory failure). This simplification reflects the pathophysiology better and aligns with clinical practice."
+        }
+      ],
+      "isTerminal": false
+    },
+    {
+      "id": "node-cultures",
+      "category": "investigation",
+      "prompt": "Septic shock is confirmed. The SEP-1 bundle clock is running. What is the correct order and content of your immediate investigations before starting antibiotics?",
+      "context": "Time since arrival: 8 minutes. Two IV cannulae in situ. Blood cultures kit is ready at the bedside. The nurse is asking which bloods to send.",
+      "choices": [
+        {
+          "id": "cultures-correct",
+          "text": "Blood cultures ×2 from separate sites before antibiotics. Simultaneously: FBC, U&E, LFT, CRP, lactate, coagulation screen, blood glucose, and catheterise for urine MC&S.",
+          "correct": true,
+          "feedback": "Correct sequence and scope. Blood cultures ×2 (from different sites, ideally ≥10mL per bottle) MUST be drawn before antibiotics — this is a quality standard. Urine MC&S will identify the causative organism. Lactate must be measured within 1 hour of presentation. Coagulation screen detects DIC. Glucose is critical in a diabetic. All can be done simultaneously while antibiotics are prepared.",
+          "nextNodeId": "node-fluids",
+          "timeAdvanceMin": 8,
+          "vitalsDelta": { "hr": 0, "spo2": 0 },
+          "scoreDelta": 15,
+          "investigations": [
+            { "name": "Blood cultures ×2", "value": "Sent — results pending (48–72 hours). Both bottles drawn from separate peripheral sites before antibiotics.", "flagged": true },
+            { "name": "Lactate", "value": "4.8 mmol/L — severely elevated (normal <2)", "flagged": true },
+            { "name": "FBC", "value": "WBC 22.4 ×10⁹/L (neutrophilia), Hb 112 g/L, Platelets 98 ×10⁹/L (low — DIC concern)", "flagged": true },
+            { "name": "U&E", "value": "Na 133, K 5.1, Creatinine 218 µmol/L (baseline 105 — AKI KDIGO Stage 2), Urea 18.2", "flagged": true },
+            { "name": "Coagulation", "value": "PT 18s (prolonged), APTT 42s, Fibrinogen 1.2 g/L (low) — DIC screen positive", "flagged": true },
+            { "name": "Blood glucose", "value": "21.4 mmol/L — severely elevated", "flagged": true },
+            { "name": "Urine dipstick", "value": "Leucocytes 3+, Nitrites positive, Blood 2+ — strongly suggestive of UTI/urosepsis", "flagged": true },
+            { "name": "CRP", "value": "348 mg/L (normal <5) — markedly elevated", "flagged": true }
+          ],
+          "educationalNote": "Lactate ≥4 mmol/L in the context of infection = septic shock by definition, regardless of blood pressure. A lactate of 4.8 mmol/L predicts approximately 30–40% hospital mortality without immediate aggressive management. Lactate clearance (target >10% reduction at 2 hours) is a key resuscitation endpoint."
+        },
+        {
+          "id": "cultures-after-antibiotics",
+          "text": "Start antibiotics immediately — blood cultures can be taken at the same time or just after. Don't delay treatment waiting for cultures.",
+          "correct": false,
+          "feedback": "Antibiotics irreversibly sterilise blood cultures within 15–30 minutes of administration. Taking cultures 'just after' antibiotics renders them useless for pathogen identification, which has major downstream consequences: organism-directed de-escalation becomes impossible, antibiotic stewardship fails, and drug-resistant organisms are missed. Blood cultures before antibiotics is a non-negotiable quality standard.",
+          "nextNodeId": "node-fluids",
+          "timeAdvanceMin": 10,
+          "vitalsDelta": { "hr": -3, "spo2": 1 },
+          "scoreDelta": -10,
+          "educationalNote": "Even a 30-minute delay in antibiotics after cultures is acceptable if it ensures cultures are obtained. However, cultures should not cause >45 minutes delay to antibiotics. The 2 actions should occur within the same 15-minute window."
+        },
+        {
+          "id": "cultures-ct-first",
+          "text": "Order a CT chest/abdomen/pelvis first to identify the source of sepsis before treating",
+          "correct": false,
+          "feedback": "CT scan is not a first-line investigation in septic shock. The source of infection (urosepsis) is already strongly suggested by the clinical history (UTI-prone patient, dysuria, nitrites on dipstick). CT can be performed after stabilisation if needed. The priority is cultures, antibiotics, and fluids — not radiological source-hunting in an unstable patient.",
+          "nextNodeId": "node-fluids",
+          "timeAdvanceMin": 45,
+          "vitalsDelta": { "hr": 12, "spo2": -2, "bp": -8 },
+          "scoreDelta": -15,
+          "triggerBadge": "delayed-diagnosis"
+        },
+        {
+          "id": "cultures-one-set",
+          "text": "One set of blood cultures is sufficient — take it and immediately start antibiotics",
+          "correct": false,
+          "feedback": "The standard is blood cultures ×2 from two separate sites. A single set has sensitivity of ~65–80%; two sets increase this to ~80–90%. Two sets also help distinguish true bacteraemia from contamination (skin contaminants such as Staph. epidermidis typically only grow in one bottle). Both sets must be drawn before antibiotics.",
+          "nextNodeId": "node-fluids",
+          "timeAdvanceMin": 6,
+          "vitalsDelta": { "hr": -2, "spo2": 0 },
+          "scoreDelta": -5
+        }
+      ],
+      "isTerminal": false
+    },
+    {
+      "id": "node-fluids",
+      "category": "treatment",
+      "prompt": "Blood cultures ×2 have been drawn. Lactate returns at 4.8 mmol/L. Creatinine 218 µmol/L (baseline 105). BP is 80/52. What fluid resuscitation strategy do you implement now?",
+      "context": "Time since arrival: 16 minutes. The patient weighs approximately 70kg. You have two large-bore IV cannulae. No signs of pulmonary oedema on quick chest auscultation. The nurse asks how much fluid to run in.",
+      "choices": [
+        {
+          "id": "fluids-correct",
+          "text": "30mL/kg crystalloid (2.1L for 70kg) as an IV bolus over 30 minutes using Hartmann's solution (or Normal Saline). Reassess after each 500mL for signs of fluid responsiveness and pulmonary oedema.",
+          "correct": true,
+          "feedback": "Correct. The SEP-1 bundle mandates 30mL/kg IV crystalloid within 3 hours if hypotensive (SBP<90) or if lactate ≥4 mmol/L. For a 70kg patient = 2,100mL. Balanced crystalloid (Hartmann's/Ringer's lactate) is preferred over Normal Saline to avoid hyperchloraemic metabolic acidosis (SMART trial). Reassess frequently — if pulmonary oedema develops, stop and consider vasopressors.",
+          "nextNodeId": "node-antibiotics",
+          "timeAdvanceMin": 30,
+          "vitalsDelta": { "hr": -12, "spo2": 1, "bp": 15 },
+          "scoreDelta": 15,
+          "educationalNote": "SMART trial (2018): Balanced crystalloids (Ringer's lactate, Hartmann's) versus Normal Saline in critically ill patients — balanced crystalloids reduced major adverse kidney events (MAKE30) by 1.1% absolute risk reduction. Normal Saline causes hyperchloraemic acidosis, which can worsen outcomes and confuse lactate interpretation."
+        },
+        {
+          "id": "fluids-small",
+          "text": "Give a cautious 250mL fluid challenge only — she has CKD and you don't want to fluid overload her",
+          "correct": false,
+          "feedback": "Cautious fluids in septic shock are inappropriate. The primary pathology here is distributive shock — massive vasodilation means the intravascular compartment is severely depleted. CKD is not a contraindication to appropriate resuscitation fluid in septic shock. Under-resuscitation leads to multi-organ failure. The 30mL/kg standard applies regardless of baseline renal function.",
+          "nextNodeId": "node-antibiotics",
+          "timeAdvanceMin": 10,
+          "vitalsDelta": { "hr": 3, "spo2": -1, "bp": 3 },
+          "scoreDelta": -12,
+          "triggerBadge": "patient-harmed",
+          "educationalNote": "Fear of fluid overload should not prevent appropriate resuscitation in septic shock. The excess mortality risk from under-resuscitation far exceeds the risk from controlled fluid administration in the first hour. Ongoing fluid assessment (POCUS, passive leg raise, pulse pressure variation) guides subsequent fluid decisions."
+        },
+        {
+          "id": "fluids-albumin",
+          "text": "Give 500mL 4.5% albumin — colloids maintain oncotic pressure better than crystalloids in sepsis",
+          "correct": false,
+          "feedback": "Albumin as initial resuscitation fluid in sepsis is not guideline-recommended. The ALBIOS trial showed no mortality benefit of albumin over crystalloids in sepsis. The Surviving Sepsis Campaign 2021 recommends crystalloids as first-line resuscitation fluid. Albumin may be considered as adjunct therapy after initial crystalloid resuscitation, but not as the primary fluid.",
+          "nextNodeId": "node-antibiotics",
+          "timeAdvanceMin": 12,
+          "vitalsDelta": { "hr": -3, "spo2": 0, "bp": 8 },
+          "scoreDelta": -8,
+          "educationalNote": "ALBIOS trial (2014): In patients with sepsis and septic shock, albumin supplementation plus crystalloids did not reduce 28-day mortality compared with crystalloids alone. Balanced crystalloids remain the evidence-based first-line choice."
+        },
+        {
+          "id": "fluids-noradrenaline-first",
+          "text": "Skip fluids — go straight to noradrenaline vasopressor as she is in shock",
+          "correct": false,
+          "feedback": "Vasopressors without adequate fluid resuscitation can worsen outcomes in distributive (septic) shock. Vasopressors vasoconstrict an already volume-depleted vascular bed. The sequence is: fluid resuscitation first (30mL/kg), then vasopressors if MAP remains <65 despite fluids. Vasopressors can run alongside fluids if MAP is critically low, but never as a replacement for them.",
+          "nextNodeId": "node-antibiotics",
+          "timeAdvanceMin": 8,
+          "vitalsDelta": { "hr": 5, "spo2": -1, "bp": 5 },
+          "scoreDelta": -10
+        }
+      ],
+      "isTerminal": false
+    },
+    {
+      "id": "node-antibiotics",
+      "category": "treatment",
+      "prompt": "Fluids are running. Time to antibiotics: you are 22 minutes into the case. The source is most likely urosepsis. Which antibiotic regimen is most appropriate for probable septic shock from a urinary source?",
+      "context": "She has no known drug allergies. Recent urine cultures from 3 months ago grew E. coli sensitive to co-amoxiclav and trimethoprim. However, this is a hospital-acquired-pattern infection (nursing home resident). No prior ESBL documented.",
+      "choices": [
+        {
+          "id": "antibiotics-correct",
+          "text": "Piperacillin-tazobactam (Tazocin) 4.5g IV 8-hourly — broad-spectrum covering gram-negatives including Pseudomonas, gram-positives, and anaerobes. Add gentamicin if shocked/high severity.",
+          "correct": true,
+          "feedback": "Correct. Pip-tazo is the appropriate empirical choice for urosepsis in a nursing home resident with septic shock. It covers: gram-negatives (E. coli, Klebsiella, Pseudomonas), gram-positives, and anaerobes. In septic shock (severe sepsis), broader spectrum is preferred. Gentamicin (or amikacin) can be added for synergy in shocked patients. Meropenem is reserved for known ESBL or treatment failure.",
+          "nextNodeId": "node-vasopressors",
+          "timeAdvanceMin": 5,
+          "vitalsDelta": { "hr": -5, "spo2": 1 },
+          "scoreDelta": 20,
+          "triggerBadge": "sepsis-bundle-complete",
+          "educationalNote": "Empirical antibiotic selection in sepsis follows the de-escalation principle: start broad, narrow once sensitivities are known. Pip-tazo covers >95% of community and nursing-home gram-negative uropathogens. The MERINO trial (2018) confirmed pip-tazo inferiority to meropenem for definitive ESBL treatment, but pip-tazo remains appropriate for empirical broad-spectrum cover pending cultures."
+        },
+        {
+          "id": "antibiotics-narrow",
+          "text": "Trimethoprim 200mg PO BD — her last culture was sensitive to this, so it should work",
+          "correct": false,
+          "feedback": "Trimethoprim oral in septic shock is wholly inappropriate for multiple reasons: (1) Oral absorption is unreliable in shocked patients; (2) Trimethoprim has no IV formulation in most formularies; (3) A culture from 3 months ago does not predict current sensitivity, especially in a nursing home resident where resistant organisms are common; (4) Trimethoprim's spectrum is too narrow for septic shock.",
+          "nextNodeId": "node-vasopressors",
+          "timeAdvanceMin": 6,
+          "vitalsDelta": { "hr": 10, "spo2": -2, "bp": -10 },
+          "scoreDelta": -20,
+          "triggerBadge": "patient-harmed",
+          "educationalNote": "Septic shock mandates IV broad-spectrum antibiotics. Oral bioavailability is unpredictable in shock states due to reduced splanchnic blood flow. Narrow-spectrum antibiotics for septic shock increase mortality — each hour of effective antibiotic delay adds approximately 7% mortality."
+        },
+        {
+          "id": "antibiotics-co-amoxiclav",
+          "text": "Co-amoxiclav (Augmentin) 1.2g IV 8-hourly — adequate gram-negative cover for UTI",
+          "correct": false,
+          "feedback": "Co-amoxiclav has inadequate gram-negative spectrum for septic shock from a nursing home patient. It lacks Pseudomonas cover, and nursing home organisms have higher rates of co-amoxiclav resistance (AmpC-producers, ESBL). This is not appropriate as monotherapy for septic shock — a broader agent (pip-tazo or meropenem) is required.",
+          "nextNodeId": "node-vasopressors",
+          "timeAdvanceMin": 5,
+          "vitalsDelta": { "hr": 5, "spo2": -1 },
+          "scoreDelta": -12
+        },
+        {
+          "id": "antibiotics-wait-cultures",
+          "text": "Wait 24 hours for blood culture sensitivities before prescribing antibiotics — avoid unnecessary broad-spectrum use",
+          "correct": false,
+          "feedback": "Waiting 24–48 hours for culture sensitivities before treating septic shock is directly lethal. Antibiotic stewardship principles apply to de-escalation, not to withholding empirical treatment in septic shock. The 1-hour antibiotic target in SEP-1 is based on strong evidence that delay dramatically increases mortality.",
+          "nextNodeId": "node-vasopressors",
+          "timeAdvanceMin": 60,
+          "vitalsDelta": { "hr": 25, "spo2": -4, "bp": -20 },
+          "scoreDelta": -25,
+          "triggerBadge": "patient-harmed"
+        }
+      ],
+      "isTerminal": false
+    },
+    {
+      "id": "node-vasopressors",
+      "category": "treatment",
+      "prompt": "After 2.1L crystalloid over 30 minutes, repeat vitals: BP 78/48 (MAP 58), HR 122, SpO2 96%. The patient remains hypotensive despite adequate fluid resuscitation. What is the correct next step?",
+      "context": "Antibiotics are running. Lactate was 4.8 mmol/L. The patient has received the full 30mL/kg crystalloid. MAP is 58 — below the target of 65 mmHg. ICU bed is being prepared.",
+      "choices": [
+        {
+          "id": "vasopressors-correct",
+          "text": "Start noradrenaline (norepinephrine) infusion — first-line vasopressor in septic shock. Target MAP ≥65 mmHg. Requires central venous access or large antecubital vein for peripheral use if central line not yet in.",
+          "correct": true,
+          "feedback": "Correct. Noradrenaline is the first-line vasopressor in septic shock (Surviving Sepsis Campaign 2021, Class 1 recommendation). It predominantly acts on alpha-1 receptors to increase systemic vascular resistance and MAP. Target MAP ≥65 mmHg. Can be run peripherally for short durations through a large antecubital vein while central access is established.",
+          "nextNodeId": "node-source-control",
+          "timeAdvanceMin": 10,
+          "vitalsDelta": { "hr": -8, "spo2": 1, "bp": 18 },
+          "scoreDelta": 15,
+          "educationalNote": "Vasopressor choice in septic shock: Noradrenaline is first-line (alpha > beta effects). Vasopressin 0.03 units/min can be added as a vasopressor-sparing agent (VASST trial). Dopamine is associated with more arrhythmias and is NOT preferred. Adrenaline (epinephrine) is reserved for refractory shock or septic shock with cardiac dysfunction. Phenylephrine is not recommended in septic shock."
+        },
+        {
+          "id": "vasopressors-dopamine",
+          "text": "Start dopamine — it has renal-protective effects at low doses and can be titrated up if needed",
+          "correct": false,
+          "feedback": "The concept of 'renal-dose dopamine' (1–3 µg/kg/min) has been definitively disproved (ANZICS DAG trial). Dopamine at vasopressor doses has more arrhythmic side effects than noradrenaline and is not recommended as first-line vasopressor in septic shock. Noradrenaline is superior (SOAP II trial, De Backer et al., NEJM 2010).",
+          "nextNodeId": "node-source-control",
+          "timeAdvanceMin": 10,
+          "vitalsDelta": { "hr": 5, "spo2": 0, "bp": 10 },
+          "scoreDelta": -10,
+          "educationalNote": "SOAP II trial (De Backer et al., NEJM 2010): Dopamine vs noradrenaline as first-line vasopressor in shock — noradrenaline was associated with fewer arrhythmias and lower 28-day mortality in the subgroup with septic shock. Dopamine is now a second or third-line agent."
+        },
+        {
+          "id": "vasopressors-more-fluids",
+          "text": "Give another 2 litres of IV fluid before starting vasopressors",
+          "correct": false,
+          "feedback": "The patient has already received 30mL/kg crystalloid — further fluid boluses without vasopressors in persistent hypotension risks fluid overload, pulmonary oedema, and increased mortality. The Surviving Sepsis Campaign recommends vasopressors when MAP <65 persists after initial resuscitation. Excessive fluid administration in sepsis is associated with worse outcomes (FEAST trial, abdominal compartment syndrome).",
+          "nextNodeId": "node-source-control",
+          "timeAdvanceMin": 30,
+          "vitalsDelta": { "hr": 8, "spo2": -2, "bp": 3 },
+          "scoreDelta": -12
+        },
+        {
+          "id": "vasopressors-adrenaline",
+          "text": "Start adrenaline (epinephrine) infusion — it is the most potent vasopressor available",
+          "correct": false,
+          "feedback": "Adrenaline is not first-line in septic shock. It causes lactic acidosis (stimulates glycolysis via beta-2), tachycardia, and splanchnic vasoconstriction. It is reserved for refractory septic shock unresponsive to noradrenaline and vasopressin. Starting with adrenaline when noradrenaline has not been tried is not appropriate.",
+          "nextNodeId": "node-source-control",
+          "timeAdvanceMin": 8,
+          "vitalsDelta": { "hr": 15, "spo2": 0, "bp": 12 },
+          "scoreDelta": -8
+        }
+      ],
+      "isTerminal": false
+    },
+    {
+      "id": "node-source-control",
+      "category": "treatment",
+      "prompt": "Noradrenaline is running. MAP is now 68 mmHg. The patient is more responsive. Urine dipstick is strongly positive (leucocytes 3+, nitrites positive). A urinary catheter is in place. Which source control measure is most important now?",
+      "context": "Time since arrival: 55 minutes. The SEP-1 bundle is nearly complete. The ICU team is reviewing the patient. Urine is turbid and dark yellow.",
+      "choices": [
+        {
+          "id": "source-urine",
+          "text": "Send catheter urine specimen for MC&S urgently. If an indwelling catheter was already present (from the nursing home), change it — infected catheters are a source of ongoing bacteraemia.",
+          "correct": true,
+          "feedback": "Excellent. Source control is the third pillar of sepsis management (alongside antibiotics and fluids). In urosepsis: (1) Catheter urine specimen must be sent before antibiotics take effect; (2) An infected/encrusted catheter must be changed — it harbours biofilm organisms that perpetuate bacteraemia; (3) If obstruction is present (e.g., renal calculus with hydronephrosis), urgent urology review is required. Ultrasound KUB to exclude obstruction.",
+          "nextNodeId": "node-lactate-monitoring",
+          "timeAdvanceMin": 8,
+          "vitalsDelta": { "hr": -3, "spo2": 0 },
+          "scoreDelta": 15,
+          "investigations": [
+            { "name": "Urine MC&S (catheter specimen)", "value": "Sent — results pending. Turbid, leucocytes 3+, nitrites positive, blood 2+. Gram stain: gram-negative rods.", "flagged": true },
+            { "name": "Renal US (KUB)", "value": "No hydronephrosis. No calculi identified. Mild bladder wall thickening consistent with cystitis.", "flagged": false }
+          ],
+          "educationalNote": "Source control in sepsis: remove, drain, or debride the infection source when possible. In urosepsis, if an obstructed kidney is identified (pyonephrosis), urgent decompression (ureteric stent or nephrostomy) is required — antibiotics alone will not treat an obstructed infected collecting system."
+        },
+        {
+          "id": "source-no-catheter",
+          "text": "The catheter is already in place and urine is draining — no further source control needed. Focus on ICU transfer.",
+          "correct": false,
+          "feedback": "Incomplete source control. An existing indwelling catheter from a nursing home may be colonised or infected with biofilm-forming organisms that are not eradicated by antibiotics alone. It must be changed. Additionally, urine MC&S must be sent if not yet done, and upper urinary tract obstruction must be excluded (US KUB).",
+          "nextNodeId": "node-lactate-monitoring",
+          "timeAdvanceMin": 5,
+          "vitalsDelta": { "hr": 3, "spo2": 0 },
+          "scoreDelta": -8
+        },
+        {
+          "id": "source-ct",
+          "text": "Order an urgent CT abdomen/pelvis with contrast to look for an abscess or other abdominal source",
+          "correct": false,
+          "feedback": "CT is not first-line source control in urosepsis where the source is clinically apparent (UTI history, positive dipstick, gram-negative rods on Gram stain). CT with IV contrast is also potentially nephrotoxic given her AKI (creatinine 218). Bedside renal ultrasound (US KUB) to exclude hydronephrosis/obstruction is the appropriate initial imaging. CT can be considered if clinical response is poor.",
+          "nextNodeId": "node-lactate-monitoring",
+          "timeAdvanceMin": 45,
+          "vitalsDelta": { "hr": 5, "spo2": -1 },
+          "scoreDelta": -10
+        }
+      ],
+      "isTerminal": false
+    },
+    {
+      "id": "node-lactate-monitoring",
+      "category": "monitoring",
+      "prompt": "It is now 2 hours since arrival. The SEP-1 bundle is complete. MAP 70, HR 108, SpO2 97%. The ICU team asks for the repeat lactate result to assess response to resuscitation. The repeat lactate is 3.1 mmol/L (was 4.8 mmol/L). How do you interpret this and what does it mean for ongoing management?",
+      "context": "The patient is more alert now (GCS 14). Blood pressure has improved. Noradrenaline infusion is at 0.12 µg/kg/min. Urine output over the past hour is 22mL (approximately 0.3mL/kg/hr — oliguric).",
+      "choices": [
+        {
+          "id": "lactate-correct",
+          "text": "Lactate clearance = (4.8 - 3.1) / 4.8 × 100 = 35% — this meets the target of >10% clearance at 2 hours (Surviving Sepsis Campaign). Response is adequate. Continue current management and reassess in 2 hours. Oliguria remains a concern — monitor UO closely.",
+          "correct": true,
+          "feedback": "Correct interpretation. Lactate clearance >10% at 2 hours indicates adequate resuscitation response and is associated with improved mortality (Jones et al., JAMA 2010). This patient's 35% clearance is encouraging. However, oliguria (UO <0.5mL/kg/hr) and creatinine 218 suggest AKI is ongoing — careful fluid balance and avoiding nephrotoxins are critical. ICU care is appropriate.",
+          "nextNodeId": "node-disposition",
+          "timeAdvanceMin": 5,
+          "vitalsDelta": { "hr": -5, "spo2": 1 },
+          "scoreDelta": 15,
+          "educationalNote": "Lactate-guided resuscitation: lactate clearance ≥10% at 2 hours is non-inferior to continuous central venous oxygen saturation (ScvO2) monitoring as a resuscitation endpoint (ProCESS, ARISE, ProMISe trials). Serial lactate measurement guides whether resuscitation is adequate. Persistent high lactate despite resuscitation = refractory shock / ongoing inadequate perfusion."
+        },
+        {
+          "id": "lactate-stop-fluids",
+          "text": "Lactate is improving — the patient is responding. Stop all IV fluids now to protect kidney function.",
+          "correct": false,
+          "feedback": "Premature fluid cessation based on partial lactate improvement is unsafe. The patient remains on vasopressors (indicating ongoing haemodynamic instability), is oliguric, and has elevated lactate (still >2). Fluid management in ICU requires dynamic assessment. Maintenance fluids, vasopressor adjustment, and close monitoring are required — not abrupt fluid cessation.",
+          "nextNodeId": "node-disposition",
+          "timeAdvanceMin": 5,
+          "vitalsDelta": { "hr": 5, "spo2": -1 },
+          "scoreDelta": -8
+        },
+        {
+          "id": "lactate-more-fluids",
+          "text": "Lactate is still elevated at 3.1 — give another 2 litres of fluid to drive it down further",
+          "correct": false,
+          "feedback": "Continued fluid resuscitation based on lactate alone without assessing fluid responsiveness risks fluid overload. Dynamic measures of fluid responsiveness (passive leg raise response, pulse pressure variation, IVC collapsibility on POCUS) should guide further fluid administration. Indiscriminate fluid administration in sepsis is associated with increased mortality (FEAST trial).",
+          "nextNodeId": "node-disposition",
+          "timeAdvanceMin": 30,
+          "vitalsDelta": { "hr": -3, "spo2": -1 },
+          "scoreDelta": -8
+        }
+      ],
+      "isTerminal": false
+    },
+    {
+      "id": "node-disposition",
+      "category": "disposition",
+      "prompt": "It is now 3 hours from presentation. MAP 72, HR 102, SpO2 97%, GCS 14. Noradrenaline infusion ongoing. Urine output improving. The patient's husband has arrived and asks where she is going. Where should this patient be admitted?",
+      "context": "The ICU has one bed available. The high dependency unit (HDU) also has a bed. The general medical ward has reviewed the patient and is willing to accept.",
+      "choices": [
+        {
+          "id": "disposition-icu",
+          "text": "ICU admission — she requires invasive monitoring, active vasopressor support, and close multi-organ monitoring in septic shock",
+          "correct": true,
+          "feedback": "Correct. This patient requires ICU-level care: (1) Active vasopressor infusion (noradrenaline); (2) Ongoing haemodynamic instability; (3) AKI requiring monitoring for possible RRT; (4) Evolving DIC (low fibrinogen, thrombocytopaenia); (5) Diabetic ketoacidosis risk (glucose 21.4 mmol/L). The Surviving Sepsis Campaign strongly recommends ICU for septic shock patients requiring vasopressors.",
+          "nextNodeId": null,
+          "timeAdvanceMin": 0,
+          "vitalsDelta": { "hr": 0, "spo2": 0 },
+          "scoreDelta": 15,
+          "triggerBadge": "guideline-clean",
+          "educationalNote": "ICU-level criteria in sepsis include: vasopressor requirement, lactate >4 mmol/L, respiratory failure requiring intubation, AKI stage 2–3, DIC, or persistent haemodynamic instability. Early ICU admission in septic shock is associated with significantly improved survival compared to ward admission with delayed escalation."
+        },
+        {
+          "id": "disposition-hdu",
+          "text": "HDU admission — she is showing improvement and doesn't need the full intensity of ICU",
+          "correct": false,
+          "feedback": "HDU is insufficient for a patient on an active vasopressor infusion. Most HDU environments do not have the staffing ratios or monitoring capability to manage vasopressor titration, arterial line monitoring, and potential emergency intubation safely. Improvement in lactate does not equate to readiness for step-down — she remains on vasopressors and has multi-organ dysfunction.",
+          "nextNodeId": null,
+          "timeAdvanceMin": 0,
+          "vitalsDelta": { "hr": 5, "spo2": -1 },
+          "scoreDelta": -10
+        },
+        {
+          "id": "disposition-ward",
+          "text": "General medical ward — antibiotics are running, she is improving, and the nursing staff can monitor her",
+          "correct": false,
+          "feedback": "Catastrophically inappropriate. A patient on vasopressor infusion in active septic shock cannot be managed on a general medical ward. Ward nursing ratios (1:8–12) cannot provide the monitoring required for vasopressor titration. This decision risks rapid deterioration and death without immediate access to resuscitation resources.",
+          "nextNodeId": null,
+          "timeAdvanceMin": 0,
+          "vitalsDelta": { "hr": 15, "spo2": -3, "bp": -15 },
+          "scoreDelta": -25,
+          "triggerBadge": "patient-harmed"
+        }
+      ],
+      "isTerminal": true
+    }
+  ],
+  "diseaseMap": {
+    "condition": "Sepsis and Septic Shock",
+    "icd10": "A41.9",
+    "presentingSymptoms": [
+      "Fever (>38.3°C) or hypothermia (<36°C)",
+      "Tachycardia (HR >90)",
+      "Tachypnoea (RR >20)",
+      "Altered mental status / confusion",
+      "Hypotension (SBP <90 or MAP <70)",
+      "Reduced urine output (<0.5mL/kg/hr for >2 hours)",
+      "Mottled or pale skin"
+    ],
+    "atypicalPresentations": [
+      "Hypothermia rather than fever (especially elderly, immunosuppressed)",
+      "Bradycardia in beta-blocker users",
+      "Normal blood pressure initially due to compensatory mechanisms",
+      "Confusion as the only presenting feature in the elderly"
+    ],
+    "redFlags": [
+      "qSOFA ≥2 (confusion, RR >22, SBP <100)",
+      "Lactate ≥4 mmol/L",
+      "MAP <65 mmHg despite fluids",
+      "Mottling, prolonged capillary refill >3 seconds",
+      "GCS deterioration",
+      "Oliguria or anuria",
+      "New coagulopathy (DIC)"
+    ],
+    "bestFirstStep": "Activate sepsis pathway — SEP-1 bundle within 1 hour",
+    "bestInvestigation": "Blood cultures ×2 (before antibiotics) + serum lactate",
+    "diagnosis": "Sepsis-3 (2016): Sepsis = organ dysfunction (SOFA ≥2) from suspected infection. Septic shock = sepsis + vasopressor requirement to maintain MAP ≥65 + lactate >2 mmol/L. qSOFA (≥2 of: altered mentation, RR ≥22, SBP ≤100) identifies high-risk patients.",
+    "treatment": {
+      "immediate": [
+        "Activate sepsis pathway (SEP-1 bundle)",
+        "High-flow oxygen, IV access ×2, cardiac monitoring",
+        "Blood cultures ×2 BEFORE antibiotics",
+        "Lactate measurement",
+        "Broad-spectrum IV antibiotics within 1 hour of recognition",
+        "30mL/kg IV crystalloid (balanced — Hartmann's preferred) if hypotensive or lactate ≥4",
+        "Vasopressors (noradrenaline first-line) if MAP <65 despite fluids",
+        "Identify and control source of infection"
+      ],
+      "vasopressors": "Noradrenaline first-line. Vasopressin (0.03 units/min) can be added as vasopressor-sparing agent. Adrenaline for refractory shock only. Avoid dopamine.",
+      "antibiotics": "Empirical broad-spectrum within 1 hour: pip-tazo 4.5g IV 8-hourly (or meropenem 1g IV 8-hourly for high-risk/ESBL). De-escalate to targeted therapy once cultures and sensitivities available (typically 48–72 hours).",
+      "monitoring": [
+        "Serial lactate (target >10% clearance at 2 hours)",
+        "Urine output (target >0.5mL/kg/hr)",
+        "MAP (target ≥65 mmHg)",
+        "Repeat blood cultures if not responding",
+        "Monitor for DIC (FBC, coagulation, fibrinogen)"
+      ]
+    },
+    "followUp": "Daily review of antibiotic appropriateness — de-escalate at 48–72 hours when culture sensitivities available. Target antibiotic course 5–7 days for bacteraemia. Reassess source control. ICU to HDU step-down when vasopressors weaned. Diabetes review post-discharge.",
+    "complications": [
+      "Multi-organ failure (renal, hepatic, respiratory)",
+      "Disseminated intravascular coagulation (DIC)",
+      "Acute respiratory distress syndrome (ARDS)",
+      "Acute kidney injury requiring RRT",
+      "Secondary infections (C. difficile, VAP, CLABSI)",
+      "Persistent critical illness / post-intensive care syndrome",
+      "Death (overall septic shock mortality ~30–40%)"
+    ],
+    "guidelineRef": "Surviving Sepsis Campaign: International Guidelines for Management of Sepsis and Septic Shock 2021 — Intensive Care Med (2021) 47:1181–1247"
+  },
+  "guideline": {
+    "name": "qSOFA and SOFA Score",
+    "description": "Two complementary tools for identifying sepsis risk and quantifying organ dysfunction. qSOFA is a rapid bedside screen; full SOFA requires laboratory values.",
+    "fields": {
+      "qsofa_mentation": {
+        "label": "Altered Mentation (GCS <15)",
+        "description": "Any new alteration in consciousness",
+        "options": [
+          { "score": 0, "description": "GCS 15 — fully alert" },
+          { "score": 1, "description": "GCS <15 — any degree of altered consciousness" }
+        ]
+      },
+      "qsofa_rr": {
+        "label": "Respiratory Rate",
+        "description": "Tachypnoea as a sign of physiological stress",
+        "options": [
+          { "score": 0, "description": "RR <22 per minute" },
+          { "score": 1, "description": "RR ≥22 per minute" }
+        ]
+      },
+      "qsofa_sbp": {
+        "label": "Systolic Blood Pressure",
+        "description": "Hypotension as a sign of cardiovascular compromise",
+        "options": [
+          { "score": 0, "description": "SBP >100 mmHg" },
+          { "score": 1, "description": "SBP ≤100 mmHg" }
+        ]
+      }
+    },
+    "formula": "qSOFA = mentation + respiratory rate + systolic BP",
+    "maxScore": 3,
+    "interpretation": [
+      { "range": "0–1", "risk": "Lower risk", "recommendation": "Continue clinical assessment. If infection suspected, monitor closely and reassess." },
+      { "range": "≥2", "risk": "High risk of sepsis with organ dysfunction", "recommendation": "Urgent investigation for organ dysfunction (full SOFA). Initiate sepsis pathway. Consider ICU review." }
+    ],
+    "thisPatientScore": {
+      "mentation": 1,
+      "respiratoryRate": 1,
+      "sbp": 1,
+      "total": 3,
+      "interpretation": "qSOFA 3/3 — maximum score. Very high risk. Septic shock confirmed."
+    }
+  },
+  "availableBadges": [
+    {
+      "id": "sepsis-bundle-complete",
+      "label": "SEP-1 Bundle Hero",
+      "description": "Completed all elements of the SEP-1 bundle — cultures, lactate, fluids, and antibiotics — within 1 hour of sepsis recognition.",
+      "icon": "checkmark",
+      "positive": true
+    },
+    {
+      "id": "guideline-clean",
+      "label": "Guideline Clean",
+      "description": "Selected correct first-line vasopressor, appropriate antibiotics, and target-directed fluid resuscitation per Surviving Sepsis Campaign 2021.",
+      "icon": "checkmark",
+      "positive": true
+    },
+    {
+      "id": "delayed-diagnosis",
+      "label": "Delayed Diagnosis",
+      "description": "Under-triaged or delayed recognition of septic shock, directly worsening the patient's outcome.",
+      "icon": "clock-warning",
+      "positive": false
+    },
+    {
+      "id": "patient-harmed",
+      "label": "Patient Harmed",
+      "description": "A clinical decision directly worsened the patient's condition — inappropriate antibiotic choice, dangerous under-resuscitation, or wrong disposition.",
+      "icon": "danger",
+      "positive": false
+    }
+  ],
+  "disclaimer": "This case is designed for medical education and clinical reasoning training only. It is not a substitute for clinical guidelines, senior supervision, or real patient care. Always refer to current local and national protocols. Drug doses and management pathways should be verified against current British National Formulary (BNF) and relevant clinical guidelines before application to real patients. Surviving Sepsis Campaign 2021 reference: Intensive Care Med (2021) 47:1181–1247."
+}

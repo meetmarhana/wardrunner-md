@@ -1,0 +1,436 @@
+{
+  "id": "afib-rvr",
+  "specialty": "Cardiology",
+  "title": "Heart Racing Out of Control",
+  "subtitle": "Atrial Fibrillation with RVR",
+  "difficulty": "beginner",
+  "estimatedMinutes": 15,
+  "patient": {
+    "name": "Gerald Marsh",
+    "age": 65,
+    "sex": "M",
+    "chiefComplaint": "Palpitations and shortness of breath for 6 hours",
+    "pmh": ["Atrial fibrillation (paroxysmal)", "Hypertension", "Type 2 diabetes mellitus"],
+    "medications": ["Metformin 1000mg BD", "Amlodipine 5mg OD", "Aspirin 81mg OD — recently stopped anticoagulation against medical advice"],
+    "allergies": "NKDA",
+    "socialHistory": "Retired teacher. Occasional alcohol. Non-smoker.",
+    "vitals": {
+      "bp": "135/85",
+      "hr": 148,
+      "rr": 22,
+      "spo2": 94,
+      "temp": 37.0,
+      "gcs": 15
+    },
+    "appearance": "Alert, anxious-appearing male. Speaking in short sentences. Mild diaphoresis."
+  },
+  "startNodeId": "node-stabilize",
+  "nodes": [
+    {
+      "id": "node-stabilize",
+      "type": "clinical",
+      "title": "Initial Assessment",
+      "stem": "Gerald, a 65-year-old male with known paroxysmal AF, arrives to the ED with 6 hours of palpitations and progressive dyspnea. He is alert but anxious. HR 148 bpm (irregular), BP 135/85, SpO2 94% on room air, RR 22. He admits he stopped his anticoagulation 3 months ago because he was 'feeling fine'. What is your first priority?",
+      "choices": [
+        {
+          "id": "c1a",
+          "text": "Apply supplemental oxygen, establish IV access, and attach cardiac monitor",
+          "correct": true,
+          "feedback": "Correct. ABCs first. SpO2 94% warrants supplemental O2. IV access and continuous cardiac monitoring are mandatory before any pharmacological intervention. This is haemodynamically stable AF with RVR — you have time to work systematically.",
+          "points": 10,
+          "nextNodeId": "node-history"
+        },
+        {
+          "id": "c1b",
+          "text": "Immediately perform DC cardioversion — HR of 148 is dangerous",
+          "correct": false,
+          "feedback": "Not yet. Gerald is haemodynamically stable — BP 135/85, GCS 15, no signs of shock. Immediate DC cardioversion is reserved for haemodynamically unstable AF (hypotension, acute pulmonary oedema, ischaemic chest pain, or altered consciousness). Rushing to cardioversion here skips critical steps and risks serious harm — he has been off anticoagulation and onset is unclear.",
+          "points": -5,
+          "nextNodeId": "node-history"
+        },
+        {
+          "id": "c1c",
+          "text": "Order a 12-lead ECG and wait for results before doing anything else",
+          "correct": false,
+          "feedback": "The ECG is essential, but do not wait passively. Stabilisation steps — O2, IV access, monitoring — should happen simultaneously. Delay in these basic steps when SpO2 is 94% is not appropriate.",
+          "points": 0,
+          "nextNodeId": "node-history"
+        }
+      ]
+    },
+    {
+      "id": "node-history",
+      "type": "clinical",
+      "title": "Targeted History",
+      "stem": "Gerald is on the monitor, IV is in, and O2 is running at 4L/min via nasal cannula — SpO2 improves to 97%. You now take a focused history. He says the palpitations started suddenly at 8am while having his morning coffee. He has had 3 previous AF episodes, all self-terminating within 12 hours. He denies chest pain, fever, recent illness, or missed medications (other than the anticoagulation). He had a minor stroke 2 years ago with full recovery. Which additional history element is most critical right now?",
+      "choices": [
+        {
+          "id": "c2a",
+          "text": "Confirm the exact onset time and ask about any recent alcohol or stimulant use",
+          "correct": true,
+          "feedback": "Excellent. Onset time is crucial — it determines cardioversion eligibility. Less than 48 hours of confirmed onset allows cardioversion with anticoagulation cover. Greater than 48 hours (or uncertain) requires either TOE-guided cardioversion or 3 weeks of therapeutic anticoagulation first. Alcohol and stimulants (caffeine, cocaine, decongestants) are common AF triggers worth addressing.",
+          "points": 10,
+          "nextNodeId": "node-investigation"
+        },
+        {
+          "id": "c2b",
+          "text": "Ask about his diet and sleep quality",
+          "correct": false,
+          "feedback": "While lifestyle factors have long-term relevance, they are not the critical piece of history right now. Onset timing and precipitants that affect your acute management plan are the priority.",
+          "points": 0,
+          "nextNodeId": "node-investigation"
+        },
+        {
+          "id": "c2c",
+          "text": "Ask whether he has ever had open heart surgery",
+          "correct": false,
+          "feedback": "Post-cardiac surgery AF is a known entity, but Gerald's history of paroxysmal AF makes this less relevant acutely. Onset time and stroke/bleeding risk factors are more immediately actionable.",
+          "points": 0,
+          "nextNodeId": "node-investigation"
+        }
+      ]
+    },
+    {
+      "id": "node-investigation",
+      "type": "clinical",
+      "title": "Investigations",
+      "stem": "Gerald confirms onset was approximately 6 hours ago — he is confident it started at 8am. He drinks 2–3 standard drinks on weekends. His 12-lead ECG shows: irregularly irregular rhythm, absent P waves, fibrillatory baseline, ventricular rate ~148 bpm, narrow QRS complexes, no ST changes or delta waves. You now select investigations. Which combination is most appropriate for initial workup?",
+      "choices": [
+        {
+          "id": "c3a",
+          "text": "FBC, UEC, LFTs, TSH, troponin, coagulation studies, chest X-ray",
+          "correct": true,
+          "feedback": "Correct. This comprehensive screen covers all the key bases: electrolyte disturbance (K⁺, Mg²⁺), thyrotoxicosis (TSH — a reversible and treatable cause), renal function (affects drug dosing and anticoagulation choice), troponin (rule out ACS as trigger), coagulation (baseline before anticoagulation), and CXR (pulmonary oedema, cardiac size). The ECG has confirmed AF — no delta waves rules out WPW.",
+          "points": 10,
+          "nextNodeId": "node-rate-control"
+        },
+        {
+          "id": "c3b",
+          "text": "ECG only — you already have the diagnosis",
+          "correct": false,
+          "feedback": "The ECG confirms AF, but investigations serve multiple purposes: identifying reversible causes (thyrotoxicosis, electrolyte disturbance), guiding drug choice, and establishing baseline before anticoagulation. Skipping them exposes the patient to avoidable risk.",
+          "points": -5,
+          "nextNodeId": "node-rate-control"
+        },
+        {
+          "id": "c3c",
+          "text": "Echo and cardiac MRI urgently",
+          "correct": false,
+          "feedback": "An echo has a role in AF — particularly if structural heart disease is suspected or to guide cardioversion — but it is not a first-line urgent investigation in stable AF with RVR. MRI is not part of the acute workup. Start with blood tests and CXR.",
+          "points": -5,
+          "nextNodeId": "node-rate-control"
+        }
+      ]
+    },
+    {
+      "id": "node-rate-control",
+      "type": "clinical",
+      "title": "Rate Control Decision",
+      "stem": "Investigations are pending. Gerald remains haemodynamically stable with HR 148, BP 135/85. QRS is narrow. No signs of pre-excitation (no delta waves, no short PR) on the ECG. He is symptomatic with dyspnea and palpitations. You decide to initiate rate control. Which agent is most appropriate as first-line?",
+      "choices": [
+        {
+          "id": "c4a",
+          "text": "Metoprolol IV 2.5–5mg over 2 minutes (may repeat up to 3 doses)",
+          "correct": true,
+          "feedback": "Correct. IV beta-blockers are first-line for rate control in AF with RVR when there is no decompensated heart failure or significant reactive airway disease. Metoprolol slows AV nodal conduction effectively. Monitor BP and HR closely. Target resting HR <110 bpm acutely (strict rate control <80 bpm is a longer-term goal).",
+          "points": 10,
+          "nextNodeId": "node-anticoagulation"
+        },
+        {
+          "id": "c4b",
+          "text": "Diltiazem IV 0.25mg/kg over 2 minutes",
+          "correct": true,
+          "feedback": "Also acceptable. IV diltiazem (non-dihydropyridine calcium channel blocker) is an effective first-line rate control agent in AF without pre-excitation and without decompensated LV dysfunction. It is equally guideline-recommended alongside beta-blockers. Caution: avoid in known severe LV dysfunction or heart failure with reduced ejection fraction.",
+          "points": 10,
+          "nextNodeId": "node-anticoagulation"
+        },
+        {
+          "id": "c4c",
+          "text": "Digoxin IV 0.5mg loading dose",
+          "correct": false,
+          "feedback": "Digoxin is not first-line for acute rate control in AF with RVR in the ED. Its onset of action is slow (2–6 hours for IV), it is less effective during adrenergic states (which is exactly the situation in acute AF), and it has a narrow therapeutic index. It may have a role as adjunctive therapy in heart failure patients, but beta-blockers or non-dihydropyridine CCBs should be used first.",
+          "points": -10,
+          "nextNodeId": "node-anticoagulation"
+        },
+        {
+          "id": "c4d",
+          "text": "Diltiazem IV — the ECG shows a delta wave so standard agents are contraindicated",
+          "correct": false,
+          "feedback": "Careful — the ECG explicitly shows NO delta waves and a normal PR interval. This rules out WPW/pre-excitation. In AF with pre-excitation, AV nodal blocking agents (diltiazem, metoprolol, digoxin, adenosine) are contraindicated as they can accelerate accessory pathway conduction and precipitate VF. But that concern does not apply here. Diltiazem is appropriate in this case.",
+          "points": -10,
+          "nextNodeId": "node-anticoagulation"
+        }
+      ]
+    },
+    {
+      "id": "node-anticoagulation",
+      "type": "clinical",
+      "title": "Anticoagulation Assessment",
+      "stem": "Gerald's HR has come down to 96 bpm after rate control. He is more comfortable. You now turn to anticoagulation. He was previously on warfarin but stopped 3 months ago. His history includes: hypertension, type 2 diabetes, and a prior stroke (full recovery). What is the next step?",
+      "choices": [
+        {
+          "id": "c5a",
+          "text": "Calculate his CHA2DS2-VASc score and use it to guide anticoagulation decision",
+          "correct": true,
+          "feedback": "Exactly right. The CHA2DS2-VASc score is the validated tool for stroke risk stratification in non-valvular AF. Gerald's score: Hypertension (+1), Age 65–74 (+1), Diabetes (+1), Prior stroke/TIA (+2) = total 5. Score ≥2 in males: anticoagulation is strongly recommended. He should be restarted on therapeutic anticoagulation — and this is also critical before any cardioversion attempt.",
+          "points": 10,
+          "nextNodeId": "node-cardioversion"
+        },
+        {
+          "id": "c5b",
+          "text": "Skip anticoagulation — he had a stroke before and is at bleeding risk",
+          "correct": false,
+          "feedback": "Incorrect reasoning. A prior stroke significantly INCREASES stroke risk in AF — it contributes 2 points to CHA2DS2-VASc. Unless there is a specific contraindication to anticoagulation (active major bleeding, high-risk haemorrhagic lesion), prior stroke mandates anticoagulation, not the reverse. Always assess bleeding risk separately using HAS-BLED, but do not conflate stroke risk with bleeding risk.",
+          "points": -10,
+          "nextNodeId": "node-cardioversion"
+        },
+        {
+          "id": "c5c",
+          "text": "Restart his warfarin at his previous maintenance dose — no need to reassess risk",
+          "correct": false,
+          "feedback": "A new anticoagulation decision should always include a formal risk reassessment — CHA2DS2-VASc for stroke risk and HAS-BLED for bleeding risk. Also, warfarin is not the only option: DOACs (apixaban, rivaroxaban, dabigatran, edoxaban) are now preferred over warfarin in non-valvular AF due to superior safety and efficacy profiles. Additionally, warfarin takes days to become therapeutic — bridging considerations apply.",
+          "points": -5,
+          "nextNodeId": "node-cardioversion"
+        }
+      ]
+    },
+    {
+      "id": "node-cardioversion",
+      "type": "clinical",
+      "title": "Cardioversion Decision",
+      "stem": "Gerald's CHA2DS2-VASc score is 5. Anticoagulation has been discussed and agreed upon. His onset is confirmed at 6 hours ago (under 48 hours). He remains in AF despite rate control. His symptoms are much improved. The team is now discussing cardioversion. He asks: 'Can you shock my heart back to normal today?' What is the safest approach?",
+      "choices": [
+        {
+          "id": "c6a",
+          "text": "Electrical cardioversion is possible given onset <48 hours, but anticoagulation must be started first and adequate rate control confirmed. Discuss risks and obtain consent.",
+          "correct": true,
+          "feedback": "Correct. For AF of confirmed onset <48 hours, cardioversion can be performed with anticoagulation cover — either therapeutic anticoagulation already established, or heparin administered before cardioversion. Given his high CHA2DS2-VASc score (5), anticoagulation is mandatory both for the cardioversion itself and for long-term maintenance. Post-cardioversion 'stunning' of the atria means embolic risk persists for 4 weeks regardless of apparent sinus rhythm, so therapeutic anticoagulation must continue.",
+          "points": 10,
+          "nextNodeId": "node-disposition"
+        },
+        {
+          "id": "c6b",
+          "text": "Perform DC cardioversion immediately — onset is under 48 hours so it is safe without anticoagulation",
+          "correct": false,
+          "feedback": "Dangerous. Even with onset <48 hours, cardioversion without any anticoagulation is not safe — particularly in a patient with a CHA2DS2-VASc score of 5. The <48 hour window reduces (but does not eliminate) thrombus risk. Heparin or established therapeutic DOAC levels are required before cardioversion. Skipping this step risks precipitating a cardioembolic stroke.",
+          "points": -15,
+          "nextNodeId": "node-disposition"
+        },
+        {
+          "id": "c6c",
+          "text": "Cardioversion is contraindicated — onset is unknown so the patient must have 3 weeks of anticoagulation first",
+          "correct": false,
+          "feedback": "Not quite. The 3-week anticoagulation rule applies when onset is >48 hours OR uncertain. Gerald has clearly confirmed his onset was 6 hours ago — this is not an uncertain case. With onset <48 hours and anticoagulation cover, cardioversion is appropriate. Alternatively, a TOE to exclude left atrial thrombus could facilitate earlier cardioversion in uncertain cases.",
+          "points": -5,
+          "nextNodeId": "node-disposition"
+        }
+      ]
+    },
+    {
+      "id": "node-disposition",
+      "type": "clinical",
+      "title": "Disposition and Monitoring Plan",
+      "stem": "After rate control and discussion with the cardiology team, a plan is made: commence apixaban (DOAC), admit for monitoring, and plan elective electrical cardioversion in the morning after ensuring therapeutic anticoagulation. Gerald's HR is now 88 bpm, BP 130/80, SpO2 98% on room air. He asks: 'What happens next and what do I need to watch for?' Which discharge/monitoring plan is most appropriate IF he were to be managed as an outpatient (he is medically stable, symptoms resolved, AF persists)?",
+      "choices": [
+        {
+          "id": "c7a",
+          "text": "Admit for monitoring given high stroke risk, newly initiated anticoagulation, and planned cardioversion",
+          "correct": true,
+          "feedback": "Correct for this patient. With a CHA2DS2-VASc of 5, new anticoagulation initiation, and planned cardioversion, inpatient monitoring is appropriate. Outpatient management of stable AF with RVR can be considered in lower-risk patients with established anticoagulation, good follow-up, and no haemodynamic compromise — but Gerald's risk profile warrants admission. Before discharge at any point, ensure clear written instructions on: anticoagulation adherence, AF triggers (alcohol reduction, caffeine, sleep hygiene), and when to return (syncope, chest pain, worsening dyspnea).",
+          "points": 10,
+          "nextNodeId": null
+        },
+        {
+          "id": "c7b",
+          "text": "Discharge home with rate control medications and GP follow-up next week",
+          "correct": false,
+          "feedback": "Not appropriate here. Gerald has a CHA2DS2-VASc score of 5, newly restarted anticoagulation, and planned cardioversion — this warrants inpatient monitoring. For lower-risk, well-anticoagulated patients with stable AF, outpatient cardioversion and follow-up can be considered, but this patient's profile does not meet that threshold.",
+          "points": -10,
+          "nextNodeId": null
+        },
+        {
+          "id": "c7c",
+          "text": "Transfer to ICU for haemodynamic monitoring",
+          "correct": false,
+          "feedback": "ICU is not warranted. Gerald is haemodynamically stable with a good response to rate control. ICU-level monitoring is appropriate for unstable AF with refractory haemodynamic compromise, not for a patient with HR 88 and BP 130/80. Cardiac monitored ward bed is appropriate.",
+          "points": -5,
+          "nextNodeId": null
+        }
+      ]
+    }
+  ],
+  "diseaseMap": {
+    "title": "Atrial Fibrillation with Rapid Ventricular Response",
+    "overview": "AF is the most common sustained cardiac arrhythmia, characterised by disorganised atrial electrical activity and an irregularly irregular ventricular response. RVR (HR >100 bpm) occurs when the AV node conducts rapid and irregular atrial impulses. AF with RVR causes haemodynamic compromise through loss of atrial kick, reduced diastolic filling time, and increased myocardial oxygen demand.",
+    "pathophysiology": "Multiple re-entrant wavelets in the atria produce chaotic depolarisation. The AV node acts as a gatekeeper — its refractory period limits ventricular rate, but in catecholamine-rich states or with fast-conducting accessory pathways, rates can exceed 150–200 bpm. Atrial stasis, particularly in the left atrial appendage, promotes thrombus formation, increasing stroke risk.",
+    "ecgFeatures": [
+      "Irregularly irregular rhythm (no two R-R intervals identical)",
+      "Absent P waves — replaced by fibrillatory baseline (best seen in V1)",
+      "Narrow QRS complex (unless aberrant conduction or bundle branch block)",
+      "Variable ventricular rate — often 100–180 bpm in RVR",
+      "No delta waves (rules out WPW/pre-excitation)"
+    ],
+    "acuteManagement": {
+      "haemodynamicallyUnstable": "Immediate synchronised DC cardioversion (100–200J biphasic). Do not delay for anticoagulation.",
+      "haemodynamicallyStable": [
+        "Step 1: Stabilise — O2, IV access, cardiac monitor",
+        "Step 2: Rate control — IV metoprolol or diltiazem (avoid in LV dysfunction or WPW)",
+        "Step 3: Investigate — ECG, FBC, UEC, TSH, troponin, coagulation, CXR",
+        "Step 4: Stroke risk — calculate CHA2DS2-VASc, initiate anticoagulation if indicated",
+        "Step 5: Cardioversion decision — based on onset timing and anticoagulation status"
+      ]
+    },
+    "pitfalls": [
+      "DC cardioversion without anticoagulation when onset is uncertain or >48 hours",
+      "Using digoxin as first-line rate control in acute RVR — slow onset, ineffective in high adrenergic states",
+      "AV nodal blocking agents in AF with WPW/pre-excitation — can cause VF",
+      "Assuming <48 hours onset means anticoagulation is unnecessary before cardioversion",
+      "Forgetting post-cardioversion stunning — anticoagulation must continue for minimum 4 weeks after cardioversion regardless of apparent sinus rhythm"
+    ],
+    "longTermManagement": [
+      "Anticoagulation: DOAC preferred over warfarin in non-valvular AF",
+      "Rate vs rhythm control strategy decision",
+      "Treat underlying precipitants (thyrotoxicosis, alcohol, infection, ischaemia)",
+      "Catheter ablation: consider for paroxysmal AF refractory to medical management",
+      "Regular review of stroke and bleeding risk scores"
+    ]
+  },
+  "guideline": {
+    "name": "CHA2DS2-VASc Stroke Risk Score",
+    "source": "ESC 2020 AF Guidelines / AHA/ACC/HRS 2023 AF Guidelines",
+    "description": "Validated risk stratification tool for stroke risk in non-valvular atrial fibrillation. Used to guide anticoagulation decisions.",
+    "calculator": {
+      "fields": [
+        {
+          "id": "chf",
+          "label": "Congestive Heart Failure (or LVEF <40%)",
+          "abbreviation": "C",
+          "points": 1
+        },
+        {
+          "id": "hypertension",
+          "label": "Hypertension (BP consistently >140/90 or on antihypertensives)",
+          "abbreviation": "H",
+          "points": 1
+        },
+        {
+          "id": "age75",
+          "label": "Age ≥75 years",
+          "abbreviation": "A₂",
+          "points": 2
+        },
+        {
+          "id": "diabetes",
+          "label": "Diabetes Mellitus",
+          "abbreviation": "D",
+          "points": 1
+        },
+        {
+          "id": "strokeTia",
+          "label": "Prior Stroke, TIA, or Thromboembolism",
+          "abbreviation": "S₂",
+          "points": 2
+        },
+        {
+          "id": "vascularDisease",
+          "label": "Vascular Disease (prior MI, peripheral arterial disease, or aortic plaque)",
+          "abbreviation": "V",
+          "points": 1
+        },
+        {
+          "id": "age6574",
+          "label": "Age 65–74 years",
+          "abbreviation": "A",
+          "points": 1
+        },
+        {
+          "id": "sexFemale",
+          "label": "Sex Category: Female",
+          "abbreviation": "Sc",
+          "points": 1
+        }
+      ],
+      "formula": "Sum of all applicable points (maximum 9)",
+      "maximumScore": 9,
+      "interpretation": [
+        {
+          "score": 0,
+          "risk": "Low",
+          "recommendation": "Anticoagulation not recommended. Consider no therapy.",
+          "annualStrokeRisk": "~0%"
+        },
+        {
+          "score": 1,
+          "risk": "Low-moderate (males) / Low (females — female sex alone does not warrant anticoagulation)",
+          "recommendation": "Consider anticoagulation based on individual risk-benefit assessment.",
+          "annualStrokeRisk": "~1.3%"
+        },
+        {
+          "score": "≥2",
+          "risk": "Moderate-high",
+          "recommendation": "Oral anticoagulation recommended. DOAC preferred over warfarin in non-valvular AF.",
+          "annualStrokeRisk": "≥2.2% and increasing with score"
+        }
+      ],
+      "notes": [
+        "Female sex alone (score of 1 in a female patient with no other risk factors) does not automatically warrant anticoagulation — reassess with other risk factors.",
+        "HAS-BLED should be calculated alongside CHA2DS2-VASc to assess bleeding risk — a high HAS-BLED score does not contraindicate anticoagulation but prompts addressing modifiable bleeding risks.",
+        "DOACs (apixaban, rivaroxaban, dabigatran, edoxaban) are preferred over warfarin for non-valvular AF due to superior net clinical benefit."
+      ]
+    },
+    "patientExample": {
+      "name": "Gerald Marsh (this case)",
+      "scoring": {
+        "chf": false,
+        "hypertension": true,
+        "age75": false,
+        "diabetes": true,
+        "strokeTia": true,
+        "vascularDisease": false,
+        "age6574": true,
+        "sexFemale": false
+      },
+      "totalScore": 5,
+      "interpretation": "Score 5 — High risk. Oral anticoagulation strongly recommended. DOAC preferred."
+    }
+  },
+  "availableBadges": [
+    {
+      "id": "badge-systematic",
+      "title": "Systematic Approach",
+      "description": "Correctly stabilised the patient before investigation and treatment",
+      "criteria": "Chose correct action in node-stabilize"
+    },
+    {
+      "id": "badge-rate-controller",
+      "title": "Rate Controller",
+      "description": "Selected an appropriate first-line rate control agent",
+      "criteria": "Chose metoprolol or diltiazem in node-rate-control"
+    },
+    {
+      "id": "badge-stroke-strategist",
+      "title": "Stroke Strategist",
+      "description": "Used CHA2DS2-VASc to guide anticoagulation decision",
+      "criteria": "Chose CHA2DS2-VASc assessment in node-anticoagulation"
+    },
+    {
+      "id": "badge-cardioversion-sage",
+      "title": "Cardioversion Sage",
+      "description": "Made the correct cardioversion decision based on onset timing and anticoagulation status",
+      "criteria": "Chose correct answer in node-cardioversion"
+    },
+    {
+      "id": "badge-clean-run",
+      "title": "Clean Run",
+      "description": "Completed the case with no incorrect choices",
+      "criteria": "Zero wrong answers across all nodes"
+    },
+    {
+      "id": "badge-no-harm",
+      "title": "First, Do No Harm",
+      "description": "Avoided all dangerous pitfalls — no DC cardioversion without anticoagulation, no digoxin first-line, no AV nodal block in WPW",
+      "criteria": "Did not select c1b, c4c, or c6b"
+    }
+  ],
+  "disclaimer": "This case is intended for educational purposes only. Clinical decisions in real patients must be made by qualified healthcare professionals with full access to the clinical context, local guidelines, and individual patient factors. Drug doses, protocols, and guidelines vary by institution and jurisdiction — always refer to local formularies and current guidelines. This simulation simplifies complex clinical scenarios for learning; real patients present with greater nuance and uncertainty."
+}

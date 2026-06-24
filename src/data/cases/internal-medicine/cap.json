@@ -1,0 +1,440 @@
+{
+  "id": "cap",
+  "specialty": "Internal Medicine",
+  "title": "Fever, Cough, and Rusty Sputum",
+  "subtitle": "Community-Acquired Pneumonia",
+  "difficulty": "intermediate",
+  "estimatedMinutes": 18,
+  "patient": {
+    "age": 55,
+    "sex": "M",
+    "chiefComplaint": "5 days of productive cough with fever — now confused",
+    "history": "55-year-old male brought in by his wife. 5 days of productive cough with rusty/blood-tinged sputum, fever, right-sided pleuritic chest pain, and progressive breathlessness. This morning he became confused — unable to say the year or where he was. Wife noticed he had not been eating or drinking for 2 days.",
+    "initialVitals": {
+      "bp": "95/65",
+      "hr": 115,
+      "rr": 26,
+      "spo2": 92,
+      "temp": 39.2,
+      "gcs": 13
+    },
+    "symptoms": [
+      "Productive cough — rusty/blood-tinged sputum",
+      "Fever (39.2°C)",
+      "Right-sided pleuritic chest pain",
+      "Confusion — new onset (GCS 13)",
+      "Worsening dyspnoea over 5 days",
+      "Reduced oral intake for 2 days",
+      "Rigors reported by wife"
+    ],
+    "redFlags": [
+      "NEW confusion (GCS 13) — CURB-65 point",
+      "BP 95/65 — hypotension, meeting sepsis criteria",
+      "RR 26 — tachypnoea (CURB-65 point: RR ≥30 just below threshold)",
+      "SpO2 92% — hypoxic",
+      "Temp 39.2°C",
+      "5 days of symptoms without seeking help — delayed presentation"
+    ],
+    "backgroundHistory": "Ex-smoker (20 pack-years, quit 10 years ago). Alcohol: 30 units/week (excess — relevant to atypical organisms and aspiration risk). Hypertension (amlodipine 5mg). No known lung disease. BMI 28. Works as a plumber. No recent travel. No sick contacts reported."
+  },
+  "startNodeId": "curb65-severity",
+  "nodes": [
+    {
+      "id": "curb65-severity",
+      "category": "Assessment",
+      "prompt": "A 55-year-old presents with 5 days of productive cough, fever, confusion, and hypotension. Calculate the CURB-65 score and determine severity.",
+      "context": "Confusion: YES (GCS 13 — new). Urea: not yet back, but clinical history of 2 days reduced intake suggests likely elevated. RR: 26/min. BP: 95/65. Age ≥65: NO (age 55). SpO2 92%. Temp 39.2°C.",
+      "choices": [
+        {
+          "id": "curb65-severe-correct",
+          "text": "CURB-65: Confusion (1) + Urea likely elevated (1) + RR 26 — just below 30 (0, but clinically concerning) + BP <90 systolic (1) + Age 55 (0) = minimum 3, likely 4. SEVERE pneumonia requiring consideration of ITU. Treat as CURB-65 ≥3",
+          "correct": true,
+          "feedback": "Correct assessment. This patient scores minimum 3 on CURB-65 (confusion, likely elevated urea, hypotension). RR 26 is close to the threshold of 30. CURB-65 ≥3 = SEVERE CAP, mortality 15-40%. This patient also meets sepsis criteria (infection + organ dysfunction: confusion, hypotension). Treat urgently.",
+          "nextNodeId": "stabilise-investigations",
+          "timeAdvanceMin": 3,
+          "scoreDelta": 20,
+          "triggerBadge": "curb65-expert",
+          "educationalNote": "CURB-65 scoring:\nC — Confusion (new, AMTS ≤8): 1 point\nU — Urea >7mmol/L: 1 point\nR — Respiratory rate ≥30/min: 1 point\nB — BP (systolic <90 or diastolic ≤60): 1 point\n65 — Age ≥65: 1 point\n\nScore 0-1: Low risk (outpatient)\nScore 2: Moderate (admit for observation)\nScore 3-5: Severe (admit, consider ITU)\nScore ≥4: Mortality 15-40%, ITU consideration essential"
+        },
+        {
+          "id": "curb65-low",
+          "text": "CURB-65 score of 1 — only confusion is clearly present. The others are not confirmed",
+          "correct": false,
+          "feedback": "Dangerous under-scoring. This patient has: confirmed confusion (GCS 13), BP 95/65 which meets the hypotension criterion (systolic <90). That alone gives CURB-65 of 2, with urea likely elevated (clinical dehydration + 2 days poor intake). Minimum score is 3 — severe CAP. Clinically he also meets sepsis criteria.",
+          "nextNodeId": "stabilise-investigations",
+          "timeAdvanceMin": 10,
+          "scoreDelta": -20,
+          "educationalNote": "Never under-score CURB-65. When urea result is pending, clinical assessment of hydration status guides likelihood. 2 days of reduced oral intake + tachycardia + hypotension makes elevated urea (>7mmol/L) very likely. Use clinical judgement alongside the score."
+        },
+        {
+          "id": "no-curb65-just-treat",
+          "text": "Skip scoring — he is clearly sick, just treat immediately",
+          "correct": false,
+          "feedback": "The instinct to treat urgently is correct, but the CURB-65 score guides antibiotic choice, disposition (ward vs HDU vs ITU), and overall escalation planning. A score without the reasoning misses the systematic approach. In an exam or real situation, scoring takes 60 seconds and determines the entire management pathway.",
+          "nextNodeId": "stabilise-investigations",
+          "timeAdvanceMin": 5,
+          "scoreDelta": -5,
+          "educationalNote": "CURB-65 is a validated mortality prediction tool. It takes 60 seconds and determines: (1) admission vs outpatient, (2) ward vs ITU, (3) antibiotic choice (oral vs IV), (4) escalation planning. Always calculate it for any CAP presentation."
+        }
+      ]
+    },
+    {
+      "id": "stabilise-investigations",
+      "category": "Treatment",
+      "prompt": "CURB-65 ≥3. He is septic. What is your immediate management bundle — what must happen in the first hour?",
+      "context": "BP 95/65, HR 115, RR 26, SpO2 92%, Temp 39.2°C, GCS 13. This is sepsis from probable CAP.",
+      "choices": [
+        {
+          "id": "sepsis-bundle-correct",
+          "text": "Sepsis 6 bundle: (1) High-flow O2, (2) Bloods + blood cultures × 2 sets BEFORE antibiotics, (3) Urine output monitoring/catheter, (4) IV access + fluid resuscitation 500mL-1L 0.9% saline, (5) IV antibiotics within 1 hour, (6) Lactate measurement",
+          "correct": true,
+          "feedback": "Correct. The Sepsis 6 bundle applied to CAP: oxygen, blood cultures BEFORE antibiotics (critical — do not delay antibiotics for >1 hour but cultures must be taken before first dose), fluid resuscitation, IV antibiotics within 1 hour, urine output monitoring, and lactate (elevated lactate indicates tissue hypoperfusion — predicts mortality).",
+          "nextNodeId": "blood-cultures-order",
+          "timeAdvanceMin": 15,
+          "vitalsDelta": { "hr": -5, "bp": "102/68", "spo2": 3 },
+          "scoreDelta": 20,
+          "educationalNote": "Sepsis 6 in 1 hour: (1) Give O2 (target SpO2 >94%). (2) Take blood cultures × 2 sets. (3) Give IV antibiotics. (4) Give IV fluid challenge 500mL. (5) Check serum lactate. (6) Check urine output. Blood cultures BEFORE antibiotics — but do not delay antibiotics for more than 45 minutes waiting for cultures."
+        },
+        {
+          "id": "antibiotics-before-cultures",
+          "text": "Start IV antibiotics immediately — cultures can wait, time to antibiotics is critical",
+          "correct": false,
+          "feedback": "Partially correct thinking but wrong order. Blood cultures should be taken BEFORE first antibiotic dose — they only take 2-3 minutes and antibiotic administration after cultures does not significantly delay treatment. Blood cultures taken after antibiotics are often sterile and lose their diagnostic value. Take cultures, then give antibiotics within 1 hour.",
+          "nextNodeId": "blood-cultures-order",
+          "timeAdvanceMin": 10,
+          "vitalsDelta": { "hr": -3, "bp": "98/66" },
+          "scoreDelta": -5,
+          "educationalNote": "Culture before antibiotics: taking 2 sets of blood cultures before the first antibiotic dose takes 2-3 minutes — it does not meaningfully delay treatment. However, antibiotics sterilise blood cultures within 1-2 hours. Post-antibiotic cultures are 80% less likely to grow an organism. This matters for de-escalation and antibiotic stewardship."
+        },
+        {
+          "id": "cxr-before-antibiotics",
+          "text": "CXR first to confirm pneumonia, then start antibiotics",
+          "correct": false,
+          "feedback": "Wrong priority. CXR should be done but is NOT required before starting antibiotics in a septic patient with a clinical diagnosis of CAP. In sepsis, every hour of antibiotic delay increases mortality. Clinical diagnosis (fever + productive cough + tachypnoea + hypotension) is sufficient to start antibiotics. CXR confirms and characterises — it does not gate treatment.",
+          "nextNodeId": "blood-cultures-order",
+          "timeAdvanceMin": 30,
+          "vitalsDelta": { "hr": 8, "bp": "90/62" },
+          "scoreDelta": -15,
+          "educationalNote": "CXR in CAP: confirms diagnosis, identifies complications (empyema, effusion, multilobar disease). However, it should not delay antibiotic administration in a septic patient. Many CXRs in early CAP are negative or equivocal — a normal CXR does not exclude pneumonia in a highly symptomatic patient."
+        }
+      ]
+    },
+    {
+      "id": "blood-cultures-order",
+      "category": "Investigation",
+      "prompt": "Blood cultures taken. What investigations are essential in severe CAP?",
+      "context": "Blood cultures × 2 taken. CXR is being done. What else must you send?",
+      "choices": [
+        {
+          "id": "full-investigations",
+          "text": "FBC, CRP, PCT, U&E, LFT, clotting, lactate, ABG (SpO2 92%), sputum culture, urinary pneumococcal antigen, urinary Legionella antigen. Consider Mycoplasma serology. CXR for characterisation.",
+          "correct": true,
+          "feedback": "Comprehensive investigation for severe CAP. Key points: (1) Urinary pneumococcal antigen (positive in 50-80% S. pneumoniae CAP — results in 15 min, guides de-escalation from dual therapy). (2) Urinary Legionella antigen (positive in Legionella, which needs atypical cover — results in 15 min). (3) Sputum culture (before antibiotics ideally). (4) ABG given SpO2 92% — type 1 or 2 RF? (5) Lactate for sepsis severity.",
+          "nextNodeId": "antibiotic-choice",
+          "timeAdvanceMin": 10,
+          "scoreDelta": 20,
+          "triggerBadge": "investigation-ace",
+          "educationalNote": "Urinary antigens in CAP: pneumococcal antigen — sensitivity 50-80%, specificity >95%, result in 15 minutes, remains positive for weeks even after antibiotics started. Legionella antigen — detects serogroup 1 (70% of cases), sensitivity 70-90%, rapid result. Both have significant implications for antibiotic targeting and de-escalation."
+        },
+        {
+          "id": "bloods-only-no-antigens",
+          "text": "FBC, CRP, U&E, blood cultures, CXR — standard admission bloods",
+          "correct": false,
+          "feedback": "Incomplete for severe CAP. Missing: ABG (SpO2 92% — need to characterise respiratory failure), urinary pneumococcal and Legionella antigens (rapid tests with major antibiotic implications), sputum culture, lactate (for sepsis severity). These tests take 2 minutes to request and can change management.",
+          "nextNodeId": "antibiotic-choice",
+          "timeAdvanceMin": 5,
+          "scoreDelta": -10,
+          "educationalNote": "In severe CAP, urine antigen tests are mandatory investigations. A positive Legionella antigen means the patient should receive a fluoroquinolone or azithromycin rather than standard amoxicillin. A positive pneumococcal antigen confirms the organism and allows de-escalation from dual to monotherapy after 48-72 hours."
+        },
+        {
+          "id": "ct-chest-first",
+          "text": "Urgent CT chest with contrast — will show the extent of consolidation and rule out abscess",
+          "correct": false,
+          "feedback": "CT chest is not a first-line investigation for straightforward CAP. CXR + clinical assessment + blood/urine tests are sufficient initially. CT is reserved for: (1) diagnostic uncertainty, (2) no clinical improvement at 48-72 hours, (3) suspected mass lesion or post-obstructive pneumonia, (4) empyema assessment. CT is not part of the initial sepsis bundle.",
+          "nextNodeId": "antibiotic-choice",
+          "timeAdvanceMin": 45,
+          "scoreDelta": -5,
+          "educationalNote": "CT in pneumonia: not routinely required at presentation. Indicated for: failure to improve at 48-72 hours, clinical suspicion of malignancy, immunocompromised patients, suspected abscess/empyema. CXR is sufficient for initial diagnosis and management in most cases."
+        }
+      ]
+    },
+    {
+      "id": "antibiotic-choice",
+      "category": "Treatment",
+      "prompt": "Investigations sent. Antibiotics must start now. What is the correct antibiotic regimen for severe CAP (CURB-65 ≥3)?",
+      "context": "CXR: right lower lobe consolidation. Urea 11mmol/L (elevated — confirms CURB-65 of 4). Urinary antigens pending. Sputum rusty and blood-tinged. No known drug allergies. No recent antibiotics.",
+      "choices": [
+        {
+          "id": "correct-antibiotics-cap",
+          "text": "IV co-amoxiclav 1.2g TDS (or IV amoxicillin 1g TDS) PLUS IV clarithromycin 500mg BD (or azithromycin). Dual therapy covers both typical (pneumococcal) and atypical organisms (Legionella, Mycoplasma, Chlamydia). Step down to oral when improving",
+          "correct": true,
+          "feedback": "Correct. Severe CAP requires dual antibiotic therapy: (1) Beta-lactam (amoxicillin or co-amoxiclav) for typical organisms including S. pneumoniae, and (2) Macrolide (clarithromycin or azithromycin) for atypical organisms (Legionella, Mycoplasma, Chlamydophila). Atypicals account for 10-20% of CAP and are missed by beta-lactam monotherapy.",
+          "nextNodeId": "fluid-resuscitation-cap",
+          "timeAdvanceMin": 10,
+          "vitalsDelta": { "hr": -8, "temp": -0.3 },
+          "scoreDelta": 20,
+          "educationalNote": "CAP antibiotic regimens (BTS NICE NG138):\nMILD (CURB-65 0-1): Amoxicillin 500mg TDS PO 5 days\nMODERATE (CURB-65 2): Amoxicillin + clarithromycin PO\nSEVERE (CURB-65 3-5): Co-amoxiclav 1.2g TDS IV + clarithromycin 500mg BD IV\nAllergy: Clarithromycin + metronidazole OR fluoroquinolone (levofloxacin)\nATYPICAL COVER: Always add macrolide in moderate-severe CAP"
+        },
+        {
+          "id": "amoxicillin-only",
+          "text": "IV amoxicillin alone — this is most likely pneumococcal CAP from the rusty sputum",
+          "correct": false,
+          "feedback": "Inadequate for severe CAP. While rusty sputum suggests pneumococcal pneumonia, atypical organisms (Legionella — particularly dangerous in heavy alcohol users, Mycoplasma) cannot be excluded clinically. In SEVERE CAP, dual therapy (beta-lactam + macrolide) is mandatory. The urinary antigen is pending — treat empirically for both.",
+          "nextNodeId": "fluid-resuscitation-cap",
+          "timeAdvanceMin": 10,
+          "scoreDelta": -15,
+          "educationalNote": "Atypical pneumonia organisms: Legionella pneumophila (water systems, heavy alcohol use, hyponatraemia), Mycoplasma pneumoniae (young adults, extrapulmonary features — rash, haemolysis, encephalitis), Chlamydophila pneumoniae. All require macrolide or fluoroquinolone coverage — missed by beta-lactams alone."
+        },
+        {
+          "id": "broad-spectrum-pip-taz",
+          "text": "IV piperacillin-tazobactam + gentamicin — severely ill, use broad spectrum",
+          "correct": false,
+          "feedback": "Over-treatment. Pip-taz and gentamicin are appropriate for HAP (hospital-acquired pneumonia) or severely immunocompromised patients, but excessive for standard severe CAP. The BTS regimen (beta-lactam + macrolide) provides excellent coverage for CAP pathogens. Broader agents increase C. diff risk, nephrotoxicity (gentamicin), and select for resistant organisms.",
+          "nextNodeId": "fluid-resuscitation-cap",
+          "timeAdvanceMin": 10,
+          "scoreDelta": -5,
+          "educationalNote": "Antibiotic stewardship in CAP: use the narrowest effective spectrum. CAP organisms (S. pneumoniae, H. influenzae, atypicals) are covered by co-amoxiclav + macrolide. Reserve pip-taz and aminoglycosides for HAP, Pseudomonas risk (bronchiectasis, cystic fibrosis, recent hospitalisation), or failed first-line therapy."
+        }
+      ]
+    },
+    {
+      "id": "fluid-resuscitation-cap",
+      "category": "Treatment",
+      "prompt": "Antibiotics prescribed. Vital signs: BP 95/65, HR 115. This patient meets sepsis criteria. How much IV fluid do you give?",
+      "context": "Sepsis criteria met: infection + organ dysfunction (confusion, hypotension, tachycardia). Lactate 3.2mmol/L (elevated — indicates tissue hypoperfusion). This is septic shock.",
+      "choices": [
+        {
+          "id": "correct-sepsis-fluids",
+          "text": "Give IV 0.9% saline 30mL/kg (approximately 2L for this patient) as an initial fluid challenge over 30-60 minutes. Reassess after each 500mL bolus. Insert urinary catheter for output monitoring. Escalate to HDU/ITU if not responding",
+          "correct": true,
+          "feedback": "Correct. Surviving Sepsis Campaign recommends 30mL/kg crystalloid within 3 hours for sepsis with hypoperfusion (lactate >2mmol/L or hypotension). Give in 500mL boluses with reassessment after each. Target: MAP >65mmHg, urine output >0.5mL/kg/hr, lactate normalisation. Escalate if not responding — vasopressors for septic shock.",
+          "nextNodeId": "disposition-cap",
+          "timeAdvanceMin": 60,
+          "vitalsDelta": { "hr": -12, "bp": "108/70", "spo2": 1 },
+          "scoreDelta": 15,
+          "educationalNote": "Sepsis fluid management: 30mL/kg crystalloid in first 3 hours for sepsis-induced hypoperfusion. Reassess with each bolus — signs of fluid responsiveness: rising BP, falling HR, increasing urine output. If MAP <65 despite 30mL/kg, start vasopressors (noradrenaline). Fluid resuscitation is the bridge to antimicrobials working."
+        },
+        {
+          "id": "restrict-fluids-cap",
+          "text": "Restrict fluids to 500mL — he has pneumonia and fluids might worsen it",
+          "correct": false,
+          "feedback": "Incorrect. The concern about fluid overload in pneumonia is a common but dangerous misconception in the acute phase. This patient is in SEPTIC SHOCK — he is intravascularly depleted and his hypotension reflects inadequate perfusion to brain, kidneys, and heart. Without fluid resuscitation now, he risks multi-organ failure. Give 30mL/kg as per Surviving Sepsis guidelines.",
+          "nextNodeId": "disposition-cap",
+          "timeAdvanceMin": 15,
+          "vitalsDelta": { "hr": 5, "bp": "90/62" },
+          "scoreDelta": -20,
+          "educationalNote": "Fluid restriction in pneumonia: appropriate ONLY when the patient is haemodynamically stable and in the recovery phase. In SEPTIC SHOCK, intravascular volume must be restored urgently. The fear of 'worsening' consolidation with fluids is not evidence-based in the acute resuscitation phase."
+        },
+        {
+          "id": "1L-bolus-reassess",
+          "text": "Give 1L normal saline as a fast bolus, then reassess",
+          "correct": false,
+          "feedback": "Partially correct. A 1L bolus is reasonable as a first step but under-targets the Surviving Sepsis goal of 30mL/kg. For a 70kg patient, that is ~2100mL. Give fluids in 500mL boluses with reassessment — but the target is 30mL/kg in the first 3 hours for sepsis-induced hypoperfusion.",
+          "nextNodeId": "disposition-cap",
+          "timeAdvanceMin": 20,
+          "vitalsDelta": { "hr": -5, "bp": "100/66" },
+          "scoreDelta": 5,
+          "educationalNote": "30mL/kg rule: standard Surviving Sepsis recommendation for sepsis-induced hypoperfusion or lactate ≥2mmol/L. Reassess after each 500mL bolus for signs of fluid responsiveness and to detect fluid overload in cardiac or renal patients."
+        }
+      ]
+    },
+    {
+      "id": "disposition-cap",
+      "category": "Disposition",
+      "prompt": "After 1 hour of resuscitation: BP 108/70, HR 102, SpO2 95%, GCS improving (now 14). Lactate 2.1mmol/L (falling). CXR shows right lower lobe consolidation. Urea 11mmol/L. Urinary pneumococcal antigen: POSITIVE. Legionella: negative. Where should this patient be managed?",
+      "context": "CURB-65 score = 4 (confusion, urea 11, RR 26 [approaching 30], BP met earlier, age 55). Responding to resuscitation. Lactate falling.",
+      "choices": [
+        {
+          "id": "hdu-admission",
+          "text": "High Dependency Unit (HDU) or Level 2 care — CURB-65 ≥4 requires HDU-level monitoring. ITU if deteriorates. Pneumococcal antigen positive — can narrow antibiotics to amoxicillin + macrolide after 24-48 hours once stable",
+          "correct": true,
+          "feedback": "Correct level of care. CURB-65 ≥4 warrants HDU or consideration of ITU. This patient is responding to resuscitation but remains at high risk of deterioration. The positive pneumococcal antigen allows antibiotic de-escalation to amoxicillin-based therapy after 48 hours of clinical stability — an important stewardship step.",
+          "nextNodeId": "monitoring-cap",
+          "timeAdvanceMin": 20,
+          "scoreDelta": 15,
+          "educationalNote": "CAP level of care by CURB-65: 0-1 = outpatient or brief ward; 2 = ward admission; 3 = ward with HDU consideration; 4-5 = HDU/ITU consideration. Other factors: bilateral consolidation, PaO2 <60mmHg on FiO2 >35%, septic shock, rapid deterioration. The patient should be discussed with ITU if CURB-65 ≥4 and any organ dysfunction persists."
+        },
+        {
+          "id": "discharge-improving",
+          "text": "Responding well to treatment — discharge with oral antibiotics",
+          "correct": false,
+          "feedback": "Unsafe. This patient had CURB-65 ≥4, septic shock, lactate 3.2mmol/L, and GCS impairment. While improving with initial resuscitation, he remains at high risk of deterioration. Early discharge from severe CAP with confirmed sepsis is associated with high re-admission rates and mortality. HDU admission is required.",
+          "nextNodeId": "monitoring-cap",
+          "timeAdvanceMin": 10,
+          "scoreDelta": -25,
+          "educationalNote": "Severe CAP discharge criteria: CURB-65 ≥3 should always be admitted. For discharge consideration from hospital: clinical stability for ≥48 hours, CURB-65 ≤2 at re-scoring, SpO2 stable on air, eating and drinking, no comorbidity concerns. CURB-65 4 requires minimum 72-96 hours."
+        },
+        {
+          "id": "general-ward-only",
+          "text": "General medical ward admission — he is improving with treatment",
+          "correct": false,
+          "feedback": "Insufficient level of care. CURB-65 4 with recent septic shock and elevated lactate warrants HDU/Level 2 monitoring. On a general ward, deterioration (respiratory failure, haemodynamic collapse) may not be detected rapidly enough. The short-term improvement does not negate the high risk stratified by his CURB-65 score.",
+          "nextNodeId": "monitoring-cap",
+          "timeAdvanceMin": 10,
+          "scoreDelta": -10,
+          "educationalNote": "HDU vs general ward in CAP: HDU (Level 2) = invasive monitoring, 1:2 nursing, closer review. General ward (Level 1) = 1:6-8 nursing. CURB-65 ≥3 with organ dysfunction should default to HDU unless improving rapidly. Use NEWS2 ≥7 as a trigger for senior review and HDU consideration."
+        }
+      ]
+    },
+    {
+      "id": "monitoring-cap",
+      "category": "Monitoring",
+      "prompt": "Admitted to HDU. What are your monitoring priorities and when would you consider stepping down?",
+      "context": "HDU Day 1: BP 118/74, HR 96, RR 22, SpO2 96% on 35% O2, GCS 15, Temp 38.4°C (still elevated). Lactate 1.4mmol/L (normalised). Antibiotics running. Urine output 45mL/hr.",
+      "choices": [
+        {
+          "id": "correct-monitoring-cap",
+          "text": "Monitor: NEWS2 score 2-4 hourly, ABG if SpO2 <94% or deteriorating, FBC/CRP/PCT 48 hours, blood cultures if re-spikes. Step down to ward when: apyrexial ≥24hrs, HR <100, RR <24, SpO2 >94% on ≤28% O2, GCS normal, eating and drinking",
+          "correct": true,
+          "feedback": "Correct monitoring and step-down criteria. NEWS2 ≥7 = urgent senior review and consideration of escalation. Procalcitonin (PCT) is a useful marker to guide antibiotic duration — falling PCT suggests infection responding, guides stopping antibiotics. CRP at 48-72 hours: failure to fall by 50% predicts treatment failure.",
+          "nextNodeId": "antibiotic-deescalation",
+          "timeAdvanceMin": 480,
+          "vitalsDelta": { "hr": -8, "temp": -0.5, "spo2": 1 },
+          "scoreDelta": 15,
+          "educationalNote": "NEWS2 (National Early Warning Score 2): scored on RR, SpO2, O2 supplementation, BP, HR, consciousness, temperature. Score ≥7 = high risk, immediate review. Use as an objective deterioration trigger. PCT declining by >80% from peak correlates with antibiotic adequacy and guides stopping."
+        },
+        {
+          "id": "abg-every-hour",
+          "text": "Hourly ABG monitoring — he is at risk of respiratory failure",
+          "correct": false,
+          "feedback": "Excessive and unnecessary given current status. Hourly ABGs are painful, risk arterial complications, and are not indicated when SpO2 monitoring is available and the patient is currently stable (SpO2 96%). ABG is indicated if: SpO2 falls to <94%, RR worsens significantly, or clinical concern about type 2 respiratory failure. Use clinical triggers, not reflexive intervals.",
+          "nextNodeId": "antibiotic-deescalation",
+          "timeAdvanceMin": 10,
+          "scoreDelta": -5,
+          "educationalNote": "ABG frequency: not routine in stable monitoring. Indications in CAP: SpO2 <94% (assess type of RF), worsening RR or work of breathing, clinical deterioration, assessment of hypercapnia risk (underlying COPD). Continuous SpO2 monitoring is sufficient in a stable, improving patient."
+        },
+        {
+          "id": "discharge-48hrs",
+          "text": "Discharge at 48 hours if CRP falling — oral antibiotics to complete at home",
+          "correct": false,
+          "feedback": "Too early for this severity. CURB-65 4 + initial septic shock warrants at least 72-96 hours of inpatient observation. Step-down from HDU to ward is appropriate when clinically stable, but complete discharge at 48 hours risks premature discontinuation of IV antibiotics and missing complications (empyema, parapneumonic effusion).",
+          "nextNodeId": "antibiotic-deescalation",
+          "timeAdvanceMin": 30,
+          "scoreDelta": -10,
+          "educationalNote": "Length of stay in severe CAP: dependent on clinical response, not a fixed number. IV to oral switch criteria: temperature <37.5°C × 24hrs, HR <100, RR <24, SpO2 ≥94% on air, BP stable, GCS normal, tolerating oral intake. IV antibiotics can be switched to oral once these are met, typically day 2-4."
+        }
+      ]
+    },
+    {
+      "id": "antibiotic-deescalation",
+      "category": "Treatment",
+      "prompt": "Day 3: Clinically much improved. Temp 37.3°C, HR 88, RR 18, SpO2 96% on air. CRP fallen from 240 to 110. Urinary pneumococcal antigen: positive. He is eating and drinking. What is your antibiotic plan?",
+      "context": "Confirmed pneumococcal CAP (urinary antigen). Clinical improvement. Ready for IV-to-oral switch consideration.",
+      "isTerminal": true,
+      "choices": [
+        {
+          "id": "deescalate-switch-oral",
+          "text": "IV-to-oral switch: amoxicillin 500mg TDS (confirmed pneumococcal) + clarithromycin 500mg BD PO. Total antibiotic course: 5-7 days (standard CAP). Discharge from HDU to ward. Plan discharge home Day 4-5 if continues to improve. Follow-up CXR in 4-6 weeks.",
+          "correct": true,
+          "feedback": "Excellent antibiotic stewardship. Positive pneumococcal antigen confirms the organism and allows targeted oral step-down. Standard CAP course is 5-7 days total (not 10-14). IV-to-oral switch when clinical stability criteria met reduces costs, line infections, and hospital stay. Follow-up CXR at 4-6 weeks is essential to confirm resolution — persistent shadowing at 6 weeks needs investigation (underlying malignancy).",
+          "nextNodeId": null,
+          "timeAdvanceMin": 20,
+          "scoreDelta": 20,
+          "triggerBadge": "stewardship-star",
+          "educationalNote": "CAP antibiotic duration: 5-7 days total (NICE NG138). Do not use 10-14 day courses routinely. IV-to-oral switch: reduces ICU/HDU stay, line infections, costs, without compromising outcomes. Follow-up CXR: MANDATORY in smokers, age >50, or any lobar consolidation at 6 weeks — persistent shadowing may represent an obstructing tumour."
+        },
+        {
+          "id": "continue-iv-14-days",
+          "text": "Continue IV antibiotics for 14 days — severe infection should have a long course",
+          "correct": false,
+          "feedback": "Incorrect and harmful. There is no evidence that 14-day courses are superior to 5-7 days in standard CAP. Prolonged IV antibiotics increase: C. diff risk, line infection risk, antibiotic resistance, hospital stay costs. The BTS/NICE guideline recommends 5-7 days total. Switch to oral when clinical stability criteria are met.",
+          "nextNodeId": null,
+          "timeAdvanceMin": 10,
+          "scoreDelta": -15,
+          "educationalNote": "Antibiotic over-treatment in CAP: 10-14 day courses are NOT evidence-based for standard community-acquired pneumonia. Short courses (5-7 days) are equally effective and cause less harm. Evidence from multiple RCTs including the CAPO study supports short-course therapy in non-immunocompromised patients."
+        },
+        {
+          "id": "stop-antibiotics-improving",
+          "text": "He is clearly improving — stop all antibiotics now at Day 3",
+          "correct": false,
+          "feedback": "Too early to stop. Clinical improvement at day 3 reflects antibiotic effect — stopping now risks relapse with a partially treated infection. Complete the 5-7 day course with oral step-down. Stopping at day 3 is premature except in very mild CAP with extremely rapid response.",
+          "nextNodeId": null,
+          "timeAdvanceMin": 5,
+          "scoreDelta": -10,
+          "educationalNote": "Minimum antibiotic duration in CAP: 5 days total. 3-day courses have higher relapse rates in moderate-severe disease. Complete the course with oral antibiotics once criteria for IV-to-oral switch are met."
+        }
+      ]
+    }
+  ],
+  "diseaseMap": {
+    "presenting": [
+      "Productive cough — rusty/purulent sputum",
+      "Fever (≥38°C)",
+      "Pleuritic chest pain",
+      "Dyspnoea",
+      "New confusion (CURB-65 marker)",
+      "Consolidation on CXR",
+      "Decreased breath sounds / bronchial breathing / dullness to percussion"
+    ],
+    "redFlags": [
+      "CURB-65 ≥3 (high mortality risk)",
+      "Sepsis criteria: infection + organ dysfunction",
+      "SpO2 <92%",
+      "Bilateral consolidation",
+      "Rapidly spreading infiltrates",
+      "Immunocompromised",
+      "Failure to improve at 48-72 hours"
+    ],
+    "bestFirstStep": "Calculate CURB-65 score + take blood cultures BEFORE starting IV antibiotics",
+    "bestInvestigation": "CXR (confirms diagnosis) + Urinary pneumococcal antigen + Urinary Legionella antigen — rapid, high-yield, guide targeted therapy",
+    "diagnosis": "Severe Community-Acquired Pneumonia (CURB-65 ≥3-4)",
+    "treatment": "IV co-amoxiclav + IV clarithromycin + Fluid resuscitation (30mL/kg) + O2 to SpO2 >94% + HDU admission",
+    "followUp": "CXR at 4-6 weeks (mandatory in smokers/age >50 — exclude underlying malignancy), GP follow-up, smoking cessation, pneumococcal and flu vaccination",
+    "complications": [
+      "Septic shock",
+      "Respiratory failure (type 1 — V/Q mismatch from consolidation)",
+      "Parapneumonic effusion",
+      "Empyema (pus in pleural space — requires drainage)",
+      "Lung abscess",
+      "ARDS",
+      "Multi-organ failure"
+    ],
+    "guidelineRef": "NICE NG138 (2019) + BTS CAP Guidelines 2009 (update 2022)"
+  },
+  "guideline": {
+    "title": "Community-Acquired Pneumonia — CURB-65 & Management",
+    "body": "CURB-65 SEVERITY SCORE\n\nOne point each for:\nC — Confusion (new, AMTS ≤8)\nU — Urea >7mmol/L\nR — Respiratory rate ≥30/min\nB — Blood pressure (systolic <90 OR diastolic ≤60)\n65 — Age ≥65 years\n\nRISK STRATIFICATION\n0-1: Low risk (outpatient treatment — 30-day mortality <3%)\n2: Moderate risk (consider ward admission — mortality 3-9%)\n3+: High risk (admit, consider HDU/ITU — mortality 15-40%)\n\nANTIBIOTIC CHOICE (NICE NG138)\nMILD (CURB-65 0-1):\n• Amoxicillin 500mg TDS PO × 5 days\n• Penicillin allergy: doxycycline 200mg/100mg PO\n\nMODERATE (CURB-65 2):\n• Amoxicillin + clarithromycin PO × 5-7 days\n\nSEVERE (CURB-65 3-5):\n• IV co-amoxiclav 1.2g TDS + IV clarithromycin 500mg BD\n• (or IV amoxicillin 1g TDS + IV clarithromycin)\n• Penicillin allergy: levofloxacin 500mg BD IV\n• Step down to oral when clinically stable\n\nKEY INVESTIGATIONS IN SEVERE CAP\n• Blood cultures × 2 (BEFORE antibiotics)\n• Urinary pneumococcal antigen\n• Urinary Legionella antigen\n• ABG if SpO2 <94%\n• Sputum culture\n• Lactate (if sepsis suspected)\n• Serum CRP, PCT, FBC, U&E, LFT\n\nSEPSIS BUNDLE (Sepsis 6)\n1. Give O2 — target SpO2 >94%\n2. Blood cultures × 2\n3. IV antibiotics within 1 hour\n4. IV fluid challenge 500mL (30mL/kg for septic shock)\n5. Urine output monitoring\n6. Serum lactate\n\nIV TO ORAL SWITCH CRITERIA\n• Temperature <37.5°C × 24hrs\n• HR <100\n• RR <24\n• SpO2 ≥94% on air\n• Tolerating oral intake\n• GCS normal\n\nFOLLOW-UP\n• CXR at 4-6 weeks (all smokers, age ≥50, lobar consolidation)\n• Persistent shadow at 6 weeks → urgent CT + bronchoscopy\n• Pneumococcal vaccine if not up to date\n• Flu vaccine annually",
+    "calculators": [
+      {
+        "name": "CURB-65",
+        "variables": [
+          { "name": "Confusion (new, AMTS ≤8)", "points": 1 },
+          { "name": "Urea >7mmol/L", "points": 1 },
+          { "name": "Respiratory rate ≥30/min", "points": 1 },
+          { "name": "BP: systolic <90 OR diastolic ≤60", "points": 1 },
+          { "name": "Age ≥65 years", "points": 1 }
+        ],
+        "scoring": [
+          { "score": "0-1", "risk": "Low", "action": "Outpatient treatment", "mortality": "<3%" },
+          { "score": "2", "risk": "Moderate", "action": "Ward admission", "mortality": "3-9%" },
+          { "score": "3-4", "risk": "High", "action": "Admit, HDU consideration", "mortality": "15-40%" },
+          { "score": "5", "risk": "Very High", "action": "ITU consideration", "mortality": "Up to 57%" }
+        ]
+      }
+    ]
+  },
+  "availableBadges": [
+    {
+      "id": "curb65-expert",
+      "label": "CURB-65 Expert",
+      "icon": "🫁",
+      "description": "Correctly calculated CURB-65 and classified the severity of CAP",
+      "positive": true
+    },
+    {
+      "id": "investigation-ace",
+      "label": "Investigation Ace",
+      "icon": "🔬",
+      "description": "Ordered full investigation panel including urinary antigens for CAP",
+      "positive": true
+    },
+    {
+      "id": "stewardship-star",
+      "label": "Stewardship Star",
+      "icon": "💊",
+      "description": "Correctly switched from IV to oral antibiotics and completed a 5-7 day course — not 14 days",
+      "positive": true
+    }
+  ],
+  "disclaimer": "This game is for educational and entertainment purposes only. It does not constitute medical advice. Always follow local guidelines and senior supervision in clinical practice."
+}

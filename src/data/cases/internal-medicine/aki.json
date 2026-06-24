@@ -1,0 +1,446 @@
+{
+  "id": "aki",
+  "specialty": "Internal Medicine",
+  "title": "The Kidneys Have Stopped Working",
+  "subtitle": "Acute Kidney Injury",
+  "difficulty": "intermediate",
+  "estimatedMinutes": 20,
+  "patient": {
+    "age": 70,
+    "sex": "M",
+    "chiefComplaint": "Decreased urine output and rising creatinine on post-operative Day 2",
+    "history": "A 70-year-old male is on the surgical ward following an elective sigmoid colectomy for diverticular disease performed 2 days ago. The nursing staff alert you that his urine output has been only 15mL/hour for the past 6 hours. The ward biochemistry shows creatinine has risen from a pre-operative baseline of 90 µmol/L to 188 µmol/L — more than double in under 48 hours. He reports feeling generally unwell with nausea.",
+    "initialVitals": {
+      "bp": "105/72",
+      "hr": 98,
+      "rr": 18,
+      "spo2": 97,
+      "temp": 37.3,
+      "gcs": 15
+    },
+    "symptoms": [
+      "Oliguria — urine output 15mL/hr (normal ≥0.5mL/kg/hr = ≥35mL/hr for 70kg patient)",
+      "Nausea and reduced appetite",
+      "Generalised fatigue",
+      "Mild abdominal discomfort (post-operative)",
+      "No chest pain, no dyspnoea at rest"
+    ],
+    "redFlags": [
+      "Oliguria <0.5mL/kg/hr for >6 hours — KDIGO Stage 1 AKI criterion",
+      "Creatinine doubled from baseline 90 to 188 µmol/L — KDIGO Stage 2 AKI",
+      "Post-operative day 2 — highest risk period for AKI after major abdominal surgery",
+      "Age 70 — reduced renal reserve",
+      "Hypotension (BP 105/72) — possible ongoing pre-renal component"
+    ],
+    "backgroundHistory": {
+      "pastMedicalHistory": [
+        "Hypertension (well-controlled)",
+        "Type 2 diabetes (HbA1c 52 — well-controlled)",
+        "Chronic kidney disease Stage 2 (baseline creatinine 90 µmol/L, eGFR 72)",
+        "Diverticular disease — indication for surgery"
+      ],
+      "medications": [
+        "Ramipril 10mg once daily (ACE inhibitor — HELD post-operatively? Confirm)",
+        "Metformin 500mg twice daily (HELD pre-operatively — must not restart until creatinine normalises)",
+        "Amlodipine 5mg once daily",
+        "Post-operatively: morphine PCA (patient-controlled analgesia), diclofenac 50mg TDS prescribed by surgical team"
+      ],
+      "allergies": "Penicillin — rash",
+      "socialHistory": "Retired teacher. Lives with wife. Non-smoker. Minimal alcohol. Good pre-operative functional status.",
+      "familyHistory": "No family history of renal disease or hereditary nephritis.",
+      "reviewOfSystems": "No haematuria. No dysuria. No loin pain (may be masked by post-operative analgesia). Bowels not yet opened post-op (Day 2 — expected). IV fluid running since surgery."
+    }
+  },
+  "startNodeId": "node-assessment",
+  "nodes": [
+    {
+      "id": "node-assessment",
+      "category": "diagnosis",
+      "prompt": "Post-operative Day 2. Creatinine 188 µmol/L (baseline 90). Urine output 15mL/hr for 6 hours. BP 105/72, HR 98. What KDIGO AKI stage is this, and what are the three categories of AKI you must systematically evaluate?",
+      "context": "You are a medical registrar called to the surgical ward. The nursing staff are concerned. The surgical team has prescribed diclofenac for post-operative pain. A urinary catheter is in situ.",
+      "choices": [
+        {
+          "id": "assessment-correct",
+          "text": "KDIGO Stage 2 (creatinine ≥2× baseline: 188/90 = 2.1×). Three categories: (1) Pre-renal — reduced kidney perfusion (dehydration, hypotension, low cardiac output); (2) Intrinsic renal — direct parenchymal damage (ATN, glomerulonephritis, nephrotoxins); (3) Post-renal — obstructive (bladder outflow, ureteric obstruction). All three must be considered simultaneously.",
+          "correct": true,
+          "feedback": "Correct staging and classification. KDIGO 2012 criteria: Stage 1 = creatinine ×1.5–1.9 or rise ≥26.5 µmol/L in 48h; Stage 2 = creatinine ×2–2.9; Stage 3 = creatinine ×3 or ≥353 µmol/L or RRT requirement. This patient is Stage 2. The pre/intrinsic/post-renal framework must always be systematically applied — missing the cause leads to wrong treatment. Post-renal is easily overlooked and easily treated.",
+          "nextNodeId": "node-fluid-challenge",
+          "timeAdvanceMin": 5,
+          "vitalsDelta": { "hr": 0, "spo2": 0 },
+          "scoreDelta": 10,
+          "educationalNote": "KDIGO AKI stages: Stage 1 — creatinine ×1.5–1.9 baseline OR rise ≥26.5 µmol/L in 48h OR UO <0.5mL/kg/hr ≥6h; Stage 2 — creatinine ×2–2.9 OR UO <0.5mL/kg/hr ≥12h; Stage 3 — creatinine ×3 OR ≥353.6 µmol/L OR RRT OR UO <0.3mL/kg/hr ≥24h. AKI occurs in 20–50% of post-major-surgery patients. Pre-renal causes account for 50–70% of all AKI."
+        },
+        {
+          "id": "assessment-ckd",
+          "text": "This is likely just his CKD progressing — a creatinine of 188 in a 70-year-old is not alarming. Monitor and reassess tomorrow.",
+          "correct": false,
+          "feedback": "This is a critical error. CKD is a chronic, slowly progressive condition — it does not cause acute doubling of creatinine in 48 hours. A creatinine rise from 90 to 188 µmol/L in under 48 hours is AKI Stage 2 by definition, regardless of underlying CKD. Dismissing this as CKD progression will miss a treatable, potentially reversible cause and lead to preventable renal failure.",
+          "nextNodeId": "node-fluid-challenge",
+          "timeAdvanceMin": 24,
+          "vitalsDelta": { "hr": 8, "spo2": -1 },
+          "scoreDelta": -20,
+          "triggerBadge": "delayed-diagnosis",
+          "educationalNote": "Acute-on-chronic kidney disease (AoCKD) is AKI occurring on a background of CKD. It requires the same urgent assessment as AKI in a patient with normal baseline renal function. Chronic elevation in creatinine does not buffer the patient from acute decline — in fact, reduced renal reserve makes them more susceptible to rapid deterioration."
+        },
+        {
+          "id": "assessment-stage3",
+          "text": "KDIGO Stage 3 AKI — creatinine is severely elevated. Immediate nephrology referral and dialysis preparation.",
+          "correct": false,
+          "feedback": "Incorrect staging. Stage 3 requires creatinine ≥3× baseline (≥270 µmol/L for this patient) or creatinine ≥353.6 µmol/L or need for RRT. This patient is Stage 2 (×2.1 baseline). While Stage 2 is serious and requires urgent management, initiating dialysis preparation without assessment, fluid challenge, or identifying the cause is premature. Stage 2 AKI is frequently reversible with prompt intervention.",
+          "nextNodeId": "node-fluid-challenge",
+          "timeAdvanceMin": 10,
+          "vitalsDelta": { "hr": 3, "spo2": 0 },
+          "scoreDelta": -8
+        }
+      ],
+      "isTerminal": false
+    },
+    {
+      "id": "node-fluid-challenge",
+      "category": "treatment",
+      "prompt": "You have assessed the patient and suspect a pre-renal component (BP 105/72, post-operative fluid losses, inadequate replacement). What is the appropriate initial intervention?",
+      "context": "Current IV fluid: 125mL/hr Hartmann's (maintenance). The surgical drain has drained 350mL in the past 12 hours. The patient has had no oral intake since yesterday. Urine remains <20mL/hr.",
+      "choices": [
+        {
+          "id": "fluids-correct",
+          "text": "Give a 500mL IV crystalloid (Hartmann's/Ringer's) bolus over 15–30 minutes. Reassess urine output and BP 30 minutes after. If response adequate (UO increases, BP improves) — likely pre-renal, continue fluid optimisation. If no response — consider intrinsic/post-renal and further investigations.",
+          "correct": true,
+          "feedback": "Correct. A fluid challenge (250–500mL bolus) is the standard first response to oliguria with signs of hypovolaemia. Balanced crystalloids (Hartmann's, Ringer's lactate) are preferred over Normal Saline to avoid hyperchloraemic acidosis (SMART/SALT trials). Response to fluid challenge differentiates pre-renal (responds) from intrinsic or post-renal AKI (no response). Monitor closely after the bolus.",
+          "nextNodeId": "node-investigations",
+          "timeAdvanceMin": 35,
+          "vitalsDelta": { "hr": -8, "spo2": 0, "bp": 8 },
+          "scoreDelta": 12,
+          "educationalNote": "Dynamic fluid assessment: A static CVP is a poor predictor of fluid responsiveness. Dynamic measures — passive leg raise (↑SV ≥10% = fluid responsive), pulse pressure variation (>13% with mechanical ventilation), or point-of-care ultrasound (collapsible IVC) — are superior for assessing fluid responsiveness. A simple bedside fluid challenge remains practical and guideline-supported."
+        },
+        {
+          "id": "fluids-furosemide",
+          "text": "Give furosemide 40mg IV to force urine output — converting oliguria to non-oliguria improves AKI outcomes",
+          "correct": false,
+          "feedback": "Furosemide in pre-renal AKI is dangerous and counterproductive. It increases urine flow but does not improve renal perfusion or GFR — it may worsen hypovolaemia and accelerate renal injury. Large trials (FACTT) show furosemide does not improve AKI outcomes. Furosemide in AKI is only appropriate for fluid overload (pulmonary oedema) or as a bridge to dialysis — never as a first-line treatment for oliguria.",
+          "nextNodeId": "node-investigations",
+          "timeAdvanceMin": 10,
+          "vitalsDelta": { "hr": 5, "spo2": -1, "bp": -5 },
+          "scoreDelta": -15,
+          "triggerBadge": "patient-harmed",
+          "educationalNote": "The 'convert oliguric to non-oliguric AKI with diuretics' concept has been definitively disproved. FACTT trial: furosemide did not improve renal outcomes in critically ill patients with AKI. Diuretics can falsely reassure clinicians that AKI is resolving when it is not."
+        },
+        {
+          "id": "fluids-normal-saline",
+          "text": "Give 1 litre Normal Saline over 30 minutes — standard post-operative fluid",
+          "correct": false,
+          "feedback": "Large volumes of Normal Saline in AKI cause hyperchloraemic metabolic acidosis (due to the high chloride content — 154 mmol/L vs physiological ~103 mmol/L). This worsens renal afferent arteriole vasoconstriction and AKI. The SMART trial (NEJM 2018) demonstrated that balanced crystalloids reduce major adverse kidney events compared to Normal Saline in critically ill patients. Balanced crystalloids (Hartmann's, Ringer's) are preferred.",
+          "nextNodeId": "node-investigations",
+          "timeAdvanceMin": 30,
+          "vitalsDelta": { "hr": -5, "spo2": 0, "bp": 5 },
+          "scoreDelta": -5,
+          "educationalNote": "SMART trial (Semler et al., NEJM 2018): Normal saline vs balanced crystalloids in ICU — balanced crystalloids reduced MAKE30 (major adverse kidney events at 30 days) by 1.1% absolute (4.7% vs 5.6%). In large volumes, Normal Saline-induced acidosis may be clinically significant."
+        }
+      ],
+      "isTerminal": false
+    },
+    {
+      "id": "node-investigations",
+      "category": "investigation",
+      "prompt": "30 minutes after the fluid bolus: BP 110/75, HR 92. Urine output only 18mL (marginally better). Creatinine now 198 µmol/L. The response to fluids is incomplete. What investigations will differentiate pre-renal from intrinsic renal AKI, and what must you exclude urgently?",
+      "context": "The surgical team mentions they prescribed diclofenac 50mg TDS for post-operative analgesia starting yesterday. The urinary catheter bag appears to have some kinking at the drainage end.",
+      "choices": [
+        {
+          "id": "investigations-correct",
+          "text": "Urine microscopy and culture (casts: granular/muddy brown = ATN, red cell casts = glomerulonephritis). Urine sodium and FENa (pre-renal: FENa <1%, Na <20; intrinsic ATN: FENa >2%). Urgent bladder scan (exclude urinary retention/outflow obstruction). Renal ultrasound (exclude hydronephrosis = post-renal obstruction). Check if diclofenac was given — NSAID-induced AKI/ATN must be considered.",
+          "correct": true,
+          "feedback": "Complete and correct. The bladder scan must be done immediately — a kinked catheter or catheter blockage can cause falsely low urine output. Urine electrolytes (FENa) differentiate pre-renal (<1%) from ATN (>2%). Urine microscopy showing muddy brown granular casts = ATN. Renal ultrasound excludes hydronephrosis (post-renal). Diclofenac (NSAID) in a patient with AKI is a nephrotoxin that must be stopped immediately.",
+          "nextNodeId": "node-stop-nephrotoxins",
+          "timeAdvanceMin": 20,
+          "vitalsDelta": { "hr": 0, "spo2": 0 },
+          "scoreDelta": 15,
+          "investigations": [
+            { "name": "Urine sodium", "value": "22 mmol/L (borderline — pre-renal vs early ATN)", "flagged": true },
+            { "name": "FENa", "value": "1.8% (borderline — equivocal; consistent with early ATN from NSAID/contrast/hypovolaemia)", "flagged": true },
+            { "name": "Urine microscopy", "value": "Granular casts present — consistent with ATN. No red cell casts. No WBC casts.", "flagged": true },
+            { "name": "Bladder scan (POCUS)", "value": "Catheter confirmed in bladder. Residual volume 45mL (adequate catheter function). No significant retained urine.", "flagged": false },
+            { "name": "Renal ultrasound", "value": "Bilateral kidneys normal size. No hydronephrosis. No calculi. Normal corticomedullary differentiation.", "flagged": false },
+            { "name": "Electrolytes", "value": "Na 136, K 5.8 mmol/L (HIGH — requires action), Bicarbonate 18 (acidaemia), Calcium 2.1, Phosphate 1.9", "flagged": true }
+          ],
+          "educationalNote": "FENa (fractional excretion of sodium) = (urine Na × plasma creatinine) / (plasma Na × urine creatinine) × 100. FENa <1% = pre-renal (kidneys avidly reabsorbing sodium); FENa >2% = ATN (tubular dysfunction prevents sodium reabsorption). Caveat: FENa is unreliable in contrast nephropathy, myoglobinuria, and diuretic use."
+        },
+        {
+          "id": "investigations-ct-contrast",
+          "text": "Order CT abdomen/pelvis with IV contrast to check for surgical complications — this could be a post-op complication causing AKI",
+          "correct": false,
+          "feedback": "Ordering IV contrast CT in a patient with Stage 2 AKI and creatinine 198 µmol/L risks contrast-induced nephropathy (CIN) and could precipitate Stage 3 AKI or dialysis-dependent renal failure. Contrast is relatively contraindicated when creatinine is rising and eGFR is significantly reduced. The post-operative complication assessment should start with non-contrast imaging (USS, plain films) and clinical examination. If contrast CT is essential, pre-hydration and minimising contrast volume is required.",
+          "nextNodeId": "node-stop-nephrotoxins",
+          "timeAdvanceMin": 60,
+          "vitalsDelta": { "hr": 5, "spo2": -1 },
+          "scoreDelta": -15,
+          "triggerBadge": "patient-harmed",
+          "educationalNote": "Contrast-induced nephropathy risk is highest when: eGFR <45, creatinine rising acutely, diabetes, cardiac failure, high contrast volume. Mitigation: IV pre-hydration with isotonic saline/bicarbonate, minimise contrast volume, avoid repeat contrast within 48–72 hours. KDIGO guidelines recommend avoiding iodinated contrast when eGFR <30 unless benefits clearly outweigh risks."
+        },
+        {
+          "id": "investigations-urine-only",
+          "text": "Dipstick the urine and send an MSU for culture — this might be a UTI causing AKI",
+          "correct": false,
+          "feedback": "Urine dipstick and MSU alone are insufficient. Post-operative AKI from UTI alone is unusual without fever and systemic signs — this patient is afebrile. Critical missed investigations: bladder scan (outflow obstruction), FENa/urine electrolytes (pre-renal vs intrinsic), urine microscopy (casts), and renal ultrasound (hydronephrosis). Focusing only on infection misses the more likely causes.",
+          "nextNodeId": "node-stop-nephrotoxins",
+          "timeAdvanceMin": 15,
+          "vitalsDelta": { "hr": 3, "spo2": 0 },
+          "scoreDelta": -8
+        }
+      ],
+      "isTerminal": false
+    },
+    {
+      "id": "node-stop-nephrotoxins",
+      "category": "treatment",
+      "prompt": "Urine microscopy shows granular casts (ATN pattern). Potassium is 5.8 mmol/L. The patient is on diclofenac (NSAID) and ramipril (ACE inhibitor). What nephrotoxins must be stopped, and are there other medications to review?",
+      "context": "The surgical team prescribing diclofenac is resistant to stopping it — 'the patient is in pain and we always use it post-op.' Ramipril is listed on the drug chart as restarted yesterday by the surgical team.",
+      "choices": [
+        {
+          "id": "nephrotoxins-correct",
+          "text": "STOP immediately: diclofenac (NSAID — reduces renal prostaglandins, causes afferent arteriole vasoconstriction), ramipril (ACE inhibitor — reduces efferent arteriole tone, drops GFR in states of renal hypoperfusion), and metformin (lactic acidosis risk in AKI). Ensure no aminoglycosides or contrast agents pending. Escalate to surgical team and document.",
+          "correct": true,
+          "feedback": "Correct and complete. NSAIDs inhibit prostaglandin-mediated afferent arteriole dilation — in states of reduced renal perfusion (post-op), this triggers acute renal vasoconstriction and ATN. ACE inhibitors block efferent arteriole constriction — reducing GFR when afferent flow is already compromised. These are the two most common medication-induced AKI culprits in the post-operative setting. Metformin must not be restarted until creatinine normalises — risk of type B lactic acidosis.",
+          "nextNodeId": "node-hyperkalaemia",
+          "timeAdvanceMin": 5,
+          "vitalsDelta": { "hr": 0, "spo2": 0 },
+          "scoreDelta": 15,
+          "educationalNote": "The 'SADMAN' acronym for nephrotoxins to stop in AKI: Sulfonamides, ACE inhibitors/ARBs, Diuretics (in pre-renal), Metformin, Aminoglycosides, NSAIDs. Diuretics should be stopped in pre-renal AKI but may be continued in fluid overload/established ATN. ACE inhibitors/ARBs: stop in acute AKI, restart when creatinine stable and hydration normalised (usually 4–6 weeks)."
+        },
+        {
+          "id": "nephrotoxins-continue-ramipril",
+          "text": "Stop the diclofenac but continue ramipril — it is an important medication for blood pressure and should not be stopped without cardiology input",
+          "correct": false,
+          "feedback": "ACE inhibitors must be stopped in AKI, even temporarily. The mechanism of ACE inhibitor harm in AKI is well understood — they reduce efferent arteriole tone, which is the compensatory mechanism maintaining GFR when afferent flow is reduced. Stopping ramipril during AKI does not require cardiology input. It can be safely restarted once the AKI has resolved and renal function is stable (usually after 4–6 weeks). Blood pressure can be managed with amlodipine (already prescribed) in the interim.",
+          "nextNodeId": "node-hyperkalaemia",
+          "timeAdvanceMin": 5,
+          "vitalsDelta": { "hr": 3, "spo2": 0 },
+          "scoreDelta": -10
+        },
+        {
+          "id": "nephrotoxins-dose-reduce",
+          "text": "Continue diclofenac but reduce the dose — half-dose NSAIDs are safe in AKI",
+          "correct": false,
+          "feedback": "There is no safe NSAID dose in AKI. NSAIDs must be stopped entirely when there is active AKI — dose reduction is not a valid compromise. The mechanism of harm is class-wide: all NSAIDs inhibit cyclooxygenase (COX-1 and COX-2), reducing prostaglandin E2 and prostacyclin synthesis, which are critical for renal afferent arteriole dilation under conditions of reduced perfusion. Even low-dose aspirin can exacerbate AKI.",
+          "nextNodeId": "node-hyperkalaemia",
+          "timeAdvanceMin": 5,
+          "vitalsDelta": { "hr": 5, "spo2": 0, "bp": -3 },
+          "scoreDelta": -12,
+          "triggerBadge": "patient-harmed"
+        }
+      ],
+      "isTerminal": false
+    },
+    {
+      "id": "node-hyperkalaemia",
+      "category": "treatment",
+      "prompt": "Potassium is 5.8 mmol/L. The patient has AKI Stage 2 with impaired potassium excretion. He is on a cardiac monitor showing sinus rhythm with no ECG changes yet. How do you manage this potassium level?",
+      "context": "ECG: sinus rhythm, HR 90, no peaked T-waves, no widened QRS. The patient feels well. Creatinine 198 µmol/L. UO still suboptimal at 20mL/hr.",
+      "choices": [
+        {
+          "id": "hyperkalaemia-correct",
+          "text": "K 5.8 = significant hyperkalaemia. ECG changes absent but AKI is worsening — K may continue to rise. Give calcium gluconate 10mL of 10% IV (membrane stabilisation if ECG changes or K >6.5). Give insulin-dextrose (10 units actrapid in 50mL 50% dextrose over 30 minutes) to drive K into cells. Stop all potassium-containing IV fluids and restrict dietary potassium. Recheck K in 2 hours.",
+          "correct": true,
+          "feedback": "Correct treatment escalation. In AKI with K 5.8, proactive management prevents progression to dangerous levels. Even without ECG changes, insulin-dextrose is appropriate (acts within 15–30 minutes, lowers K by 0.5–1.5 mmol/L). Calcium gluconate is the membrane stabiliser — give for ECG changes or K ≥6.5 (peaked T-waves, prolonged PR, widened QRS). Calcium does NOT lower K — it only protects the myocardium. Salbutamol nebulisation (10–20mg) is an alternative/adjunct to insulin-dextrose.",
+          "nextNodeId": "node-rrt-disposition",
+          "timeAdvanceMin": 35,
+          "vitalsDelta": { "hr": -5, "spo2": 0 },
+          "scoreDelta": 15,
+          "investigations": [
+            { "name": "ECG", "value": "Sinus rhythm. HR 88. No peaked T-waves. Normal QRS duration. No prolonged PR. Normal QTc.", "flagged": false }
+          ],
+          "educationalNote": "Hyperkalaemia management: (1) Membrane stabilisation — calcium gluconate 10mL 10% IV if K>6.5 or ECG changes (works immediately, lasts 30–60 min); (2) Shift K into cells — insulin 10 units + 50mL 50% dextrose IV over 30 min (onset 15–30 min, lowers K 0.5–1.5 mmol/L, lasts 4–6h); salbutamol 10–20mg nebulised (onset 30 min, lowers K 0.5–1 mmol/L); (3) Remove K from body — calcium resonium (slow), sodium zirconium cyclosilicate (faster), dialysis (immediate/refractory). Sodium bicarbonate has limited role unless severe metabolic acidosis."
+        },
+        {
+          "id": "hyperkalaemia-ignore",
+          "text": "K 5.8 is mildly elevated — recheck in the morning. ECG shows no changes so there is no immediate danger.",
+          "correct": false,
+          "feedback": "K 5.8 with worsening AKI cannot be dismissed. As the AKI progresses (creatinine still rising), potassium will continue to rise — K 5.8 today could become K 7.0 overnight without intervention. ECG changes are a late sign of hyperkalaemia — by the time they appear, the patient is at risk of ventricular fibrillation. Proactive treatment is always safer than reactive treatment at K 7+.",
+          "nextNodeId": "node-rrt-disposition",
+          "timeAdvanceMin": 8,
+          "vitalsDelta": { "hr": 3, "spo2": 0 },
+          "scoreDelta": -12,
+          "triggerBadge": "patient-harmed",
+          "educationalNote": "The ECG changes of hyperkalaemia progress predictably: (1) Peaked T-waves (K >5.5–6); (2) Prolonged PR interval; (3) Widened QRS; (4) Sine wave pattern; (5) VF/asystole. Each stage represents increasing cardiac risk. Do not wait for ECG changes before treating K >6 mmol/L in AKI."
+        },
+        {
+          "id": "hyperkalaemia-bicarb",
+          "text": "Give 100mL of 8.4% sodium bicarbonate IV — this is the most effective treatment for hyperkalaemia in AKI",
+          "correct": false,
+          "feedback": "Sodium bicarbonate is no longer recommended as first-line treatment for hyperkalaemia in AKI without severe metabolic acidosis. It has variable and limited efficacy for lowering potassium in non-acidotic patients, and hypertonic bicarbonate risks volume overload, hypernatraemia, and paradoxical CSF acidosis. Insulin-dextrose and calcium gluconate are superior first-line treatments.",
+          "nextNodeId": "node-rrt-disposition",
+          "timeAdvanceMin": 10,
+          "vitalsDelta": { "hr": 0, "spo2": 0 },
+          "scoreDelta": -8
+        }
+      ],
+      "isTerminal": false
+    },
+    {
+      "id": "node-rrt-disposition",
+      "category": "disposition",
+      "prompt": "After 12 hours of fluid optimisation, nephrotoxin removal, and hyperkalaemia treatment: Creatinine 210 µmol/L (still rising), K 5.5, UO 25mL/hr. The AKI is not resolving. What are the indications for renal replacement therapy (RRT), and where should this patient be managed?",
+      "context": "The nephrology registrar is on the phone. The patient's creatinine is still rising. He is not yet in pulmonary oedema. Potassium is partially controlled. No encephalopathy.",
+      "choices": [
+        {
+          "id": "rrt-correct",
+          "text": "Current indications for RRT are not yet met. Indications are: (1) Refractory hyperkalaemia K >6.5 despite treatment, (2) Severe metabolic acidosis pH <7.1, (3) Fluid overload causing pulmonary oedema refractory to diuretics, (4) Uraemic encephalopathy or pericarditis. Transfer to high dependency or nephrology ward for close monitoring. Daily nephrology review.",
+          "correct": true,
+          "feedback": "Correct. This patient does not yet have absolute indications for RRT, but requires close HDU-level monitoring given Stage 2 AKI, rising creatinine, and partially controlled hyperkalaemia. The 'AEIOU' criteria for urgent RRT: Acidosis (pH <7.1), Electrolytes (K >6.5 refractory), Intoxication, Overload (pulmonary oedema), Uraemia (encephalopathy, pericarditis, bleeding). Escalation to nephrology ward or HDU ensures 4-hourly monitoring and rapid escalation if RRT becomes necessary.",
+          "nextNodeId": null,
+          "timeAdvanceMin": 0,
+          "vitalsDelta": { "hr": 0, "spo2": 0 },
+          "scoreDelta": 15,
+          "triggerBadge": "guideline-clean",
+          "educationalNote": "RRT modalities in AKI: (1) Intermittent haemodialysis (IHD) — haemodynamically stable patients; (2) Continuous renal replacement therapy (CRRT) — haemodynamically unstable, in ICU; (3) Peritoneal dialysis — rarely used in AKI in adults. The AKIKI and IDEAL-ICU trials showed no benefit to early vs standard initiation of RRT in AKI — RRT should be started when indications are met, not prophylactically."
+        },
+        {
+          "id": "rrt-immediate",
+          "text": "Start dialysis immediately — creatinine 210 is very high and the AKI is worsening despite treatment",
+          "correct": false,
+          "feedback": "Creatinine 210 alone is not an indication for RRT. The absolute indications (refractory K >6.5, pH <7.1, pulmonary oedema, uraemic complications) are not met. Starting RRT unnecessarily exposes the patient to vascular access complications, bleeding risk (anticoagulation), infection, and haemodynamic instability. The AKIKI trial showed no mortality benefit from early vs standard RRT initiation — and early RRT increased complications.",
+          "nextNodeId": null,
+          "timeAdvanceMin": 0,
+          "vitalsDelta": { "hr": 5, "spo2": -1 },
+          "scoreDelta": -12
+        },
+        {
+          "id": "rrt-ward",
+          "text": "Return to surgical ward — the AKI is being managed, nephrology can review as an outpatient in 2 weeks",
+          "correct": false,
+          "feedback": "AKI Stage 2 with rising creatinine, ongoing oliguria, and partially controlled hyperkalaemia cannot be managed on a surgical ward with delayed nephrology review. This patient is at high risk of progressing to Stage 3 AKI or requiring emergency RRT overnight. He needs at minimum HDU-level monitoring with 4-hourly observations, daily bloods, and nephrology review within 24 hours.",
+          "nextNodeId": null,
+          "timeAdvanceMin": 0,
+          "vitalsDelta": { "hr": 8, "spo2": -1 },
+          "scoreDelta": -15,
+          "triggerBadge": "patient-harmed"
+        }
+      ],
+      "isTerminal": true
+    }
+  ],
+  "diseaseMap": {
+    "condition": "Acute Kidney Injury (AKI)",
+    "icd10": "N17.9",
+    "presentingSymptoms": [
+      "Oliguria (<0.5mL/kg/hr for >6 hours)",
+      "Rising creatinine (KDIGO criteria)",
+      "Nausea and vomiting",
+      "Fluid retention and oedema",
+      "Confusion or drowsiness (uraemic encephalopathy — late)",
+      "Symptoms of underlying cause: hypotension (pre-renal), loin pain (obstruction), rash/haematuria (intrinsic)"
+    ],
+    "atypicalPresentations": [
+      "Non-oliguric AKI (normal or increased UO with rising creatinine)",
+      "Found incidentally on routine bloods",
+      "Presenting as hyperkalaemia or metabolic acidosis without recognised oliguria"
+    ],
+    "redFlags": [
+      "Potassium ≥6.0 mmol/L — cardiac risk",
+      "pH <7.2 — severe metabolic acidosis",
+      "Pulmonary oedema — fluid overload",
+      "Rapidly rising creatinine",
+      "GCS change — uraemic encephalopathy",
+      "Pericardial friction rub — uraemic pericarditis (indication for urgent RRT)"
+    ],
+    "bestFirstStep": "Fluid challenge (500mL balanced crystalloid) + identify and remove nephrotoxins + bladder scan",
+    "bestInvestigation": "Urine FENa + urine microscopy (casts) + renal ultrasound (exclude obstruction)",
+    "diagnosis": "KDIGO 2012: Stage 1 = creatinine ×1.5–1.9 or rise ≥26.5 µmol/L in 48h; Stage 2 = creatinine ×2–2.9; Stage 3 = creatinine ×3 or ≥353 µmol/L or RRT required. Always classify as pre-renal, intrinsic, or post-renal.",
+    "treatment": {
+      "general": [
+        "Fluid optimisation (balanced crystalloids — avoid Normal Saline in large volumes)",
+        "Remove all nephrotoxins: NSAIDs, ACE inhibitors/ARBs, aminoglycosides, contrast",
+        "Hold metformin (lactic acidosis risk)",
+        "Bladder scan to exclude outflow obstruction",
+        "Monitor and treat hyperkalaemia",
+        "Daily U&E monitoring minimum"
+      ],
+      "hyperkalaemia": [
+        "K >6.5 or ECG changes: calcium gluconate 10mL 10% IV (membrane stabilisation)",
+        "Insulin-dextrose: 10u actrapid in 50mL 50% glucose over 30 min",
+        "Salbutamol 10–20mg nebulised (additive to insulin-dextrose)",
+        "Dietary potassium restriction",
+        "Calcium resonium or sodium zirconium for longer-term management",
+        "Dialysis for refractory hyperkalaemia"
+      ],
+      "rrtIndications": [
+        "Refractory hyperkalaemia K >6.5 mmol/L",
+        "Severe metabolic acidosis pH <7.1",
+        "Pulmonary oedema refractory to diuretics",
+        "Uraemic encephalopathy",
+        "Uraemic pericarditis",
+        "Intoxication with dialysable toxin"
+      ]
+    },
+    "followUp": "Renal function recheck at 1, 2, 4, and 12 weeks post-discharge. Restart ACE inhibitor/ARB only when creatinine stable ×4 weeks. Do NOT restart metformin until creatinine normalises. Refer to nephrology if residual CKD 3b or worse. Check for reversible underlying causes.",
+    "complications": [
+      "Hyperkalaemia — potentially fatal arrhythmia",
+      "Fluid overload and pulmonary oedema",
+      "Metabolic acidosis",
+      "Uraemic pericarditis",
+      "Anaemia (EPO-responsive — chronic)",
+      "Progression to CKD or dialysis-dependent ESKD",
+      "Death (overall AKI hospital mortality 20–30%)"
+    ],
+    "guidelineRef": "KDIGO 2012 Clinical Practice Guideline for Acute Kidney Injury — Kidney International Supplements (2012) 2(1):1–138"
+  },
+  "guideline": {
+    "name": "KDIGO AKI Staging",
+    "description": "The KDIGO 2012 staging system classifies AKI severity by creatinine rise or urine output. Staging guides urgency of intervention and monitoring intensity.",
+    "fields": {
+      "creatinine": {
+        "label": "Serum Creatinine (vs baseline)",
+        "description": "Rise in creatinine from known or estimated baseline",
+        "options": [
+          { "score": 1, "description": "×1.5–1.9 baseline OR rise ≥26.5 µmol/L in 48 hours" },
+          { "score": 2, "description": "×2.0–2.9 baseline" },
+          { "score": 3, "description": "×3 baseline OR ≥353.6 µmol/L OR RRT initiated" }
+        ]
+      },
+      "urineOutput": {
+        "label": "Urine Output",
+        "description": "Oliguric criteria per KDIGO",
+        "options": [
+          { "score": 1, "description": "<0.5 mL/kg/hr for 6–12 hours" },
+          { "score": 2, "description": "<0.5 mL/kg/hr for ≥12 hours" },
+          { "score": 3, "description": "<0.3 mL/kg/hr for ≥24 hours OR anuria ≥12 hours" }
+        ]
+      }
+    },
+    "formula": "AKI Stage = highest stage met by either creatinine OR urine output criteria",
+    "maxScore": 3,
+    "interpretation": [
+      { "range": "Stage 1", "risk": "Mild AKI", "recommendation": "Identify and treat cause. Remove nephrotoxins. Monitor daily electrolytes. Consider nephrology consult." },
+      { "range": "Stage 2", "risk": "Moderate AKI", "recommendation": "Nephrology review within 24 hours. HDU monitoring. Active management of fluid balance and electrolytes. Monitor for RRT indications." },
+      { "range": "Stage 3", "risk": "Severe AKI", "recommendation": "Urgent nephrology review. ICU/HDU admission. Prepare for RRT if indications met. Consider renal biopsy if aetiology unclear." }
+    ],
+    "thisPatientScore": {
+      "creatinineStage": 2,
+      "urineOutputStage": 1,
+      "finalStage": 2,
+      "interpretation": "KDIGO Stage 2 — creatinine 2.1× baseline. High risk of progression to Stage 3 if nephrotoxins not removed and haemodynamics not optimised."
+    }
+  },
+  "availableBadges": [
+    {
+      "id": "guideline-clean",
+      "label": "Guideline Clean",
+      "description": "Correctly staged the AKI, removed all nephrotoxins, used balanced crystalloids, treated hyperkalaemia proactively, and identified appropriate RRT indications.",
+      "icon": "checkmark",
+      "positive": true
+    },
+    {
+      "id": "delayed-diagnosis",
+      "label": "Delayed Diagnosis",
+      "description": "Missed or dismissed the AKI staging, leading to delayed intervention and progressive renal impairment.",
+      "icon": "clock-warning",
+      "positive": false
+    },
+    {
+      "id": "patient-harmed",
+      "label": "Patient Harmed",
+      "description": "A clinical decision directly worsened the AKI — contrast CT without pre-hydration, continued NSAIDs, furosemide in pre-renal AKI, or unsafe disposition.",
+      "icon": "danger",
+      "positive": false
+    }
+  ],
+  "disclaimer": "This case is designed for medical education and clinical reasoning training only. It is not a substitute for clinical guidelines, senior supervision, or real patient care. Always refer to current local and national protocols. Drug doses and management pathways should be verified against current British National Formulary (BNF) and relevant clinical guidelines before application to real patients. KDIGO 2012 AKI Guideline reference: Kidney International Supplements (2012) 2(1):1–138."
+}
