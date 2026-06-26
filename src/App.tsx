@@ -7,6 +7,7 @@ import AchievementGallery from './pages/AchievementGallery';
 import Career from './pages/Career';
 import CaseBuilder from './pages/CaseBuilder';
 import NightShift from './pages/NightShift';
+import SimPlayer from './pages/SimPlayer';
 import LevelUpNotification from './components/LevelUpNotification';
 import AchievementToast from './components/AchievementToast';
 import ErrorBoundary from './components/ErrorBoundary';
@@ -16,7 +17,7 @@ import { loadProfile, saveProfile, createProfile } from './engine/profileEngine'
 import { getAchievement } from './engine/achievementEngine';
 import { ALL_CASES } from './data/allCases';
 
-type Page = 'home' | 'specialties' | 'play' | 'profile' | 'achievements' | 'career' | 'builder' | 'night-shift';
+type Page = 'home' | 'specialties' | 'play' | 'profile' | 'achievements' | 'career' | 'builder' | 'night-shift' | 'sim-player';
 
 interface LevelUpNotif {
   newRank: string;
@@ -137,6 +138,10 @@ function App() {
           onHome={() => setPage('home')}
           onShiftComplete={(updated) => setProfile(updated)}
         />
+      )}
+
+      {page === 'sim-player' && (
+        <SimPlayer onHome={() => setPage('home')} />
       )}
 
       {/* Global overlays */}
