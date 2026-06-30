@@ -8,8 +8,13 @@ import type {
   EndingCondition,
   SimVitals,
   NursingMessage,
+  CasePhase,
+  PhaseDefinition,
+  CoachingMessage,
+  CoachingEntry,
 } from '../../types/simulation';
-import { applyDrift, checkThresholds, deriveStatus } from './deteriorationEngine';
+import { PHASE_ORDER } from '../../types/simulation';
+import { applyDrift, checkThresholds, deriveStatus, evaluateCondition } from './deteriorationEngine';
 import { resolveOrders, instantiateOrder } from './orderEngine';
 import { processPendingCascades } from './cascadeEngine';
 
@@ -19,11 +24,14 @@ export function initSimState(simCase: SimCase): SimState {
   const patient: PatientSim = {
     ...simCase.initialPatientState,
     caseId: simCase.id,
+    firedCoachingIds: [],
   };
   return {
     patient,
     phase: 'playing',
     activeEndingId: null,
+    casePhase: 'history',
+    coachingLog: [],
     eventLog: [
       {
         simTimeMin: 0,
@@ -42,10 +50,18 @@ export function getAvailableActions(state: SimState, caseActions: SimAction[]): 
   const { patient } = state;
   const completed = new Set(patient.completedActionIds);
   const unlocked  = new Set(patient.unlockedActionIds);
+  const currentPhase = state.casePhase ?? 'history';
 
   return caseActions.filter(action => {
     // Once-only actions already done
     if ((action.availableOnce !== false) && completed.has(action.id)) return false;
+
+    // Phase gate: action's required phase must be reached or earlier
+    if (action.phase) {
+      const currentIdx = PHASE_ORDER.indexOf(currentPhase);
+      const requiredIdx = PHASE_ORDER.indexOf(action.phase);
+      if (requiredIdx > currentIdx) return false;
+    }
 
     // Unless explicitly unlocked, check standard gates
     if (!unlocked.has(action.id)) {
@@ -210,6 +226,22 @@ export function applyAction(state: SimState, action: SimAction, simCase: SimCase
     }];
   }
 
+  // 10b. afterAction coaching
+  let coachingLog = state.coachingLog ?? [];
+  if (simCase.coachingMessages?.length) {
+    const firedIds = patient.firedCoachingIds ?? [];
+    const newEntries = fireAfterActionCoaching(
+      simCase.coachingMessages, firedIds, action.id, patient.simTimeMinutes,
+    );
+    if (newEntries.length) {
+      coachingLog = [...coachingLog, ...newEntries];
+      patient = {
+        ...patient,
+        firedCoachingIds: [...firedIds, ...newEntries.map(e => e.id)],
+      };
+    }
+  }
+
   // Process any immediately-queued cascades BEFORE advancing time
   const cascadeResult = processPendingCascades(
     patient,
@@ -229,7 +261,15 @@ export function applyAction(state: SimState, action: SimAction, simCase: SimCase
 
   // Now advance time
   const timeResult = advanceTime(
-    { patient, phase: state.phase, activeEndingId: state.activeEndingId, eventLog: events, scores },
+    {
+      patient,
+      phase: state.phase,
+      activeEndingId: state.activeEndingId,
+      eventLog: events,
+      scores,
+      casePhase: state.casePhase ?? 'history',
+      coachingLog,
+    },
     action.timeCostMin,
     simCase,
   );
@@ -245,10 +285,12 @@ export function applyAction(state: SimState, action: SimAction, simCase: SimCase
 export function advanceTime(state: SimState, minutes: number, simCase: SimCase): SimState {
   if (state.phase === 'ended') return state;
 
-  let patient = state.patient;
-  let events  = state.eventLog;
-  let scores  = state.scores;
+  let patient      = state.patient;
+  let events       = state.eventLog;
+  let scores       = state.scores;
   let activeEndingId = state.activeEndingId;
+  let casePhase    = state.casePhase ?? 'history';
+  let coachingLog  = state.coachingLog ?? [];
 
   for (let i = 0; i < minutes; i++) {
     // 1. Advance clock
@@ -297,7 +339,7 @@ export function advanceTime(state: SimState, minutes: number, simCase: SimCase):
     if (cascadeResult.forcedEndingId) {
       activeEndingId = cascadeResult.forcedEndingId;
       patient = { ...patient, status: deriveStatus(patient.vitals, patient.status) };
-      return { patient, phase: 'ended', activeEndingId, eventLog: events, scores };
+      return { patient, phase: 'ended', activeEndingId, eventLog: events, scores, casePhase, coachingLog };
     }
 
     // 6. Derive patient status
@@ -322,15 +364,117 @@ export function advanceTime(state: SimState, minutes: number, simCase: SimCase):
       }
     }
 
+    // 6.6 Phase transitions
+    if (simCase.phases?.length) {
+      const nextPhase = tryAdvancePhase(casePhase, patient, simCase.phases);
+      if (nextPhase !== casePhase) {
+        casePhase = nextPhase;
+        // Fire onPhase coaching
+        if (simCase.coachingMessages?.length) {
+          const firedIds = patient.firedCoachingIds ?? [];
+          const entries = fireOnPhaseCoaching(simCase.coachingMessages, firedIds, casePhase, patient.simTimeMinutes);
+          if (entries.length) {
+            coachingLog = [...coachingLog, ...entries];
+            patient = { ...patient, firedCoachingIds: [...firedIds, ...entries.map(e => e.id)] };
+          }
+        }
+      }
+    }
+
+    // 6.7 Time-based and missed-action coaching
+    if (simCase.coachingMessages?.length) {
+      const firedIds = patient.firedCoachingIds ?? [];
+      const entries = fireTimeBasedCoaching(
+        simCase.coachingMessages, firedIds, patient.completedActionIds, patient.simTimeMinutes,
+      );
+      if (entries.length) {
+        coachingLog = [...coachingLog, ...entries];
+        patient = { ...patient, firedCoachingIds: [...firedIds, ...entries.map(e => e.id)] };
+      }
+    }
+
     // 7. Check endings (highest priority first)
     const ending = checkEndings(patient, simCase.endings);
     if (ending) {
       activeEndingId = ending.id;
-      return { patient, phase: 'ended', activeEndingId, eventLog: events, scores };
+      return { patient, phase: 'ended', activeEndingId, eventLog: events, scores, casePhase, coachingLog };
     }
   }
 
-  return { patient, phase: 'playing', activeEndingId, eventLog: events, scores };
+  return { patient, phase: 'playing', activeEndingId, eventLog: events, scores, casePhase, coachingLog };
+}
+
+// ─── Phase System ─────────────────────────────────────────────────────────────
+
+function tryAdvancePhase(
+  current: CasePhase,
+  patient: PatientSim,
+  phases: PhaseDefinition[],
+): CasePhase {
+  const currentIdx = PHASE_ORDER.indexOf(current);
+  if (currentIdx >= PHASE_ORDER.length - 1) return current;
+
+  const nextId = PHASE_ORDER[currentIdx + 1];
+  const nextDef = phases.find(p => p.id === nextId);
+  if (!nextDef) return current;
+  if (!nextDef.unlockCondition) return nextId; // auto-advance if no condition
+  return evaluateCondition(patient, nextDef.unlockCondition) ? nextId : current;
+}
+
+// ─── Coaching Helpers ─────────────────────────────────────────────────────────
+
+function fireAfterActionCoaching(
+  messages: CoachingMessage[],
+  firedIds: string[],
+  actionId: string,
+  simTime: number,
+): CoachingEntry[] {
+  return messages
+    .filter(m => {
+      if (firedIds.includes(m.id)) return false;
+      if (m.trigger.type !== 'afterAction') return false;
+      return (m.trigger as { type: 'afterAction'; actionId: string }).actionId === actionId;
+    })
+    .map(m => ({ id: m.id, simTimeMin: simTime, text: m.text, tone: m.tone }));
+}
+
+function fireOnPhaseCoaching(
+  messages: CoachingMessage[],
+  firedIds: string[],
+  phase: CasePhase,
+  simTime: number,
+): CoachingEntry[] {
+  return messages
+    .filter(m => {
+      if (firedIds.includes(m.id)) return false;
+      if (m.trigger.type !== 'onPhase') return false;
+      return (m.trigger as { type: 'onPhase'; phase: CasePhase }).phase === phase;
+    })
+    .map(m => ({ id: m.id, simTimeMin: simTime, text: m.text, tone: m.tone }));
+}
+
+function fireTimeBasedCoaching(
+  messages: CoachingMessage[],
+  firedIds: string[],
+  completedActionIds: string[],
+  simTime: number,
+): CoachingEntry[] {
+  const entries: CoachingEntry[] = [];
+  for (const m of messages) {
+    if (firedIds.includes(m.id)) continue;
+    if (m.trigger.type === 'missedAction') {
+      const t = m.trigger as { type: 'missedAction'; actionId: string; byMin: number };
+      if (simTime >= t.byMin && !completedActionIds.includes(t.actionId)) {
+        entries.push({ id: m.id, simTimeMin: simTime, text: m.text, tone: m.tone });
+      }
+    } else if (m.trigger.type === 'atTime') {
+      const t = m.trigger as { type: 'atTime'; atMin: number };
+      if (simTime >= t.atMin) {
+        entries.push({ id: m.id, simTimeMin: simTime, text: m.text, tone: m.tone });
+      }
+    }
+  }
+  return entries;
 }
 
 // ─── Nursing / Consultant Messages ───────────────────────────────────────────

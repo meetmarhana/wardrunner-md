@@ -17,7 +17,7 @@ export default function SimPlayer({ onHome }: Props) {
   const [actingActionId, setActingActionId] = useState<string | null>(null);
   const [lastAction, setLastAction] = useState<string | null>(null);
 
-  const { patient, phase, activeEndingId, eventLog, scores } = simState;
+  const { patient, phase, activeEndingId, eventLog, scores, casePhase, coachingLog } = simState;
 
   const availableActions = getAvailableActions(simState, SEPTIC_SHOCK_CASE.actions);
 
@@ -86,6 +86,8 @@ export default function SimPlayer({ onHome }: Props) {
       actingActionId={actingActionId}
       lastAction={lastAction}
       eventLog={eventLog}
+      casePhase={casePhase ?? 'history'}
+      coachingLog={coachingLog ?? []}
       onAction={handleAction}
       onViewResult={handleViewResult}
       onHome={onHome}

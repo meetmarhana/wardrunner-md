@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import type { SimAction, SimCase, PatientSim, SimEvent, SimVitals, SimPatientStatus } from '../../types/simulation';
+import type { SimAction, SimCase, PatientSim, SimEvent, SimVitals, SimPatientStatus, CasePhase, CoachingEntry } from '../../types/simulation';
 
 // ── Toast system ───────────────────────────────────────────────────────────────
 interface ToastData {
@@ -58,8 +58,9 @@ import OrderConsole from './OrderConsole';
 import PatientMonitor from './PatientMonitor';
 import ResultsWorkspace from './ResultsWorkspace';
 import EventTimeline from './EventTimeline';
-import PatientSnapshot from './PatientSnapshot';
+import ScenePanel from './ScenePanel';
 import LiveFeed from './LiveFeed';
+import CaseProgressBar from './CaseProgressBar';
 
 const CASE_START_MIN = 8 * 60;
 function wallClock(simMin: number): string {
@@ -98,6 +99,8 @@ interface Props {
   actingActionId: string | null;
   lastAction: string | null;
   eventLog: SimEvent[];
+  casePhase: CasePhase;
+  coachingLog: CoachingEntry[];
   onAction: (action: SimAction) => void;
   onViewResult: (orderId: string) => void;
   onHome: () => void;
@@ -112,6 +115,8 @@ export default function SimCockpit({
   actingActionId,
   lastAction,
   eventLog,
+  casePhase,
+  coachingLog,
   onAction,
   onViewResult,
   onHome,
@@ -202,8 +207,15 @@ export default function SimCockpit({
   );
 
   const timelineEl = <EventTimeline events={eventLog} />;
-  const snapshotEl = <PatientSnapshot patient={patient} simCase={simCase} />;
-  const feedEl     = <LiveFeed events={eventLog} />;
+  const scenePanelEl = (
+    <ScenePanel
+      patient={patient}
+      simCase={simCase}
+      eventLog={eventLog}
+      coachingLog={coachingLog}
+    />
+  );
+  const feedEl = <LiveFeed events={eventLog} />;
 
   return (
     <div className="h-screen bg-slate-950 text-slate-100 flex flex-col overflow-hidden">
@@ -256,8 +268,8 @@ export default function SimCockpit({
       <div
         className="hidden lg:grid min-h-0 overflow-hidden"
         style={{
-          gridTemplateColumns: '220px 1fr 260px',
-          height: 'calc(100vh - 44px)',
+          gridTemplateColumns: '220px 1fr 272px',
+          height: 'calc(100vh - 44px - 52px)',
         }}
       >
         {/* ── LEFT: Order Console ─────────────────────────── */}
@@ -267,7 +279,7 @@ export default function SimCockpit({
 
         {/* ── CENTER: Monitor + Results + Timeline ─────────── */}
         <div className="border-r border-slate-800 flex flex-col overflow-hidden">
-          {/* Monitor — fixed height (42px ECG + ~143px vitals grid) */}
+          {/* Monitor */}
           <div className="shrink-0 border-b border-slate-800" style={{ height: '185px' }}>
             {monitorEl}
           </div>
@@ -275,21 +287,31 @@ export default function SimCockpit({
           <div className="flex-1 min-h-0 border-b border-slate-800 overflow-hidden">
             {resultsEl}
           </div>
-          {/* Timeline — fixed height */}
+          {/* Timeline */}
           <div className="shrink-0 overflow-hidden" style={{ height: '124px' }}>
             {timelineEl}
           </div>
         </div>
 
-        {/* ── RIGHT: Snapshot + Feed ───────────────────────── */}
+        {/* ── RIGHT: Scene + Feed ──────────────────────────── */}
         <div className="flex flex-col overflow-hidden">
-          <div className="border-b border-slate-800 overflow-hidden" style={{ height: '45%' }}>
-            {snapshotEl}
+          <div className="border-b border-slate-800 overflow-hidden" style={{ height: '52%' }}>
+            {scenePanelEl}
           </div>
           <div className="flex-1 min-h-0 overflow-hidden">
             {feedEl}
           </div>
         </div>
+      </div>
+
+      {/* ── Case Progress Bar ─────────────────────────────────────────────── */}
+      <div className="hidden lg:block shrink-0">
+        <CaseProgressBar
+          casePhase={casePhase}
+          simTimeMin={patient.simTimeMinutes}
+          phases={simCase.phases}
+          gamePhase={patient.status === 'dead' || patient.status === 'discharged' || patient.status === 'icu-transferred' ? 'ended' : 'playing'}
+        />
       </div>
 
       {/* ── Mobile layout ─────────────────────────────────────────────────── */}
@@ -309,7 +331,7 @@ export default function SimCockpit({
           <div style={{ height: 'calc(100vh - 102px)' }}>{resultsEl}</div>
         )}
         {mobileTab === 'chart' && (
-          <div style={{ height: 'calc(100vh - 102px)' }}>{snapshotEl}</div>
+          <div style={{ height: 'calc(100vh - 102px)' }}>{scenePanelEl}</div>
         )}
         {mobileTab === 'feed' && (
           <div style={{ height: 'calc(100vh - 102px)' }}>{feedEl}</div>

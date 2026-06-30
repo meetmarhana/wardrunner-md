@@ -79,6 +79,46 @@ export interface OrderTemplate {
   result: OrderResult;
 }
 
+// ─── Case Phase System ────────────────────────────────────────────────────────
+
+export type CasePhase = 'history' | 'workup' | 'treatment' | 'complication' | 'disposition';
+
+export const PHASE_ORDER: CasePhase[] = [
+  'history', 'workup', 'treatment', 'complication', 'disposition',
+];
+
+export interface PhaseDefinition {
+  id: CasePhase;
+  label: string;
+  description?: string;
+  unlockCondition?: ThresholdCondition;  // undefined = unlocks from start
+}
+
+// ─── Coaching System ──────────────────────────────────────────────────────────
+
+export type CoachingTone = 'praise' | 'nudge' | 'warn' | 'teach';
+
+export type CoachingTrigger =
+  | { type: 'afterAction'; actionId: string }
+  | { type: 'missedAction'; actionId: string; byMin: number }
+  | { type: 'onCascade'; cascadeId: string }
+  | { type: 'onPhase'; phase: CasePhase }
+  | { type: 'atTime'; atMin: number };
+
+export interface CoachingMessage {
+  id: string;
+  text: string;
+  tone: CoachingTone;
+  trigger: CoachingTrigger;
+}
+
+export interface CoachingEntry {
+  id: string;
+  simTimeMin: number;
+  text: string;
+  tone: CoachingTone;
+}
+
 // ─── Actions ──────────────────────────────────────────────────────────────────
 
 export type ActionCategory =
@@ -153,6 +193,9 @@ export interface SimAction {
   requiresFlags?: string[];       // all must be set
   blockedByFlags?: string[];      // any blocks the action
   availableOnce?: boolean;        // default: true
+
+  // Phase gate: blocks action until this case phase is reached
+  phase?: CasePhase;
 
   effect: SimEffect;
 
@@ -308,6 +351,9 @@ export interface PatientSim {
   // Nursing/consultant messages already fired (prevents re-fire for onlyOnce messages)
   firedNursingIds: string[];
 
+  // Coaching messages already fired
+  firedCoachingIds?: string[];
+
   // Problems that have been resolved (moved from activeProblems)
   resolvedProblems: ActiveProblem[];
 }
@@ -349,6 +395,8 @@ export interface SimState {
   activeEndingId: string | null;
   eventLog: SimEvent[];
   scores: SimScores;
+  casePhase?: CasePhase;
+  coachingLog?: CoachingEntry[];
 }
 
 // ─── Case Definition ──────────────────────────────────────────────────────────
@@ -358,6 +406,10 @@ export interface CasePresentation {
   oneLiner: string;
   contextNote?: string;
   initialVitals: SimVitals;
+  patientName?: string;
+  patientAge?: string;
+  patientLocation?: string;
+  mrn?: string;
 }
 
 export interface SimCase {
@@ -378,6 +430,8 @@ export interface SimCase {
   activeProblemCatalog: Record<string, string>;  // id → display label
   endings: SimEnding[];
   nursingMessages?: NursingMessage[];
+  phases?: PhaseDefinition[];
+  coachingMessages?: CoachingMessage[];
 
   internalDiagnosis: string;
 }

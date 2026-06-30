@@ -686,6 +686,7 @@ const ACTIONS: SimAction[] = [
     icon: '📞',
     timeCostMin: 2,
     availableOnce: true,
+    phase: 'complication' as const,
     effect: {
       setsFlags: ['icuCalled'],
       eventMessage: 'ICU registrar contacted. Review requested.',
@@ -720,6 +721,7 @@ const ACTIONS: SimAction[] = [
     icon: '🏥',
     timeCostMin: 5,
     availableOnce: true,
+    phase: 'disposition' as const,
     requiresFlags: ['antibioticsStarted', 'fluidsStarted'],
     blockedByFlags: ['shockThresholdReached'],
     effect: {
@@ -858,11 +860,128 @@ export const SEPTIC_SHOCK_CASE: SimCase = {
   tags: ['sepsis', 'septic-shock', 'UTI', 'immunosuppression', 'antibiotics', 'fluid-resuscitation'],
   internalDiagnosis: 'Septic shock — catheter-associated UTI with bacteraemic pneumonia in an immunosuppressed host (methotrexate for RA)',
 
+  phases: [
+    { id: 'history',     label: 'History & Exam',  description: 'Assess the patient' },
+    { id: 'workup',      label: 'Investigations',   description: 'Order and interpret results',
+      unlockCondition: { simTimeAbove: 1 } },
+    { id: 'treatment',   label: 'Treatment',        description: 'Resuscitate and treat',
+      unlockCondition: { flagSet: 'ivAccessEstablished' } },
+    { id: 'complication', label: 'Reassessment',    description: 'Reassess and manage deterioration',
+      unlockCondition: { and: [
+        { flagSet: 'antibioticsStarted' },
+        { flagSet: 'fluidsStarted' },
+        { simTimeAbove: 18 },
+      ]} },
+    { id: 'disposition', label: 'Disposition',      description: 'Decide where Ruth goes',
+      unlockCondition: { and: [
+        { flagSet: 'antibioticsStarted' },
+        { flagSet: 'fluidsStarted' },
+        { simTimeAbove: 28 },
+      ]} },
+  ],
+
+  coachingMessages: [
+    {
+      id: 'coach-check-allergies',
+      text: "Good catch — allergy status confirmed before antibiotics. You just avoided a potentially fatal reaction.",
+      tone: 'praise',
+      trigger: { type: 'afterAction', actionId: 'check-allergies' },
+    },
+    {
+      id: 'coach-blood-cultures',
+      text: "Blood cultures before antibiotics — textbook. Sensitivities in 48h will guide rationalisation.",
+      tone: 'teach',
+      trigger: { type: 'afterAction', actionId: 'draw-blood-cultures' },
+    },
+    {
+      id: 'coach-meropenem',
+      text: "Meropenem — right call. Safe in penicillin allergy, excellent cover for an immunosuppressed host.",
+      tone: 'praise',
+      trigger: { type: 'afterAction', actionId: 'antibiotics-meropenem' },
+    },
+    {
+      id: 'coach-adequate-fluids',
+      text: "30 mL/kg achieved with balanced crystalloid. That's the SSC target — now watch the lactate trend.",
+      tone: 'praise',
+      trigger: { type: 'afterAction', actionId: 'fluids-hartmanns-3' },
+    },
+    {
+      id: 'coach-vasopressors',
+      text: "Noradrenaline — correct first-line. Target MAP ≥65 mmHg. Titrate, don't set and forget.",
+      tone: 'teach',
+      trigger: { type: 'afterAction', actionId: 'start-vasopressors' },
+    },
+    {
+      id: 'coach-icu-early',
+      text: "Good — ICU involved early. Septic shock patients need senior eyes quickly. Don't wait for arrest.",
+      tone: 'praise',
+      trigger: { type: 'afterAction', actionId: 'call-icu' },
+    },
+    {
+      id: 'coach-ceftriaxone',
+      text: "Ceftriaxone covers UTI — but Ruth is immunosuppressed. Is this coverage broad enough for this host?",
+      tone: 'nudge',
+      trigger: { type: 'afterAction', actionId: 'antibiotics-ceftriaxone' },
+    },
+    {
+      id: 'coach-pip-tazo-allergy',
+      text: "Pip-Tazo is penicillin-class. Allergy status should have been confirmed before prescribing.",
+      tone: 'warn',
+      trigger: { type: 'afterAction', actionId: 'antibiotics-pip-tazo' },
+    },
+    {
+      id: 'coach-no-vbg-10',
+      text: "A lactate should be one of your first moves in sepsis — it quantifies severity and guides resuscitation targets.",
+      tone: 'nudge',
+      trigger: { type: 'missedAction', actionId: 'order-vbg', byMin: 10 },
+    },
+    {
+      id: 'coach-no-allergies-15',
+      text: "Antibiotics will be needed soon. Check allergies first — two minutes that could save her life.",
+      tone: 'warn',
+      trigger: { type: 'missedAction', actionId: 'check-allergies', byMin: 15 },
+    },
+    {
+      id: 'coach-no-cultures-25',
+      text: "If antibiotics are started without blood cultures, sensitivities will be uninterpretable. Culture before you treat.",
+      tone: 'warn',
+      trigger: { type: 'missedAction', actionId: 'draw-blood-cultures', byMin: 25 },
+    },
+    {
+      id: 'coach-complication-phase',
+      text: "Treatment is running. Now reassess — check the lactate trend, urine output, and signs of shock.",
+      tone: 'teach',
+      trigger: { type: 'onPhase', phase: 'complication' },
+    },
+    {
+      id: 'coach-disposition-phase',
+      text: "Time to decide where Ruth goes. ICU or ward? Her response to resuscitation will guide this.",
+      tone: 'nudge',
+      trigger: { type: 'onPhase', phase: 'disposition' },
+    },
+    {
+      id: 'coach-t5-bundle',
+      text: "Sepsis bundle: lactate → blood cultures → antibiotics → 30 mL/kg crystalloid. You have time — but not much.",
+      tone: 'teach',
+      trigger: { type: 'atTime', atMin: 5 },
+    },
+    {
+      id: 'coach-t25-urgency',
+      text: "25 minutes elapsed. In real sepsis, every minute without antibiotics increases mortality. Keep moving.",
+      tone: 'warn',
+      trigger: { type: 'atTime', atMin: 25 },
+    },
+  ],
+
   presentation: {
     chiefComplaint: 'Confusion and fever',
     oneLiner: '65F · confusion · fever · hypotension · brought in by daughter',
     contextNote: "Handover from triage: \"Family found her confused at home this morning. She's been a bit off for a few days.\"",
     initialVitals: INITIAL_VITALS,
+    patientName: 'Ruth Anand',
+    patientAge: '65F',
+    patientLocation: 'ED · Bay 3',
+    mrn: 'MRN-84217',
   },
 
   activeProblemCatalog: {
