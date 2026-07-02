@@ -145,11 +145,11 @@ export default function Home({ onNavigate, profile }: HomeProps) {
               onClick={() => onNavigate('sim-player')}
               className="inline-flex items-center gap-2.5 px-6 py-3 bg-gradient-to-r from-violet-700 to-indigo-700 hover:from-violet-600 hover:to-indigo-600 text-white font-semibold rounded-xl transition-all shadow-lg shadow-violet-900/40 border border-violet-600/50"
             >
-              <span className="text-lg">🧬</span>
-              Try Simulation Mode
+              <span className="text-lg">🩺</span>
+              Morning Shift
               <span className="text-xs bg-violet-900/60 px-2 py-0.5 rounded-full text-violet-200 font-normal border border-violet-600/40">New</span>
             </button>
-            <p className="text-xs text-slate-500 mt-2">Manage a real patient · Septic Shock · 6 possible outcomes</p>
+            <p className="text-xs text-slate-500 mt-2">Work a full shift · Manage patients · Build your career</p>
           </div>
 
           {/* Stats row */}

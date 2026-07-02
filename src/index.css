@@ -132,6 +132,13 @@ body {
 }
 .director-soft-fade { animation: director-soft-fade 2.5s ease-in-out; }
 
+/* ── Shift Loop animations ───────────────────────────────────────── */
+@keyframes shift-fade-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.shift-fade-in { animation: shift-fade-in 0.45s ease-out forwards; }
+
 /* ── Interruption timer bar shrink ────────────────────────────────── */
 .interruption-bar {
   width: 100%;

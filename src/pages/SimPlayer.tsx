@@ -6,13 +6,19 @@ import { SEPTIC_SHOCK_CASE } from '../data/simCases/septicShock';
 import SimCockpit from '../components/sim/SimCockpit';
 import SimDebrief from '../components/sim/SimDebrief';
 import CinematicIntro from '../components/sim/CinematicIntro';
+import { computeOutcomeXP } from '../types/shiftLoop';
+import type { CaseOutcome } from '../types/shiftLoop';
 
 interface Props {
   onHome: () => void;
+  onContinueShift?: (outcome: CaseOutcome) => void;
+  onEndShift?: () => void;
+  skipIntro?: boolean;
+  patientNumber?: number;
 }
 
-export default function SimPlayer({ onHome }: Props) {
-  const [introComplete, setIntroComplete] = useState(false);
+export default function SimPlayer({ onHome, onContinueShift, onEndShift, skipIntro = false }: Props) {
+  const [introComplete, setIntroComplete] = useState(skipIntro);
   const [simState, setSimState] = useState(() => initSimState(SEPTIC_SHOCK_CASE));
   const prevVitalsRef = useRef<SimVitals>(SEPTIC_SHOCK_CASE.presentation.initialVitals);
   const [acting, setActing] = useState(false);
@@ -66,6 +72,30 @@ export default function SimPlayer({ onHome }: Props) {
   }
 
   if (liveEnding && phase === 'ended') {
+    const completedSet = new Set(patient.completedActionIds);
+    const survived = liveEnding.severity !== 'death';
+    const culturesFirst = patient.metrics.culturesBeforeAbx === true;
+    const allergyChecked = completedSet.has('check-allergies');
+    const timeToAbx = typeof patient.metrics.timeToAntibiotics === 'number'
+      ? patient.metrics.timeToAntibiotics
+      : null;
+
+    function buildOutcome(): CaseOutcome {
+      const { total, breakdown } = computeOutcomeXP(
+        liveEnding!.id, survived, culturesFirst, allergyChecked, timeToAbx,
+      );
+      return {
+        endingId:          liveEnding!.id,
+        survived,
+        timeToAntibiotics: timeToAbx,
+        culturesFirst,
+        allergyChecked,
+        patientName:       'Ruth Anand',
+        xpEarned:          total,
+        xpBreakdown:       breakdown,
+      };
+    }
+
     return (
       <SimDebrief
         ending={liveEnding}
@@ -77,7 +107,9 @@ export default function SimPlayer({ onHome }: Props) {
         eventLog={eventLog}
         metrics={patient.metrics}
         onRestart={handleRestart}
-        onHome={onHome}
+        onHome={onEndShift ?? onHome}
+        onContinueShift={onContinueShift ? () => onContinueShift(buildOutcome()) : undefined}
+        onEndShift={onEndShift ? () => onEndShift() : undefined}
       />
     );
   }

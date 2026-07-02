@@ -7,7 +7,7 @@ import AchievementGallery from './pages/AchievementGallery';
 import Career from './pages/Career';
 import CaseBuilder from './pages/CaseBuilder';
 import NightShift from './pages/NightShift';
-import SimPlayer from './pages/SimPlayer';
+import ShiftPlayer from './pages/ShiftPlayer';
 import LevelUpNotification from './components/LevelUpNotification';
 import AchievementToast from './components/AchievementToast';
 import ErrorBoundary from './components/ErrorBoundary';
@@ -141,7 +141,7 @@ function App() {
       )}
 
       {page === 'sim-player' && (
-        <SimPlayer onHome={() => setPage('home')} />
+        <ShiftPlayer onHome={() => setPage('home')} />
       )}
 
       {/* Global overlays */}

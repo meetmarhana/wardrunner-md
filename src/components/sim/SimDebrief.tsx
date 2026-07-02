@@ -37,6 +37,8 @@ interface Props {
   metrics: Record<string, number | boolean>;
   onRestart: () => void;
   onHome: () => void;
+  onContinueShift?: () => void;
+  onEndShift?: () => void;
 }
 
 const SEVERITY_STYLE: Record<string, { bg: string; border: string; text: string; badge: string }> = {
@@ -248,7 +250,7 @@ function NarrativeStanza({ endingId, simTimeMin, completedIds }: { endingId: str
   );
 }
 
-export default function SimDebrief({ ending, scores, simTimeMin, completedActionIds, allActions, completedOrders, eventLog, metrics, onRestart, onHome }: Props) {
+export default function SimDebrief({ ending, scores, simTimeMin, completedActionIds, allActions, completedOrders, eventLog, metrics, onRestart, onHome, onContinueShift, onEndShift }: Props) {
   const sev = SEVERITY_STYLE[ending.severity] ?? SEVERITY_STYLE.acceptable;
   const db  = ending.debrief;
 
@@ -486,19 +488,38 @@ export default function SimDebrief({ ending, scores, simTimeMin, completedAction
         )}
 
         {/* Actions */}
-        <div className="flex gap-3 justify-center pt-2">
-          <button
-            onClick={onRestart}
-            className="px-6 py-2.5 rounded-xl bg-blue-700 hover:bg-blue-600 text-white font-semibold text-sm transition-colors"
-          >
-            Try Again
-          </button>
-          <button
-            onClick={onHome}
-            className="px-6 py-2.5 rounded-xl bg-slate-700 hover:bg-slate-600 text-white font-semibold text-sm transition-colors"
-          >
-            Home
-          </button>
+        <div className="flex gap-3 justify-center pt-2 flex-wrap">
+          {onContinueShift ? (
+            <>
+              <button
+                onClick={onContinueShift}
+                className="px-6 py-2.5 rounded-xl bg-blue-700 hover:bg-blue-600 text-white font-semibold text-sm transition-colors"
+              >
+                ▶ Next Patient
+              </button>
+              <button
+                onClick={onEndShift ?? onHome}
+                className="px-6 py-2.5 rounded-xl bg-slate-700 hover:bg-slate-600 text-white font-semibold text-sm transition-colors"
+              >
+                End Shift
+              </button>
+            </>
+          ) : (
+            <>
+              <button
+                onClick={onRestart}
+                className="px-6 py-2.5 rounded-xl bg-blue-700 hover:bg-blue-600 text-white font-semibold text-sm transition-colors"
+              >
+                Try Again
+              </button>
+              <button
+                onClick={onHome}
+                className="px-6 py-2.5 rounded-xl bg-slate-700 hover:bg-slate-600 text-white font-semibold text-sm transition-colors"
+              >
+                Home
+              </button>
+            </>
+          )}
         </div>
       </div>
     </div>
