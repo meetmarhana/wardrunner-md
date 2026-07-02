@@ -1,32 +1,19 @@
 import { useState, useEffect, useRef } from 'react';
-import type { PatientSim, SimCase, SimEvent, CoachingEntry, SimPatientStatus } from '../../types/simulation';
+import type {
+  PatientSim, SimCase, SimEvent, CoachingEntry,
+  CharacterMoods, DoctorMood, NurseMood, FamilyMood,
+  DirectorCue,
+} from '../../types/simulation';
 import type { Interruption } from '../../hooks/useInterruptionEngine';
 import InterruptionBubble from './InterruptionBubble';
 
-// ─── Doctor mood ──────────────────────────────────────────────────────────────
-
-type DoctorMood = 'thinking' | 'acting' | 'concerned' | 'happy' | 'alarmed';
-
-function computeDoctorMood(
-  status: SimPatientStatus,
-  acting: boolean,
-  latestCoach: CoachingEntry | null,
-  simTimeMin: number,
-): DoctorMood {
-  if (acting) return 'acting';
-  if (status === 'cardiac-arrest') return 'alarmed';
-  if (status === 'dead') return 'alarmed';
-  if (status === 'critical') return 'concerned';
-  if (latestCoach?.tone === 'praise' && simTimeMin - latestCoach.simTimeMin < 4) return 'happy';
-  if (status === 'improving' || status === 'discharged' || status === 'icu-transferred') return 'happy';
-  return 'thinking';
-}
+// ─── Doctor face paths (keyed by new DoctorMood) ─────────────────────────────
 
 const DOCTOR_FACE: Record<DoctorMood, { mouth: string; browL: string; browR: string }> = {
   thinking:  { mouth: 'M 25 33 Q 30 36 35 33', browL: 'M 19 23 Q 24 21 27 23', browR: 'M 33 23 Q 36 21 41 23' },
-  acting:    { mouth: 'M 25 33 Q 30 35 35 33', browL: 'M 19 21 Q 24 19 28 22', browR: 'M 32 22 Q 36 19 41 21' },
+  focused:   { mouth: 'M 25 33 Q 30 35 35 33', browL: 'M 19 21 Q 24 19 28 22', browR: 'M 32 22 Q 36 19 41 21' },
   concerned: { mouth: 'M 25 35 Q 30 32 35 35', browL: 'M 19 21 Q 24 19 28 22', browR: 'M 32 22 Q 36 19 41 21' },
-  happy:     { mouth: 'M 23 32 Q 30 38 37 32', browL: 'M 19 24 Q 24 22 27 24', browR: 'M 33 24 Q 36 22 41 24' },
+  proud:     { mouth: 'M 23 32 Q 30 38 37 32', browL: 'M 19 24 Q 24 22 27 24', browR: 'M 33 24 Q 36 22 41 24' },
   alarmed:   { mouth: 'M 26 34 Q 30 37 34 34', browL: 'M 18 20 Q 24 17 28 20', browR: 'M 32 20 Q 36 17 42 20' },
 };
 
@@ -248,15 +235,15 @@ function PatientFigure({
 
 function DoctorAvatar({ mood }: { mood: DoctorMood }) {
   const face = DOCTOR_FACE[mood];
-  const isActing = mood === 'acting';
+  const isFocused = mood === 'focused';
   const isAlarmed = mood === 'alarmed';
-  const coatStroke = isAlarmed ? '#ef4444' : isActing ? '#3b82f6' : 'none';
+  const coatStroke = isAlarmed ? '#ef4444' : isFocused ? '#3b82f6' : 'none';
 
   return (
     <svg viewBox="0 0 60 80" width="52" height="69">
       {/* White coat body */}
       <rect x="8" y="38" width="44" height="42" rx="5" fill="#e2e8f0"
-        stroke={coatStroke} strokeWidth={isAlarmed || isActing ? '1.5' : '0'} />
+        stroke={coatStroke} strokeWidth={isAlarmed || isFocused ? '1.5' : '0'} />
       {/* Scrubs underneath */}
       <rect x="18" y="38" width="24" height="42" fill="#3b82f6" opacity="0.4" />
       {/* Coat lapels */}
@@ -265,8 +252,8 @@ function DoctorAvatar({ mood }: { mood: DoctorMood }) {
       {/* Stethoscope */}
       <path d="M 18 48 Q 28 60 30 54 Q 32 48 42 52" stroke="#64748b" strokeWidth="2" fill="none" />
       <circle cx="42" cy="53" r="3.5" fill="#475569" />
-      {/* Acting — pen in hand */}
-      {isActing && <line x1="40" y1="58" x2="48" y2="72" stroke="#1e293b" strokeWidth="2" strokeLinecap="round" />}
+      {/* Focused — pen in hand */}
+      {isFocused && <line x1="40" y1="58" x2="48" y2="72" stroke="#1e293b" strokeWidth="2" strokeLinecap="round" />}
 
       {/* Head */}
       <circle cx="30" cy="26" r="19" fill="#fcd9b4" />
@@ -294,7 +281,15 @@ function DoctorAvatar({ mood }: { mood: DoctorMood }) {
 
 // ─── Nurse Avatar ─────────────────────────────────────────────────────────────
 
-function NurseAvatar() {
+function NurseAvatar({ mood }: { mood: NurseMood }) {
+  const isWorried  = mood === 'worried';
+  const isRelieved = mood === 'relieved';
+  const mouthD = isRelieved
+    ? 'M 24 34 Q 30 38 36 34'   // smile
+    : isWorried
+    ? 'M 25 35 Q 30 32 35 35'   // frown
+    : 'M 25 34 Q 30 37 35 34';  // gentle smile (default)
+  const browStroke = isWorried ? '#7c2d12' : '#92400e';
   return (
     <svg viewBox="0 0 60 80" width="46" height="62">
       <rect x="8"  y="38" width="44" height="42" rx="5" fill="#1d4ed8" opacity="0.85" />
@@ -305,9 +300,19 @@ function NurseAvatar() {
       <circle cx="30" cy="9"  r="5" fill="#78350f" />
       <circle cx="24" cy="27" r="2.5" fill="#1e293b" />
       <circle cx="36" cy="27" r="2.5" fill="#1e293b" />
-      <path d="M 21 23 Q 24 21 27 23" stroke="#92400e" strokeWidth="1.5" fill="none" />
-      <path d="M 33 23 Q 36 21 39 23" stroke="#92400e" strokeWidth="1.5" fill="none" />
-      <path d="M 25 34 Q 30 37 35 34" stroke="#9d7060" strokeWidth="1.5" fill="none" strokeLinecap="round" />
+      {/* Mood brows */}
+      {isWorried ? (
+        <>
+          <path d="M 20 22 Q 24 19 28 22" stroke={browStroke} strokeWidth="1.5" fill="none" />
+          <path d="M 32 22 Q 36 19 40 22" stroke={browStroke} strokeWidth="1.5" fill="none" />
+        </>
+      ) : (
+        <>
+          <path d="M 21 23 Q 24 21 27 23" stroke={browStroke} strokeWidth="1.5" fill="none" />
+          <path d="M 33 23 Q 36 21 39 23" stroke={browStroke} strokeWidth="1.5" fill="none" />
+        </>
+      )}
+      <path d={mouthD} stroke="#9d7060" strokeWidth="1.5" fill="none" strokeLinecap="round" />
       <path d="M 18 40 Q 30 48 42 40" stroke="#94a3b8" strokeWidth="1.5" fill="none" />
     </svg>
   );
@@ -315,10 +320,20 @@ function NurseAvatar() {
 
 // ─── Family Avatar ────────────────────────────────────────────────────────────
 
-function FamilyAvatar({ improving }: { improving: boolean }) {
-  const mouthD = improving
-    ? 'M 25 34 Q 30 37 35 34'  // slight smile when good news
-    : 'M 25 34 Q 30 31 35 34'; // slight frown when worried
+function FamilyAvatar({ mood }: { mood: FamilyMood }) {
+  const isCrying   = mood === 'crying';
+  const isRelieved = mood === 'relieved';
+  const isHopeful  = mood === 'hopeful';
+  const isAnxious  = mood === 'anxious';
+
+  const mouthD = isRelieved
+    ? 'M 24 34 Q 30 38 36 34'   // smile
+    : isHopeful
+    ? 'M 25 34 Q 30 36 35 34'   // slight smile
+    : 'M 25 34 Q 30 31 35 34';  // frown (anxious/crying)
+
+  const showWorriedBrows = isAnxious || isCrying;
+
   return (
     <svg viewBox="0 0 60 80" width="42" height="56">
       <rect x="10" y="38" width="40" height="42" rx="5" fill="#7c3aed" opacity="0.7" />
@@ -327,9 +342,22 @@ function FamilyAvatar({ improving }: { improving: boolean }) {
       <path d="M 13 22 Q 30 8 47 22"  stroke="#92400e" strokeWidth="5" fill="none" strokeLinecap="round" />
       <path d="M 13 22 Q 11 36 13 44" stroke="#92400e" strokeWidth="5" fill="none" strokeLinecap="round" />
       <path d="M 47 22 Q 49 36 47 44" stroke="#92400e" strokeWidth="5" fill="none" strokeLinecap="round" />
-      <circle cx="24" cy="27" r="2.5" fill="#1e293b" />
-      <circle cx="36" cy="27" r="2.5" fill="#1e293b" />
-      {!improving && (
+      {/* Eyes — closed/wet when crying */}
+      {isCrying ? (
+        <>
+          <line x1="21" y1="27" x2="27" y2="27" stroke="#1e293b" strokeWidth="2" strokeLinecap="round" />
+          <line x1="33" y1="27" x2="39" y2="27" stroke="#1e293b" strokeWidth="2" strokeLinecap="round" />
+          {/* Tear drops */}
+          <ellipse cx="24" cy="30" rx="1.2" ry="2" fill="#93c5fd" opacity="0.8" />
+          <ellipse cx="36" cy="30" rx="1.2" ry="2" fill="#93c5fd" opacity="0.8" />
+        </>
+      ) : (
+        <>
+          <circle cx="24" cy="27" r="2.5" fill="#1e293b" />
+          <circle cx="36" cy="27" r="2.5" fill="#1e293b" />
+        </>
+      )}
+      {showWorriedBrows && (
         <>
           <path d="M 20 22 Q 24 19 28 22" stroke="#92400e" strokeWidth="1.5" fill="none" />
           <path d="M 32 22 Q 36 19 40 22" stroke="#92400e" strokeWidth="1.5" fill="none" />
@@ -372,11 +400,15 @@ interface Props {
   interruption?: Interruption | null;
   onInterruptionDismiss?: () => void;
   onInterruptionRespond?: (response: string) => void;
+  // Director System
+  characterMoods?: CharacterMoods;
+  activeCue?: DirectorCue | null;
 }
 
 export default function ScenePanel({
   patient, simCase, eventLog, coachingLog, acting = false,
   interruption, onInterruptionDismiss, onInterruptionRespond,
+  characterMoods, activeCue,
 }: Props) {
   const pres = simCase.presentation;
 
@@ -447,15 +479,52 @@ export default function ScenePanel({
     ? latestNurse.text.replace(/^[^:]+:\s*"?/, '').replace(/"$/, '')
     : (ambientMsg ?? '');
 
-  const allergy    = patient.revealedAllergies[0] ?? null;
-  const toneStyle  = latestCoach ? TONE_STYLE[latestCoach.tone] ?? TONE_STYLE.teach : TONE_STYLE.teach;
-  const doctorMood = computeDoctorMood(patient.status, acting, latestCoach, patient.simTimeMinutes);
-  const isImproving = patient.status === 'improving' || patient.status === 'discharged' || patient.status === 'icu-transferred';
+  const allergy   = patient.revealedAllergies[0] ?? null;
+  const toneStyle = latestCoach ? TONE_STYLE[latestCoach.tone] ?? TONE_STYLE.teach : TONE_STYLE.teach;
+  const rr        = patient.vitals.rr ?? 16;
 
-  const rr = patient.vitals.rr ?? 16;
+  // ── Director: derive moods + message slots ───────────────────────────────
+  const defaultMoods: CharacterMoods = {
+    doctor:  acting ? 'focused' : 'thinking',
+    nurse:   'calm',
+    patient: 'stable',
+    family:  'anxious',
+  };
+  const moods = characterMoods ?? defaultMoods;
+
+  // Override speech bubble when Director has a message for that actor
+  const dirActor = activeCue?.actor;
+  const dirMsg   = activeCue?.message ?? null;
+
+  // Visual effect class on root
+  const visualClass =
+    activeCue?.visualEffect === 'greenGlow' ? 'director-green-glow' :
+    activeCue?.visualEffect === 'redFlash'  ? 'director-red-flash'  :
+    activeCue?.visualEffect === 'pulse'     ? 'director-pulse'       :
+    activeCue?.visualEffect === 'softFade'  ? 'director-soft-fade'   :
+    '';
+
+  // Doctor speech: Director overrides coaching log when actor === 'doctor'
+  const doctorBubbleText = dirActor === 'doctor' ? dirMsg
+    : (coachVisible && latestCoach ? latestCoach.text : null);
+  const doctorBubbleTone = dirActor === 'doctor' ? (activeCue?.tone ?? 'calm') : latestCoach?.tone ?? 'teach';
+
+  // Nurse speech: Director overrides ambient/eventLog when actor === 'nurse'
+  const nurseBubbleOverride = dirActor === 'nurse' ? dirMsg : null;
+  const effectiveNurseBubble = nurseBubbleOverride
+    ?? (showNurseBubble ? nurseBubbleText : null);
+
+  // Patient speech bubble (new — only from Director)
+  const patientBubbleText = dirActor === 'patient' ? dirMsg : null;
+
+  // Family speech: Director overrides eventLog when actor === 'family'
+  const familyBubbleText = dirActor === 'family' ? dirMsg
+    : (familyVisible && latestFamily
+        ? latestFamily.text.replace(/^[^:()]+\([^)]*\):\s*"?/, '').replace(/"$/, '') || latestFamily.text
+        : null);
 
   return (
-    <div className="relative flex flex-col h-full overflow-hidden bg-slate-950">
+    <div className={`relative flex flex-col h-full overflow-hidden bg-slate-950 ${visualClass}`}>
 
       {/* ── Interruption overlay ────────────────────────────── */}
       {interruption && onInterruptionDismiss && onInterruptionRespond && (
@@ -497,58 +566,73 @@ export default function ScenePanel({
       {/* ── Characters row ─────────────────────────────────── */}
       <div className="flex-1 min-h-0 px-2 pb-2 flex items-end gap-1 overflow-hidden">
 
-        {/* Doctor + coaching bubble */}
-        <div className={`flex flex-col items-center gap-1 shrink-0 ${acting ? '' : 'doctor-living'}`}>
-          {coachVisible && latestCoach && (
-            <div
-              className={`rounded-lg border text-xs leading-snug px-2 py-1.5 shadow-lg animate-bubble-in ${toneStyle.border} ${toneStyle.bg} ${toneStyle.text}`}
-              style={{ maxWidth: 148, minWidth: 80 }}
-            >
-              <div className="flex items-center gap-1 mb-0.5">
-                <div className={`w-1.5 h-1.5 rounded-full shrink-0 ${toneStyle.dot}`} />
-                <span className="font-semibold text-[10px] uppercase tracking-wide opacity-70">
-                  {latestCoach.tone}
-                </span>
+        {/* Doctor + coaching / Director bubble */}
+        <div className={`flex flex-col items-center gap-1 shrink-0 ${moods.doctor === 'focused' ? '' : 'doctor-living'}`}>
+          {doctorBubbleText && (() => {
+            const tone = doctorBubbleTone;
+            const ts = TONE_STYLE[tone as keyof typeof TONE_STYLE] ?? TONE_STYLE.teach;
+            return (
+              <div
+                className={`rounded-lg border text-xs leading-snug px-2 py-1.5 shadow-lg animate-bubble-in ${ts.border} ${ts.bg} ${ts.text}`}
+                style={{ maxWidth: 148, minWidth: 80 }}
+                key={doctorBubbleText}
+              >
+                <div className="flex items-center gap-1 mb-0.5">
+                  <div className={`w-1.5 h-1.5 rounded-full shrink-0 ${ts.dot}`} />
+                  <span className="font-semibold text-[10px] uppercase tracking-wide opacity-70">
+                    {dirActor === 'doctor' ? (activeCue?.tone ?? 'calm') : latestCoach?.tone ?? 'teach'}
+                  </span>
+                </div>
+                <div>{doctorBubbleText.length > 80 ? doctorBubbleText.slice(0, 77) + '…' : doctorBubbleText}</div>
               </div>
-              <div>{latestCoach.text.length > 80 ? latestCoach.text.slice(0, 77) + '…' : latestCoach.text}</div>
-            </div>
-          )}
-          <DoctorAvatar mood={doctorMood} />
+            );
+          })()}
+          <DoctorAvatar mood={moods.doctor} />
           <span className="text-[9px] text-slate-600">
-            {acting ? '⏱ ordering…' : 'Dr. Patel'}
+            {moods.doctor === 'focused' ? '⏱ ordering…' : 'Dr. Patel'}
           </span>
         </div>
 
-        {/* Nurse + speech bubble (real or ambient) */}
+        {/* Nurse + speech bubble (real, ambient, or Director) */}
         <div className="flex flex-col items-center gap-1 shrink-0 flex-1 min-w-0 nurse-living">
-          {showNurseBubble && nurseBubbleText && (
+          {effectiveNurseBubble && (
             <SpeechBubble
-              key={nurseBubbleText}
-              text={nurseBubbleText}
+              key={effectiveNurseBubble}
+              text={effectiveNurseBubble}
               colorClass="bg-indigo-950/80 border-indigo-700/60 text-indigo-200"
               maxWidth={148}
             />
           )}
-          <NurseAvatar />
+          <NurseAvatar mood={moods.nurse} />
           <span className="text-[9px] text-slate-600">Nurse Jenna</span>
         </div>
 
-        {/* Family — only when messages have fired */}
-        {latestFamily && (
-          <div className="flex flex-col items-center gap-1 shrink-0 family-living">
-            {familyVisible && (
-              <SpeechBubble
-                key={latestFamily.text}
-                text={latestFamily.text.replace(/^[^:()]+\([^)]*\):\s*"?/, '').replace(/"$/, '') || latestFamily.text}
-                colorClass="bg-amber-950/80 border-amber-700/60 text-amber-200"
-                maxWidth={130}
-              />
-            )}
-            <FamilyAvatar improving={isImproving} />
-            <span className="text-[9px] text-slate-600">Family</span>
-          </div>
-        )}
+        {/* Family — always shown; moods from Director */}
+        <div className="flex flex-col items-center gap-1 shrink-0 family-living">
+          {familyBubbleText && (
+            <SpeechBubble
+              key={familyBubbleText}
+              text={familyBubbleText}
+              colorClass="bg-amber-950/80 border-amber-700/60 text-amber-200"
+              maxWidth={130}
+            />
+          )}
+          <FamilyAvatar mood={moods.family} />
+          <span className="text-[9px] text-slate-600">Family</span>
+        </div>
       </div>
+
+      {/* ── Patient speech bubble (Director only) ──────────────── */}
+      {patientBubbleText && (
+        <div className="absolute bottom-16 left-1/2 -translate-x-1/2 z-20 pointer-events-none">
+          <SpeechBubble
+            key={patientBubbleText}
+            text={patientBubbleText}
+            colorClass="bg-slate-800/90 border-slate-600/60 text-slate-100"
+            maxWidth={180}
+          />
+        </div>
+      )}
     </div>
   );
 }

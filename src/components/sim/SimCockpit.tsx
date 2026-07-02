@@ -63,6 +63,8 @@ import HospitalFeed from './HospitalFeed';
 import CaseProgressBar from './CaseProgressBar';
 import ComboDisplay from './ComboDisplay';
 import { useInterruptionEngine } from '../../hooks/useInterruptionEngine';
+import type { InterruptionSource } from '../../hooks/useInterruptionEngine';
+import { useDirector } from '../../hooks/useDirector';
 
 const CASE_START_MIN = 8 * 60;
 function wallClock(simMin: number): string {
@@ -131,6 +133,24 @@ export default function SimCockpit({
   // ── Interruption engine ───────────────────────────────────────────────────
   const { interruption, dismiss: dismissInterruption, respond: respondInterruption } =
     useInterruptionEngine(patient, acting);
+
+  // ── Director system ───────────────────────────────────────────────────────
+  const { activeCue, characterMoods, dismissCue: dismissDirectorCue } = useDirector(patient, simCase);
+
+  // Convert Director cues for non-scene actors into priority interruptions
+  const SCENE_ACTORS = new Set(['doctor', 'nurse', 'patient', 'family']);
+  const directorInterruption = activeCue && !SCENE_ACTORS.has(activeCue.actor)
+    ? {
+        id:        activeCue.id,
+        source:    activeCue.actor as InterruptionSource,
+        text:      activeCue.message,
+        responses: ['Noted'],
+        durationMs: activeCue.priority === 'high' ? 9000 : activeCue.priority === 'medium' ? 7000 : 5500,
+      }
+    : null;
+
+  // Director interruptions override ambient interruptions
+  const effectiveInterruption = directorInterruption ?? interruption;
 
   const dismissToast = useCallback((id: number) => {
     setToasts(prev => prev.filter(t => t.id !== id));
@@ -220,9 +240,11 @@ export default function SimCockpit({
       eventLog={eventLog}
       coachingLog={coachingLog}
       acting={acting}
-      interruption={interruption}
-      onInterruptionDismiss={dismissInterruption}
-      onInterruptionRespond={respondInterruption}
+      interruption={effectiveInterruption}
+      onInterruptionDismiss={directorInterruption ? dismissDirectorCue : dismissInterruption}
+      onInterruptionRespond={directorInterruption ? dismissDirectorCue : respondInterruption}
+      characterMoods={characterMoods}
+      activeCue={activeCue && SCENE_ACTORS.has(activeCue.actor) ? activeCue : null}
     />
   );
   const feedEl = <HospitalFeed events={eventLog} />;

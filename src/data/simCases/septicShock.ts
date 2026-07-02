@@ -1,4 +1,4 @@
-import type { SimCase, SimAction, SimVitals, PatientSim, OrderResult } from '../../types/simulation';
+import type { SimCase, SimAction, SimVitals, PatientSim, OrderResult, DirectorCue } from '../../types/simulation';
 
 // ─── Initial Vitals ───────────────────────────────────────────────────────────
 
@@ -851,6 +851,164 @@ const ACTIONS: SimAction[] = [
 
 // ─── Septic Shock Case ────────────────────────────────────────────────────────
 
+// ─── Director Cues ────────────────────────────────────────────────────────────
+
+const DIRECTOR_CUES: DirectorCue[] = [
+
+  // ── Opening atmosphere ──────────────────────────────────────────────────────
+
+  {
+    id: 'early-handover',
+    trigger: { atTime: 1 },
+    actor: 'nurse', tone: 'calm', priority: 'low', once: true,
+    message: "That catheter's been in since her hip surgery. Three weeks.",
+  },
+
+  // ── Allergy system — most important safety signal ───────────────────────────
+
+  {
+    id: 'allergy-family-clue',
+    trigger: { atTime: 5, flagNotSet: 'allergiesChecked' },
+    actor: 'family', tone: 'urgent', priority: 'high', once: true,
+    message: "Doctor — she has a drug allergy. Something to do with penicillin, I think.",
+    visualEffect: 'pulse',
+  },
+  {
+    id: 'allergy-dr-nudge',
+    trigger: { atTime: 9, flagNotSet: 'allergiesChecked' },
+    actor: 'doctor', tone: 'nudge', priority: 'medium', once: true,
+    message: "Have we checked her allergies yet?",
+  },
+  {
+    id: 'pip-tazo-allergy-known',
+    trigger: { afterActionId: 'antibiotics-pip-tazo', flagSet: 'penicillinAllergyKnown' },
+    actor: 'nurse', tone: 'urgent', priority: 'high', once: true,
+    message: "She's allergic to penicillin! Pip-tazo is penicillin-class!",
+    visualEffect: 'redFlash',
+    sound: 'alarm',
+  },
+  {
+    id: 'pip-tazo-allergy-unknown',
+    trigger: { afterActionId: 'antibiotics-pip-tazo', flagNotSet: 'allergiesChecked' },
+    actor: 'nurse', tone: 'urgent', priority: 'high', once: true,
+    message: "We never checked her allergies. The wristband says penicillin — pip-tazo is contraindicated!",
+    visualEffect: 'redFlash',
+    sound: 'alarm',
+  },
+
+  // ── Culture sequence ────────────────────────────────────────────────────────
+
+  {
+    id: 'cultures-praise',
+    trigger: { afterActionId: 'draw-blood-cultures', flagNotSet: 'antibioticsStarted' },
+    actor: 'doctor', tone: 'praise', priority: 'medium', once: true,
+    message: "Good. Cultures first.",
+  },
+  {
+    id: 'cultures-post-abx',
+    trigger: { flagSet: 'antibioticsStarted', flagNotSet: 'culturesDrawn' },
+    actor: 'lab', tone: 'warn', priority: 'medium', once: true,
+    message: "Note: cultures drawn after antibiotics — sensitivity results may be affected.",
+  },
+
+  // ── Resuscitation timing ────────────────────────────────────────────────────
+
+  {
+    id: 'no-o2-nudge',
+    trigger: { atTime: 12, flagNotSet: 'oxygenStarted' },
+    actor: 'nurse', tone: 'nudge', priority: 'medium', once: true,
+    message: "Sats are 91% and dropping. Should we get some oxygen on?",
+  },
+  {
+    id: 'no-iv-warning',
+    trigger: { atTime: 15, flagNotSet: 'ivAccessEstablished' },
+    actor: 'nurse', tone: 'nudge', priority: 'medium', once: true,
+    message: "We still don't have IV access.",
+  },
+  {
+    id: 'no-fluids-warning',
+    trigger: { atTime: 15, flagNotSet: 'fluidsStarted' },
+    actor: 'nurse', tone: 'warn', priority: 'high', once: true,
+    message: "Her BP is still dropping. She needs IV fluids urgently.",
+    visualEffect: 'pulse',
+  },
+  {
+    id: 'abx-delay-30',
+    trigger: { atTime: 30, flagNotSet: 'antibioticsStarted' },
+    actor: 'doctor', tone: 'warn', priority: 'high', once: true,
+    message: "Antibiotics. Every hour of delay matters in sepsis.",
+  },
+
+  // ── Consequence cues ────────────────────────────────────────────────────────
+
+  {
+    id: 'ctpa-trap',
+    trigger: { afterActionId: 'order-ctpa' },
+    actor: 'doctor', tone: 'nudge', priority: 'medium', once: true,
+    message: "She's hypotensive. Imaging can wait until she's more stable.",
+  },
+  {
+    id: 'saline-note',
+    trigger: { afterActionId: 'fluids-ns-1' },
+    actor: 'lab', tone: 'warn', priority: 'low', once: true,
+    message: "Large saline volumes carry hyperchloraemia risk. Hartmann's is preferred in sepsis.",
+  },
+  {
+    id: 'arrest-warning',
+    trigger: { vitalBelow: { key: 'sbp', value: 55 } },
+    actor: 'nurse', tone: 'urgent', priority: 'high', once: false, cooldownSec: 30,
+    message: "BP is crashing. She's going to lose output.",
+    visualEffect: 'redFlash',
+    sound: 'alarm',
+  },
+
+  // ── Celebration cues ────────────────────────────────────────────────────────
+
+  {
+    id: 'meropenem-praise',
+    trigger: { afterActionId: 'antibiotics-meropenem', flagSet: 'allergiesChecked' },
+    actor: 'doctor', tone: 'praise', priority: 'medium', once: true,
+    message: "Good call. Covers the penicillin allergy.",
+  },
+  {
+    id: 'fluid-response-praise',
+    trigger: { flagSet: 'adequateFluids' },
+    actor: 'nurse', tone: 'relief', priority: 'medium', once: true,
+    message: "That helped — her pressure's coming up.",
+    visualEffect: 'greenGlow',
+    sound: 'successChime',
+  },
+  {
+    id: 'patient-lucid',
+    trigger: { flagSet: 'adequateFluids' },
+    actor: 'patient', tone: 'relief', priority: 'low', once: true,
+    message: "I feel... a little less confused now. Thank you.",
+  },
+  {
+    id: 'family-relief',
+    trigger: { flagSet: 'adequateFluids' },
+    actor: 'family', tone: 'relief', priority: 'low', once: true,
+    message: "She looks better. There's colour back in her face.",
+  },
+
+  // ── Signature moments ────────────────────────────────────────────────────────
+
+  {
+    id: 'icu-arrival',
+    trigger: { flagSet: 'icuCalled' },
+    actor: 'consultant', tone: 'calm', priority: 'high', once: true,
+    message: "ICU registrar here. What's her current MAP and fluid balance?",
+    sound: 'phoneRing',
+  },
+  {
+    id: 'family-final-thanks',
+    trigger: { atTime: 50, flagSet: 'adequateFluids' },
+    actor: 'family', tone: 'relief', priority: 'low', once: true,
+    message: "She's asking for water. She says thank you.",
+    visualEffect: 'softFade',
+  },
+];
+
 export const SEPTIC_SHOCK_CASE: SimCase = {
   id: 'sim-septic-shock',
   title: 'The Morning Admission',
@@ -879,6 +1037,8 @@ export const SEPTIC_SHOCK_CASE: SimCase = {
         { simTimeAbove: 28 },
       ]} },
   ],
+
+  directorCues: DIRECTOR_CUES,
 
   coachingMessages: [
     {

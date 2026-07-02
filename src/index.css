@@ -103,6 +103,35 @@ body {
 }
 .family-living { animation: family-sway 5.5s ease-in-out infinite; }
 
+/* ── Director visual effects ──────────────────────────────────────── */
+
+@keyframes director-green-pulse {
+  0%, 100% { box-shadow: inset 0 0 0px rgba(34,197,94,0); }
+  40%, 60% { box-shadow: inset 0 0 28px rgba(34,197,94,0.22); }
+}
+.director-green-glow { animation: director-green-pulse 2.2s ease-in-out 3; }
+
+@keyframes director-red-flash {
+  0%, 100% { box-shadow: inset 0 0 0px rgba(239,68,68,0); }
+  10%, 90% { box-shadow: inset 0 0 36px rgba(239,68,68,0.35); }
+}
+.director-red-flash { animation: director-red-flash 1.1s ease-in-out forwards; }
+
+@keyframes director-pulse-ring {
+  0%   { box-shadow: inset 0 0 0px rgba(251,191,36,0); }
+  30%  { box-shadow: inset 0 0 20px rgba(251,191,36,0.28); }
+  70%  { box-shadow: inset 0 0 20px rgba(251,191,36,0.28); }
+  100% { box-shadow: inset 0 0 0px rgba(251,191,36,0); }
+}
+.director-pulse { animation: director-pulse-ring 1.4s ease-in-out 2; }
+
+@keyframes director-soft-fade {
+  0%   { opacity: 1; }
+  50%  { opacity: 0.7; }
+  100% { opacity: 1; }
+}
+.director-soft-fade { animation: director-soft-fade 2.5s ease-in-out; }
+
 /* ── Interruption timer bar shrink ────────────────────────────────── */
 .interruption-bar {
   width: 100%;

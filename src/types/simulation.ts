@@ -399,6 +399,50 @@ export interface SimState {
   coachingLog?: CoachingEntry[];
 }
 
+// ─── Director System ──────────────────────────────────────────────────────────
+
+export type DirectorActor =
+  | 'doctor' | 'nurse' | 'patient' | 'family'
+  | 'consultant' | 'lab' | 'radiology' | 'pharmacy' | 'hospital';
+
+export type DirectorTone = 'calm' | 'praise' | 'nudge' | 'warn' | 'urgent' | 'relief' | 'sad';
+export type DirectorPriority = 'low' | 'medium' | 'high';
+export type VisualEffect = 'shake' | 'pulse' | 'greenGlow' | 'redFlash' | 'softFade' | 'flatline';
+export type DirectorSound = 'monitorBeep' | 'labDing' | 'phoneRing' | 'alarm' | 'successChime';
+
+export interface DirectorCue {
+  id: string;
+  trigger: {
+    atTime?: number;                          // fires once simTimeMinutes ≥ this value
+    afterActionId?: string;                   // fires once this action is completed
+    missedActionId?: string;                  // combined with atTime: fires if action NOT done by atTime
+    flagSet?: string;                         // fires when this flag becomes true
+    flagNotSet?: string;                      // combined with atTime: fires if flag still false at atTime
+    vitalBelow?: { key: keyof SimVitals; value: number };
+    vitalAbove?: { key: keyof SimVitals; value: number };
+  };
+  actor: DirectorActor;
+  tone: DirectorTone;
+  message: string;
+  priority: DirectorPriority;
+  once: boolean;
+  cooldownSec?: number;
+  visualEffect?: VisualEffect;
+  sound?: DirectorSound;
+}
+
+export type DoctorMood  = 'thinking' | 'focused' | 'proud' | 'concerned' | 'alarmed';
+export type NurseMood   = 'calm' | 'attentive' | 'worried' | 'relieved';
+export type PatientMood = 'stable' | 'scared' | 'confused' | 'distressed' | 'improving' | 'unconscious' | 'dead';
+export type FamilyMood  = 'anxious' | 'hopeful' | 'relieved' | 'crying';
+
+export interface CharacterMoods {
+  doctor:  DoctorMood;
+  nurse:   NurseMood;
+  patient: PatientMood;
+  family:  FamilyMood;
+}
+
 // ─── Case Definition ──────────────────────────────────────────────────────────
 
 export interface CasePresentation {
@@ -432,6 +476,7 @@ export interface SimCase {
   nursingMessages?: NursingMessage[];
   phases?: PhaseDefinition[];
   coachingMessages?: CoachingMessage[];
+  directorCues?: DirectorCue[];
 
   internalDiagnosis: string;
 }
