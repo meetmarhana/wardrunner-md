@@ -70,3 +70,42 @@ body {
   to   { opacity: 1; transform: translateY(0); }
 }
 .animate-feed-in { animation: feed-in 0.28s ease-out both; }
+
+/* ── Living staff animations ──────────────────────────────────────── */
+
+@keyframes nurse-bob {
+  0%, 100% { transform: translateY(0); }
+  30%      { transform: translateY(-2px); }
+  60%      { transform: translateY(-1px); }
+}
+.nurse-living { animation: nurse-bob 3.2s ease-in-out infinite; }
+
+@keyframes doctor-lean {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  35%      { transform: translateY(-1.5px) rotate(0.4deg); }
+  65%      { transform: translateY(-0.5px) rotate(-0.3deg); }
+}
+.doctor-living { animation: doctor-lean 4.5s ease-in-out infinite; }
+
+@keyframes patient-cough {
+  0%, 82%, 100% { transform: rotate(0deg) translateX(0); }
+  84%            { transform: rotate(-1.5deg) translateX(-2px); }
+  87%            { transform: rotate(1.2deg)  translateX(2px);  }
+  90%            { transform: rotate(-0.8deg) translateX(-1px); }
+  93%            { transform: rotate(0.4deg)  translateX(1px);  }
+}
+.patient-living { animation: patient-cough 9s ease-in-out infinite; }
+
+@keyframes family-sway {
+  0%, 100% { transform: translateX(0) rotate(0deg); }
+  25%      { transform: translateX(-1.5px) rotate(-0.5deg); }
+  75%      { transform: translateX(1.5px) rotate(0.5deg); }
+}
+.family-living { animation: family-sway 5.5s ease-in-out infinite; }
+
+/* ── Interruption timer bar shrink ────────────────────────────────── */
+.interruption-bar {
+  width: 100%;
+  transition: width var(--dur, 5s) linear;
+}
+.interruption-bar.shrink { width: 0%; }

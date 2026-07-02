@@ -1,5 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import type { PatientSim, SimCase, SimEvent, CoachingEntry, SimPatientStatus } from '../../types/simulation';
+import type { Interruption } from '../../hooks/useInterruptionEngine';
+import InterruptionBubble from './InterruptionBubble';
 
 // ─── Doctor mood ──────────────────────────────────────────────────────────────
 
@@ -367,9 +369,15 @@ interface Props {
   eventLog: SimEvent[];
   coachingLog: CoachingEntry[];
   acting?: boolean;
+  interruption?: Interruption | null;
+  onInterruptionDismiss?: () => void;
+  onInterruptionRespond?: (response: string) => void;
 }
 
-export default function ScenePanel({ patient, simCase, eventLog, coachingLog, acting = false }: Props) {
+export default function ScenePanel({
+  patient, simCase, eventLog, coachingLog, acting = false,
+  interruption, onInterruptionDismiss, onInterruptionRespond,
+}: Props) {
   const pres = simCase.presentation;
 
   const [ambientMsg, setAmbientMsg] = useState<string | null>(null);
@@ -447,7 +455,17 @@ export default function ScenePanel({ patient, simCase, eventLog, coachingLog, ac
   const rr = patient.vitals.rr ?? 16;
 
   return (
-    <div className="flex flex-col h-full overflow-hidden bg-slate-950">
+    <div className="relative flex flex-col h-full overflow-hidden bg-slate-950">
+
+      {/* ── Interruption overlay ────────────────────────────── */}
+      {interruption && onInterruptionDismiss && onInterruptionRespond && (
+        <InterruptionBubble
+          key={interruption.id}
+          interruption={interruption}
+          onDismiss={onInterruptionDismiss}
+          onRespond={onInterruptionRespond}
+        />
+      )}
 
       {/* ── Patient header ─────────────────────────────────── */}
       <div className="shrink-0 px-3 pt-2 pb-1.5 border-b border-slate-800/60">
@@ -472,7 +490,7 @@ export default function ScenePanel({ patient, simCase, eventLog, coachingLog, ac
       </div>
 
       {/* ── Patient figure ─────────────────────────────────── */}
-      <div className="shrink-0 flex justify-center items-end px-2 pt-2" style={{ height: '124px' }}>
+      <div className="shrink-0 flex justify-center items-end px-2 pt-2 patient-living" style={{ height: '124px' }}>
         <PatientFigure status={patient.status} flags={patient.flags} rr={rr} />
       </div>
 
@@ -480,7 +498,7 @@ export default function ScenePanel({ patient, simCase, eventLog, coachingLog, ac
       <div className="flex-1 min-h-0 px-2 pb-2 flex items-end gap-1 overflow-hidden">
 
         {/* Doctor + coaching bubble */}
-        <div className="flex flex-col items-center gap-1 shrink-0">
+        <div className={`flex flex-col items-center gap-1 shrink-0 ${acting ? '' : 'doctor-living'}`}>
           {coachVisible && latestCoach && (
             <div
               className={`rounded-lg border text-xs leading-snug px-2 py-1.5 shadow-lg animate-bubble-in ${toneStyle.border} ${toneStyle.bg} ${toneStyle.text}`}
@@ -502,7 +520,7 @@ export default function ScenePanel({ patient, simCase, eventLog, coachingLog, ac
         </div>
 
         {/* Nurse + speech bubble (real or ambient) */}
-        <div className="flex flex-col items-center gap-1 shrink-0 flex-1 min-w-0">
+        <div className="flex flex-col items-center gap-1 shrink-0 flex-1 min-w-0 nurse-living">
           {showNurseBubble && nurseBubbleText && (
             <SpeechBubble
               key={nurseBubbleText}
@@ -517,7 +535,7 @@ export default function ScenePanel({ patient, simCase, eventLog, coachingLog, ac
 
         {/* Family — only when messages have fired */}
         {latestFamily && (
-          <div className="flex flex-col items-center gap-1 shrink-0">
+          <div className="flex flex-col items-center gap-1 shrink-0 family-living">
             {familyVisible && (
               <SpeechBubble
                 key={latestFamily.text}

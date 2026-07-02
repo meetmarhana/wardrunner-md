@@ -61,6 +61,8 @@ import EventTimeline from './EventTimeline';
 import ScenePanel from './ScenePanel';
 import HospitalFeed from './HospitalFeed';
 import CaseProgressBar from './CaseProgressBar';
+import ComboDisplay from './ComboDisplay';
+import { useInterruptionEngine } from '../../hooks/useInterruptionEngine';
 
 const CASE_START_MIN = 8 * 60;
 function wallClock(simMin: number): string {
@@ -125,6 +127,10 @@ export default function SimCockpit({
   const [toasts, setToasts]       = useState<ToastData[]>([]);
   const toastIdRef                = useRef(0);
   const { enabled: soundOn, setEnabled: setSoundOn, play } = useSimAudio();
+
+  // ── Interruption engine ───────────────────────────────────────────────────
+  const { interruption, dismiss: dismissInterruption, respond: respondInterruption } =
+    useInterruptionEngine(patient, acting);
 
   const dismissToast = useCallback((id: number) => {
     setToasts(prev => prev.filter(t => t.id !== id));
@@ -214,6 +220,9 @@ export default function SimCockpit({
       eventLog={eventLog}
       coachingLog={coachingLog}
       acting={acting}
+      interruption={interruption}
+      onInterruptionDismiss={dismissInterruption}
+      onInterruptionRespond={respondInterruption}
     />
   );
   const feedEl = <HospitalFeed events={eventLog} />;
@@ -294,11 +303,12 @@ export default function SimCockpit({
           </div>
         </div>
 
-        {/* ── RIGHT: Scene + Feed ──────────────────────────── */}
+        {/* ── RIGHT: Scene + Combo + Feed ──────────────────── */}
         <div className="flex flex-col overflow-hidden">
-          <div className="border-b border-slate-800 overflow-hidden" style={{ height: '52%' }}>
+          <div className="border-b border-slate-800 overflow-hidden" style={{ height: '50%' }}>
             {scenePanelEl}
           </div>
+          <ComboDisplay completedActionIds={patient.completedActionIds} />
           <div className="flex-1 min-h-0 overflow-hidden">
             {feedEl}
           </div>
