@@ -5,12 +5,14 @@ import { viewOrderResult } from '../engine/sim/orderEngine';
 import { SEPTIC_SHOCK_CASE } from '../data/simCases/septicShock';
 import SimCockpit from '../components/sim/SimCockpit';
 import SimDebrief from '../components/sim/SimDebrief';
+import CinematicIntro from '../components/sim/CinematicIntro';
 
 interface Props {
   onHome: () => void;
 }
 
 export default function SimPlayer({ onHome }: Props) {
+  const [introComplete, setIntroComplete] = useState(false);
   const [simState, setSimState] = useState(() => initSimState(SEPTIC_SHOCK_CASE));
   const prevVitalsRef = useRef<SimVitals>(SEPTIC_SHOCK_CASE.presentation.initialVitals);
   const [acting, setActing] = useState(false);
@@ -57,6 +59,10 @@ export default function SimPlayer({ onHome }: Props) {
     setSimState(initSimState(SEPTIC_SHOCK_CASE));
     setLastAction(null);
     setActingActionId(null);
+  }
+
+  if (!introComplete) {
+    return <CinematicIntro onComplete={() => setIntroComplete(true)} />;
   }
 
   if (liveEnding && phase === 'ended') {

@@ -202,6 +202,52 @@ function buildRunSummary(
   return rows;
 }
 
+// ─── Narrative stanza ─────────────────────────────────────────────────────────
+
+function buildNarrative(
+  endingId: string,
+  simTimeMin: number,
+  completedIds: Set<string>,
+): string {
+  const hadAbx       = completedIds.has('antibiotics-pip-tazo') || completedIds.has('antibiotics-meropenem') || completedIds.has('antibiotics-ceftriaxone');
+  const hadFluids    = completedIds.has('fluids-hartmanns-1') || completedIds.has('fluids-ns-1');
+  const hadCultures  = completedIds.has('draw-blood-cultures');
+  const calledICU    = completedIds.has('call-icu');
+  const checkedAllergy = completedIds.has('check-allergies');
+
+  const hourStr = simTimeMin >= 60
+    ? `${Math.floor(simTimeMin / 60)}h ${simTimeMin % 60}min`
+    : `${simTimeMin} min`;
+
+  if (endingId === 'full-recovery') {
+    return `Ruth Anand arrived at 08:00 in septic shock — confused, cold, and hypotensive. ${checkedAllergy ? 'You checked her allergies first and ' : ''}${hadCultures ? 'drew cultures before ' : ''}${hadAbx ? 'started antibiotics within the hour' : 'managed her fluids'}. ${hadFluids ? 'Fluids ran in fast. ' : ''}She stabilised over ${hourStr}. Discharged Day 5. No organ dysfunction. Her daughter Priya sent a card.`;
+  }
+  if (endingId === 'icu-transfer') {
+    return `Ruth Anand arrived at 08:00 in septic shock. Despite your efforts over ${hourStr}, she needed escalation — ${calledICU ? 'you called ICU when it counted' : 'the intensivist was called'}. She spent 48 hours on the unit. Stable by Day 3. A difficult case handled under pressure.`;
+  }
+  if (endingId === 'death') {
+    return `Ruth Anand arrived at 08:00 in septic shock. The next ${hourStr} were a fight. ${!hadAbx ? 'Antibiotics were delayed. ' : ''}${!hadFluids ? 'Fluids came late. ' : ''}She didn't make it. Her daughter was with her at the end. Review this case — the decisions that mattered most came early.`;
+  }
+  // fallback
+  return `Ruth Anand arrived at 08:00 in septic shock. Over ${hourStr} you made decisions that shaped her outcome. Every case like this is a chance to do better next time.`;
+}
+
+function NarrativeStanza({ endingId, simTimeMin, completedIds }: { endingId: string; simTimeMin: number; completedIds: Set<string> }) {
+  const text = buildNarrative(endingId, simTimeMin, completedIds);
+  return (
+    <div className="rounded-xl border border-slate-700/60 bg-slate-900/60 p-5 relative overflow-hidden">
+      {/* Accent bar */}
+      <div className="absolute left-0 top-0 bottom-0 w-0.5 bg-gradient-to-b from-sky-600 via-indigo-600 to-slate-700 rounded-l-xl" />
+      <div className="pl-3">
+        <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-500 mb-2">Case Story</div>
+        <p className="text-sm text-slate-300 leading-relaxed font-medium italic">
+          {text}
+        </p>
+      </div>
+    </div>
+  );
+}
+
 export default function SimDebrief({ ending, scores, simTimeMin, completedActionIds, allActions, completedOrders, eventLog, metrics, onRestart, onHome }: Props) {
   const sev = SEVERITY_STYLE[ending.severity] ?? SEVERITY_STYLE.acceptable;
   const db  = ending.debrief;
@@ -227,6 +273,9 @@ export default function SimDebrief({ ending, scores, simTimeMin, completedAction
   return (
     <div className="min-h-screen bg-slate-900 flex flex-col items-center justify-start py-8 px-4">
       <div className="w-full max-w-2xl space-y-4">
+
+        {/* Narrative stanza */}
+        <NarrativeStanza endingId={ending.id} simTimeMin={simTimeMin} completedIds={completedSet} />
 
         {/* Outcome header */}
         <div className={`rounded-xl border-2 ${sev.border} ${sev.bg} p-5`}>

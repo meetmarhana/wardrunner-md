@@ -515,7 +515,7 @@ export default function ScenePanel({
           )}
           <DoctorAvatar mood={doctorMood} />
           <span className="text-[9px] text-slate-600">
-            {acting ? '⏱ ordering…' : 'Doctor'}
+            {acting ? '⏱ ordering…' : 'Dr. Patel'}
           </span>
         </div>
 

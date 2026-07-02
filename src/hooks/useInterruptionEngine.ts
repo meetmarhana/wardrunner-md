@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import type { PatientSim, SimPatientStatus } from '../types/simulation';
 
-export type InterruptionSource = 'nurse' | 'family' | 'lab' | 'pharmacy' | 'consultant';
+export type InterruptionSource = 'nurse' | 'family' | 'lab' | 'pharmacy' | 'consultant' | 'patient';
 
 export interface Interruption {
   id: string;
@@ -97,6 +97,25 @@ const POOL: PoolEntry[] = [
   { source: 'pharmacy', text: 'Incorrect dose entered in system — clarify?',
     responses: ['Correcting now', 'Standard dose', 'Check with me'] },
 
+  // Patient — Ruth's voice
+  { source: 'patient', text: "I'm cold... I can't stop shivering.",
+    responses: ['We\'re warming you', 'More blankets coming', 'Heard'],
+    condition: (_, s) => s === 'guarded' || s === 'critical' },
+  { source: 'patient', text: "Where... where am I? What happened?",
+    responses: ['You\'re safe', 'City General ED', 'Rest now'],
+    condition: (_, s) => s === 'guarded' || s === 'critical' },
+  { source: 'patient', text: "Is my daughter here? Is Priya here?",
+    responses: ['She\'s right outside', 'We\'ll get her', 'She knows you\'re here'],
+    condition: f => !f.ivAccessEstablished },
+  { source: 'patient', text: "It hurts... my side...",
+    responses: ['We\'re managing it', 'Tell me more', 'Checking now'],
+    condition: (_, s) => s === 'critical' },
+  { source: 'patient', text: "Thank you... I feel a little better.",
+    responses: ['Good to hear', 'You\'re responding well', 'Keep resting'],
+    condition: (_, s) => s === 'improving' },
+  { source: 'patient', text: "Am I going to be alright?",
+    responses: ['You\'re in good hands', 'We\'re working on it', 'Looking more stable'] },
+
   // Consultant
   { source: 'consultant', text: "Start vasopressors if MAP stays below 65.",
     responses: ['Agreed', 'Noted', 'Preparing'],
@@ -121,6 +140,7 @@ const SOURCE_COOLDOWN_MS: Record<InterruptionSource, number> = {
   lab:        35000,
   pharmacy:   28000,
   consultant: 40000,
+  patient:    45000,
 };
 
 // ─── Hook ─────────────────────────────────────────────────────────────────────

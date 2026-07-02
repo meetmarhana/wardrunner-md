@@ -7,6 +7,7 @@ const SOURCE_CFG: Record<InterruptionSource, { icon: string; label: string; bg: 
   lab:        { icon: '🔬',   label: 'Lab',           bg: 'bg-emerald-950/95', border: 'border-emerald-600/70',color: 'text-emerald-200', bar: 'bg-emerald-500'},
   pharmacy:   { icon: '💊',   label: 'Pharmacy',      bg: 'bg-purple-950/95',  border: 'border-purple-600/70', color: 'text-purple-200',  bar: 'bg-purple-500' },
   consultant: { icon: '☎',    label: 'Consultant',    bg: 'bg-sky-950/95',     border: 'border-sky-600/70',    color: 'text-sky-200',     bar: 'bg-sky-500'    },
+  patient:    { icon: '🧓',   label: 'Ruth',          bg: 'bg-slate-900/95',   border: 'border-slate-600/70',  color: 'text-slate-200',   bar: 'bg-slate-500'  },
 };
 
 interface Props {
