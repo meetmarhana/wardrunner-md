@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import type {
   PatientSim, SimCase, SimEvent, CoachingEntry,
   CharacterMoods, DoctorMood, NurseMood, FamilyMood,
-  DirectorCue,
+  DirectorCue, SimPatientStatus,
 } from '../../types/simulation';
 import type { Interruption } from '../../hooks/useInterruptionEngine';
 import InterruptionBubble from './InterruptionBubble';
@@ -480,8 +480,7 @@ export default function ScenePanel({
     : (ambientMsg ?? '');
 
   const allergy   = patient.revealedAllergies[0] ?? null;
-  const toneStyle = latestCoach ? TONE_STYLE[latestCoach.tone] ?? TONE_STYLE.teach : TONE_STYLE.teach;
-  const rr        = patient.vitals.rr ?? 16;
+  const rr = patient.vitals.rr ?? 16;
 
   // ── Director: derive moods + message slots ───────────────────────────────
   const defaultMoods: CharacterMoods = {
