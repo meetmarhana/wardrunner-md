@@ -59,7 +59,7 @@ import PatientMonitor from './PatientMonitor';
 import ResultsWorkspace from './ResultsWorkspace';
 import EventTimeline from './EventTimeline';
 import ScenePanel from './ScenePanel';
-import LiveFeed from './LiveFeed';
+import HospitalFeed from './HospitalFeed';
 import CaseProgressBar from './CaseProgressBar';
 
 const CASE_START_MIN = 8 * 60;
@@ -213,9 +213,10 @@ export default function SimCockpit({
       simCase={simCase}
       eventLog={eventLog}
       coachingLog={coachingLog}
+      acting={acting}
     />
   );
-  const feedEl = <LiveFeed events={eventLog} />;
+  const feedEl = <HospitalFeed events={eventLog} />;
 
   return (
     <div className="h-screen bg-slate-950 text-slate-100 flex flex-col overflow-hidden">

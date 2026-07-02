@@ -1,4 +1,32 @@
+import { useState, useEffect, useRef } from 'react';
 import type { PatientSim, SimCase, SimEvent, CoachingEntry, SimPatientStatus } from '../../types/simulation';
+
+// ─── Doctor mood ──────────────────────────────────────────────────────────────
+
+type DoctorMood = 'thinking' | 'acting' | 'concerned' | 'happy' | 'alarmed';
+
+function computeDoctorMood(
+  status: SimPatientStatus,
+  acting: boolean,
+  latestCoach: CoachingEntry | null,
+  simTimeMin: number,
+): DoctorMood {
+  if (acting) return 'acting';
+  if (status === 'cardiac-arrest') return 'alarmed';
+  if (status === 'dead') return 'alarmed';
+  if (status === 'critical') return 'concerned';
+  if (latestCoach?.tone === 'praise' && simTimeMin - latestCoach.simTimeMin < 4) return 'happy';
+  if (status === 'improving' || status === 'discharged' || status === 'icu-transferred') return 'happy';
+  return 'thinking';
+}
+
+const DOCTOR_FACE: Record<DoctorMood, { mouth: string; browL: string; browR: string }> = {
+  thinking:  { mouth: 'M 25 33 Q 30 36 35 33', browL: 'M 19 23 Q 24 21 27 23', browR: 'M 33 23 Q 36 21 41 23' },
+  acting:    { mouth: 'M 25 33 Q 30 35 35 33', browL: 'M 19 21 Q 24 19 28 22', browR: 'M 32 22 Q 36 19 41 21' },
+  concerned: { mouth: 'M 25 35 Q 30 32 35 35', browL: 'M 19 21 Q 24 19 28 22', browR: 'M 32 22 Q 36 19 41 21' },
+  happy:     { mouth: 'M 23 32 Q 30 38 37 32', browL: 'M 19 24 Q 24 22 27 24', browR: 'M 33 24 Q 36 22 41 24' },
+  alarmed:   { mouth: 'M 26 34 Q 30 37 34 34', browL: 'M 18 20 Q 24 17 28 20', browR: 'M 32 20 Q 36 17 42 20' },
+};
 
 // ─── Tone styling ─────────────────────────────────────────────────────────────
 
@@ -9,40 +37,138 @@ const TONE_STYLE: Record<string, { border: string; bg: string; text: string; dot
   warn:   { border: 'border-red-600/70',     bg: 'bg-red-950/80',     text: 'text-red-200',     dot: 'bg-red-400'     },
 };
 
-// ─── Patient SVG (lying in bed) ───────────────────────────────────────────────
+// ─── Ambient nurse pool ───────────────────────────────────────────────────────
 
-function PatientFigure({ status, flags }: { status: SimPatientStatus; flags: Record<string, boolean> }) {
+const BASE_AMBIENT = [
+  'Obs done — charted.',
+  'Let me know what you need.',
+  'Monitoring continuously.',
+  'On it.',
+];
+
+const FLAG_AMBIENT: Array<[string, string[]]> = [
+  ['ivAccessEstablished', [
+    "IV's patent — no infiltration.",
+    'Line secure, running well.',
+  ]],
+  ['oxygenStarted', [
+    'Mask on — sats picking up.',
+    "She's more settled on the O2.",
+    'O2 on, mask in place.',
+  ]],
+  ['fluidsStarted', [
+    'Fluids running — watching the rate.',
+    "First bag's going in well.",
+  ]],
+  ['antibioticsStarted', [
+    "Drip's up. Watching for any reaction.",
+    'No reaction so far — all good.',
+  ]],
+  ['culturesDrawn', [
+    'Bottles labelled and with the runner.',
+  ]],
+  ['adequateFluids', [
+    '30 mL/kg in. UO ticking up slightly.',
+    "She's had her fluids — looking a bit better.",
+  ]],
+  ['icuCalled', [
+    'ICU said ten minutes.',
+    'Waiting on the ICU reg.',
+  ]],
+];
+
+const STATUS_AMBIENT: Partial<Record<SimPatientStatus, string[]>> = {
+  guarded: [
+    "She's asking for some water.",
+    'Family in the corridor — should I let them in?',
+    'Call bell within reach.',
+  ],
+  critical: [
+    "Doctor, I'm not happy with those obs.",
+    'Cap refill up to 4 seconds.',
+    "Colour's not right.",
+    'BP dropping again.',
+  ],
+  improving: [
+    "She's more settled now.",
+    'Colour coming back.',
+    'Looked at me when I checked on her.',
+    'Urine output improving.',
+  ],
+};
+
+function buildAmbientPool(flags: Record<string, boolean>, status: SimPatientStatus): string[] {
+  const pool: string[] = [...BASE_AMBIENT];
+  for (const [flag, msgs] of FLAG_AMBIENT) {
+    if (flags[flag]) pool.push(...msgs);
+  }
+  const statusMsgs = STATUS_AMBIENT[status];
+  if (statusMsgs) pool.push(...statusMsgs);
+  return pool;
+}
+
+// ─── Patient SVG ──────────────────────────────────────────────────────────────
+
+function PatientFigure({
+  status,
+  flags,
+  rr,
+}: {
+  status: SimPatientStatus;
+  flags: Record<string, boolean>;
+  rr: number;
+}) {
   const isArrested = status === 'cardiac-arrest';
   const isDead     = status === 'dead';
   const isCritical = status === 'critical' || isArrested;
   const isGood     = status === 'improving' || status === 'discharged';
+  const isFeverish = isCritical && !isDead;
 
-  const faceColor  = isDead ? '#64748b' : isCritical ? '#fca5a5' : isGood ? '#86efac' : '#fde68a';
-  const eyeState   = isDead ? 'x' : isCritical ? 'open-wide' : isGood ? 'soft' : 'neutral';
+  const faceColor = isDead ? '#64748b' : isCritical ? '#fca5a5' : isGood ? '#86efac' : '#fde68a';
+  const eyeState  = isDead ? 'x' : isCritical ? 'wide' : isGood ? 'soft' : 'neutral';
+
+  // RR-based breathing: cycle = 60s / rr, scaled to real-time seconds
+  const safeRr = Math.max(8, Math.min(rr, 40));
+  const breathDuration = `${(60 / safeRr).toFixed(1)}s`;
+
+  const bodyBreathStyle = isDead
+    ? {}
+    : {
+        animation: `patient-breathe ${breathDuration} ease-in-out infinite`,
+        transformBox: 'fill-box' as const,
+        transformOrigin: 'center 88px',
+      };
 
   return (
-    <svg viewBox="0 0 240 116" width="240" height="116" aria-label={`Patient: ${status}`}>
+    <svg
+      viewBox="0 0 240 116"
+      width="240"
+      height="116"
+      aria-label={`Patient: ${status}`}
+      className={isFeverish ? 'patient-shivering' : undefined}
+    >
       {/* Bed frame */}
-      <rect x="4" y="76" width="232" height="38" rx="5" fill="#1e293b" stroke="#334155" strokeWidth="1" />
+      <rect x="4"   y="76" width="232" height="38" rx="5" fill="#1e293b" stroke="#334155" strokeWidth="1" />
       {/* Headboard */}
-      <rect x="196" y="58" width="40" height="55" rx="4" fill="#1e3a5f" stroke="#2563eb" strokeWidth="0.5" />
+      <rect x="196" y="58" width="40"  height="55" rx="4" fill="#1e3a5f" stroke="#2563eb" strokeWidth="0.5" />
       {/* IV pole */}
-      <rect x="210" y="8" width="3" height="68" fill="#475569" />
-      <rect x="200" y="8" width="23" height="3" rx="1" fill="#475569" />
+      <rect x="210" y="8"  width="3"   height="68" fill="#475569" />
+      <rect x="200" y="8"  width="23"  height="3"  rx="1" fill="#475569" />
       {/* IV bag */}
-      <rect x="206" y="11" width="11" height="15" rx="3" fill="#bfdbfe" opacity="0.7" stroke="#93c5fd" strokeWidth="0.5" />
-      {/* Mattress/blanket */}
-      <rect x="6" y="78" width="190" height="34" rx="3" fill="#1e3a5f" opacity="0.8" />
-      {/* Blanket folds */}
-      <rect x="6" y="78" width="190" height="16" rx="3" fill="#1d4ed8" opacity="0.5" />
+      <rect x="206" y="11" width="11"  height="15" rx="3" fill="#bfdbfe" opacity="0.7" stroke="#93c5fd" strokeWidth="0.5" />
       {/* Pillow */}
       <ellipse cx="152" cy="77" rx="38" ry="10" fill="#f1f5f9" stroke="#e2e8f0" strokeWidth="0.5" />
-      {/* Body outline under blanket */}
-      <ellipse cx="90" cy="92" rx="55" ry="14" fill="#1e40af" opacity="0.4" />
+
+      {/* ── Breathing body group ─────────────────────────────── */}
+      <g style={bodyBreathStyle}>
+        <rect   x="6"  y="78" width="190" height="34" rx="3" fill="#1e3a5f" opacity="0.8" />
+        <rect   x="6"  y="78" width="190" height="16" rx="3" fill="#1d4ed8" opacity="0.5" />
+        <ellipse cx="90" cy="92" rx="55" ry="14" fill="#1e40af" opacity="0.4" />
+      </g>
 
       {/* Head */}
       <ellipse cx="152" cy="60" rx="24" ry="22" fill={faceColor} />
-      {/* Hair (white/grey — elderly) */}
+      {/* Hair */}
       <path d="M 130 52 Q 152 40 174 52" stroke="#94a3b8" strokeWidth="6" fill="none" strokeLinecap="round" />
       <path d="M 128 58 Q 126 48 130 44" stroke="#94a3b8" strokeWidth="4" fill="none" strokeLinecap="round" />
       <path d="M 176 58 Q 178 48 174 44" stroke="#94a3b8" strokeWidth="4" fill="none" strokeLinecap="round" />
@@ -57,8 +183,27 @@ function PatientFigure({ status, flags }: { status: SimPatientStatus; flags: Rec
         </>
       ) : (
         <>
-          <ellipse cx="145" cy="60" rx="3" ry={eyeState === 'open-wide' ? 3.5 : 2.5} fill="#1e293b" />
-          <ellipse cx="159" cy="60" rx="3" ry={eyeState === 'open-wide' ? 3.5 : 2.5} fill="#1e293b" />
+          {/* Left eye with blink */}
+          <ellipse cx="145" cy="60" rx="3" ry={eyeState === 'wide' ? 3.5 : 2.5} fill="#1e293b">
+            <animate
+              attributeName="ry"
+              values={`${eyeState === 'wide' ? 3.5 : 2.5};0.2;${eyeState === 'wide' ? 3.5 : 2.5}`}
+              dur="4.2s"
+              repeatCount="indefinite"
+              begin="0s"
+            />
+          </ellipse>
+          {/* Right eye with blink (slight offset) */}
+          <ellipse cx="159" cy="60" rx="3" ry={eyeState === 'wide' ? 3.5 : 2.5} fill="#1e293b">
+            <animate
+              attributeName="ry"
+              values={`${eyeState === 'wide' ? 3.5 : 2.5};0.2;${eyeState === 'wide' ? 3.5 : 2.5}`}
+              dur="4.2s"
+              repeatCount="indefinite"
+              begin="0.07s"
+            />
+          </ellipse>
+          {/* Worry brows */}
           {isCritical && (
             <>
               <path d="M 141 56 Q 145 53 149 56" stroke="#374151" strokeWidth="1.5" fill="none" />
@@ -69,19 +214,15 @@ function PatientFigure({ status, flags }: { status: SimPatientStatus; flags: Rec
       )}
 
       {/* Mouth */}
-      {isGood ? (
-        <path d="M 146 70 Q 152 74 158 70" stroke="#374151" strokeWidth="2" fill="none" strokeLinecap="round" />
-      ) : isCritical ? (
-        <path d="M 146 71 Q 152 68 158 71" stroke="#374151" strokeWidth="2" fill="none" strokeLinecap="round" />
-      ) : (
-        <line x1="147" y1="70" x2="157" y2="70" stroke="#374151" strokeWidth="1.5" strokeLinecap="round" />
-      )}
+      {isGood   && <path d="M 146 70 Q 152 74 158 70" stroke="#374151" strokeWidth="2" fill="none" strokeLinecap="round" />}
+      {isCritical && !isDead && <path d="M 146 71 Q 152 68 158 71" stroke="#374151" strokeWidth="2" fill="none" strokeLinecap="round" />}
+      {!isGood && !isCritical && !isDead && <line x1="147" y1="70" x2="157" y2="70" stroke="#374151" strokeWidth="1.5" strokeLinecap="round" />}
 
-      {/* Sweat drops (critical) */}
-      {isCritical && !isDead && (
+      {/* Sweat drops — animated fall */}
+      {isFeverish && (
         <>
-          <ellipse cx="130" cy="64" rx="2" ry="3" fill="#93c5fd" opacity="0.8" />
-          <ellipse cx="174" cy="62" rx="1.5" ry="2.5" fill="#93c5fd" opacity="0.7" />
+          <ellipse cx="130" cy="60" rx="2" ry="3" fill="#93c5fd" opacity="0.8" className="sweat-drop" />
+          <ellipse cx="174" cy="58" rx="1.5" ry="2.5" fill="#93c5fd" opacity="0.7" className="sweat-drop-2" />
         </>
       )}
 
@@ -91,7 +232,7 @@ function PatientFigure({ status, flags }: { status: SimPatientStatus; flags: Rec
           fill="rgba(56,189,248,0.15)" stroke="#38bdf8" strokeWidth="1.5" />
       )}
 
-      {/* Monitoring dots (critical) */}
+      {/* Monitor alert dot */}
       {isCritical && (
         <circle cx="10" cy="85" r="4" fill="#ef4444" opacity="0.9">
           <animate attributeName="opacity" values="0.9;0.3;0.9" dur="1.2s" repeatCount="indefinite" />
@@ -103,11 +244,17 @@ function PatientFigure({ status, flags }: { status: SimPatientStatus; flags: Rec
 
 // ─── Doctor Avatar ────────────────────────────────────────────────────────────
 
-function DoctorAvatar() {
+function DoctorAvatar({ mood }: { mood: DoctorMood }) {
+  const face = DOCTOR_FACE[mood];
+  const isActing = mood === 'acting';
+  const isAlarmed = mood === 'alarmed';
+  const coatStroke = isAlarmed ? '#ef4444' : isActing ? '#3b82f6' : 'none';
+
   return (
     <svg viewBox="0 0 60 80" width="52" height="69">
       {/* White coat body */}
-      <rect x="8" y="38" width="44" height="42" rx="5" fill="#e2e8f0" />
+      <rect x="8" y="38" width="44" height="42" rx="5" fill="#e2e8f0"
+        stroke={coatStroke} strokeWidth={isAlarmed || isActing ? '1.5' : '0'} />
       {/* Scrubs underneath */}
       <rect x="18" y="38" width="24" height="42" fill="#3b82f6" opacity="0.4" />
       {/* Coat lapels */}
@@ -116,9 +263,12 @@ function DoctorAvatar() {
       {/* Stethoscope */}
       <path d="M 18 48 Q 28 60 30 54 Q 32 48 42 52" stroke="#64748b" strokeWidth="2" fill="none" />
       <circle cx="42" cy="53" r="3.5" fill="#475569" />
+      {/* Acting — pen in hand */}
+      {isActing && <line x1="40" y1="58" x2="48" y2="72" stroke="#1e293b" strokeWidth="2" strokeLinecap="round" />}
+
       {/* Head */}
       <circle cx="30" cy="26" r="19" fill="#fcd9b4" />
-      {/* Hair (dark) */}
+      {/* Hair */}
       <path d="M 11 22 Q 30 10 49 22 Q 49 12 30 10 Q 11 12 11 22" fill="#1e293b" />
       {/* Eyes */}
       <circle cx="24" cy="26" r="2.5" fill="#1e293b" />
@@ -127,8 +277,11 @@ function DoctorAvatar() {
       <rect x="18" y="22" width="10" height="7" rx="2" fill="none" stroke="#94a3b8" strokeWidth="1" />
       <rect x="32" y="22" width="10" height="7" rx="2" fill="none" stroke="#94a3b8" strokeWidth="1" />
       <line x1="28" y1="25" x2="32" y2="25" stroke="#94a3b8" strokeWidth="1" />
-      {/* Slight smile */}
-      <path d="M 25 33 Q 30 36 35 33" stroke="#9d7060" strokeWidth="1.5" fill="none" strokeLinecap="round" />
+      {/* Mood brows */}
+      <path d={face.browL} stroke="#6b4226" strokeWidth="1.5" fill="none" strokeLinecap="round" />
+      <path d={face.browR} stroke="#6b4226" strokeWidth="1.5" fill="none" strokeLinecap="round" />
+      {/* Mood mouth */}
+      <path d={face.mouth} stroke="#9d7060" strokeWidth="1.5" fill="none" strokeLinecap="round" />
       {/* Name badge */}
       <rect x="17" y="52" width="14" height="8" rx="1" fill="#dbeafe" />
       <line x1="19" y1="55" x2="29" y2="55" stroke="#93c5fd" strokeWidth="1" />
@@ -142,26 +295,17 @@ function DoctorAvatar() {
 function NurseAvatar() {
   return (
     <svg viewBox="0 0 60 80" width="46" height="62">
-      {/* Body — blue scrubs */}
-      <rect x="8" y="38" width="44" height="42" rx="5" fill="#1d4ed8" opacity="0.85" />
-      {/* Scrubs stripe */}
-      <rect x="8" y="44" width="44" height="6" fill="#1e40af" opacity="0.5" />
-      {/* Head */}
+      <rect x="8"  y="38" width="44" height="42" rx="5" fill="#1d4ed8" opacity="0.85" />
+      <rect x="8"  y="44" width="44" height="6"  fill="#1e40af" opacity="0.5" />
       <circle cx="30" cy="26" r="18" fill="#fde8d0" />
-      {/* Hair (pulled back) */}
       <path d="M 12 22 Q 30 10 48 22" stroke="#854d0e" strokeWidth="5" fill="none" strokeLinecap="round" />
       <ellipse cx="30" cy="13" rx="14" ry="5" fill="#854d0e" />
-      {/* Hair bun */}
-      <circle cx="30" cy="9" r="5" fill="#78350f" />
-      {/* Eyes */}
+      <circle cx="30" cy="9"  r="5" fill="#78350f" />
       <circle cx="24" cy="27" r="2.5" fill="#1e293b" />
       <circle cx="36" cy="27" r="2.5" fill="#1e293b" />
-      {/* Alert eyebrows */}
       <path d="M 21 23 Q 24 21 27 23" stroke="#92400e" strokeWidth="1.5" fill="none" />
       <path d="M 33 23 Q 36 21 39 23" stroke="#92400e" strokeWidth="1.5" fill="none" />
-      {/* Mouth */}
       <path d="M 25 34 Q 30 37 35 34" stroke="#9d7060" strokeWidth="1.5" fill="none" strokeLinecap="round" />
-      {/* Stethoscope around neck */}
       <path d="M 18 40 Q 30 48 42 40" stroke="#94a3b8" strokeWidth="1.5" fill="none" />
     </svg>
   );
@@ -169,26 +313,27 @@ function NurseAvatar() {
 
 // ─── Family Avatar ────────────────────────────────────────────────────────────
 
-function FamilyAvatar() {
+function FamilyAvatar({ improving }: { improving: boolean }) {
+  const mouthD = improving
+    ? 'M 25 34 Q 30 37 35 34'  // slight smile when good news
+    : 'M 25 34 Q 30 31 35 34'; // slight frown when worried
   return (
     <svg viewBox="0 0 60 80" width="42" height="56">
-      {/* Body — civilian clothes */}
       <rect x="10" y="38" width="40" height="42" rx="5" fill="#7c3aed" opacity="0.7" />
       <rect x="16" y="38" width="28" height="10" rx="2" fill="#6d28d9" opacity="0.5" />
-      {/* Head */}
       <circle cx="30" cy="26" r="17" fill="#fde8d0" />
-      {/* Hair (longer) */}
-      <path d="M 13 22 Q 30 8 47 22" stroke="#92400e" strokeWidth="5" fill="none" strokeLinecap="round" />
+      <path d="M 13 22 Q 30 8 47 22"  stroke="#92400e" strokeWidth="5" fill="none" strokeLinecap="round" />
       <path d="M 13 22 Q 11 36 13 44" stroke="#92400e" strokeWidth="5" fill="none" strokeLinecap="round" />
       <path d="M 47 22 Q 49 36 47 44" stroke="#92400e" strokeWidth="5" fill="none" strokeLinecap="round" />
-      {/* Eyes (worried) */}
       <circle cx="24" cy="27" r="2.5" fill="#1e293b" />
       <circle cx="36" cy="27" r="2.5" fill="#1e293b" />
-      {/* Worried brows */}
-      <path d="M 20 22 Q 24 19 28 22" stroke="#92400e" strokeWidth="1.5" fill="none" />
-      <path d="M 32 22 Q 36 19 40 22" stroke="#92400e" strokeWidth="1.5" fill="none" />
-      {/* Mouth (slight frown) */}
-      <path d="M 25 34 Q 30 31 35 34" stroke="#9d7060" strokeWidth="1.5" fill="none" strokeLinecap="round" />
+      {!improving && (
+        <>
+          <path d="M 20 22 Q 24 19 28 22" stroke="#92400e" strokeWidth="1.5" fill="none" />
+          <path d="M 32 22 Q 36 19 40 22" stroke="#92400e" strokeWidth="1.5" fill="none" />
+        </>
+      )}
+      <path d={mouthD} stroke="#9d7060" strokeWidth="1.5" fill="none" strokeLinecap="round" />
     </svg>
   );
 }
@@ -206,8 +351,8 @@ function SpeechBubble({
 }) {
   return (
     <div
-      className={`rounded-lg border text-xs leading-snug px-2 py-1.5 shadow-lg ${colorClass}`}
-      style={{ maxWidth, minWidth: 80 }}
+      className={`rounded-lg border text-xs leading-snug px-2 py-1.5 shadow-lg animate-bubble-in ${colorClass}`}
+      style={{ maxWidth, minWidth: 72 }}
     >
       {text.length > 90 ? text.slice(0, 87) + '…' : text}
     </div>
@@ -221,12 +366,66 @@ interface Props {
   simCase: SimCase;
   eventLog: SimEvent[];
   coachingLog: CoachingEntry[];
+  acting?: boolean;
 }
 
-export default function ScenePanel({ patient, simCase, eventLog, coachingLog }: Props) {
+export default function ScenePanel({ patient, simCase, eventLog, coachingLog, acting = false }: Props) {
   const pres = simCase.presentation;
 
-  // Latest messages by source (visible within 6 sim-minutes window)
+  const [ambientMsg, setAmbientMsg] = useState<string | null>(null);
+  const ambientTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const pulseTimerRef     = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Keep latest state accessible in the timer callback without stale closures
+  const stateRef = useRef({ flags: patient.flags, status: patient.status, simTimeMin: patient.simTimeMinutes, latestNurse: null as SimEvent | null });
+  useEffect(() => {
+    stateRef.current = {
+      flags: patient.flags,
+      status: patient.status,
+      simTimeMin: patient.simTimeMinutes,
+      latestNurse: [...eventLog].reverse().find(e => e.source === 'nurse') ?? null,
+    };
+  });
+
+  // Ambient pulse — fires every 9–16 real-time seconds
+  useEffect(() => {
+    function scheduleTick() {
+      pulseTimerRef.current = setTimeout(() => {
+        const { flags, status, simTimeMin, latestNurse } = stateRef.current;
+        const realNurseVisible = latestNurse && (simTimeMin - latestNurse.simTimeMin) < 6;
+        if (!realNurseVisible && !ambientMsg) {
+          const pool = buildAmbientPool(flags, status);
+          const msg  = pool[Math.floor(Math.random() * pool.length)];
+          setAmbientMsg(msg);
+          if (ambientTimeoutRef.current) clearTimeout(ambientTimeoutRef.current);
+          ambientTimeoutRef.current = setTimeout(() => setAmbientMsg(null), 5000);
+        }
+        scheduleTick();
+      }, 9000 + Math.random() * 7000);
+    }
+    // First pulse after a short delay
+    pulseTimerRef.current = setTimeout(scheduleTick, 12000 + Math.random() * 6000);
+    return () => {
+      if (pulseTimerRef.current)    clearTimeout(pulseTimerRef.current);
+      if (ambientTimeoutRef.current) clearTimeout(ambientTimeoutRef.current);
+    };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Clear ambient when a real nurse event arrives
+  const prevEventCountRef = useRef(eventLog.length);
+  useEffect(() => {
+    if (eventLog.length > prevEventCountRef.current) {
+      const newEvs = eventLog.slice(prevEventCountRef.current);
+      if (newEvs.some(e => e.source === 'nurse')) {
+        setAmbientMsg(null);
+        if (ambientTimeoutRef.current) clearTimeout(ambientTimeoutRef.current);
+      }
+      prevEventCountRef.current = eventLog.length;
+    }
+  }, [eventLog]);
+
+  // Latest messages
   const latestNurse  = [...eventLog].reverse().find(e => e.source === 'nurse');
   const latestFamily = [...eventLog].reverse().find(e => e.source === 'family');
   const latestCoach  = coachingLog.at(-1) ?? null;
@@ -235,8 +434,17 @@ export default function ScenePanel({ patient, simCase, eventLog, coachingLog }: 
   const familyVisible = latestFamily ? (patient.simTimeMinutes - latestFamily.simTimeMin) < 6 : false;
   const coachVisible  = latestCoach  ? (patient.simTimeMinutes - latestCoach.simTimeMin)  < 8 : false;
 
-  const allergy = patient.revealedAllergies[0] ?? null;
-  const toneStyle = latestCoach ? TONE_STYLE[latestCoach.tone] ?? TONE_STYLE.teach : TONE_STYLE.teach;
+  const showNurseBubble = (nurseVisible && latestNurse) || ambientMsg;
+  const nurseBubbleText = nurseVisible && latestNurse
+    ? latestNurse.text.replace(/^[^:]+:\s*"?/, '').replace(/"$/, '')
+    : (ambientMsg ?? '');
+
+  const allergy    = patient.revealedAllergies[0] ?? null;
+  const toneStyle  = latestCoach ? TONE_STYLE[latestCoach.tone] ?? TONE_STYLE.teach : TONE_STYLE.teach;
+  const doctorMood = computeDoctorMood(patient.status, acting, latestCoach, patient.simTimeMinutes);
+  const isImproving = patient.status === 'improving' || patient.status === 'discharged' || patient.status === 'icu-transferred';
+
+  const rr = patient.vitals.rr ?? 16;
 
   return (
     <div className="flex flex-col h-full overflow-hidden bg-slate-950">
@@ -265,7 +473,7 @@ export default function ScenePanel({ patient, simCase, eventLog, coachingLog }: 
 
       {/* ── Patient figure ─────────────────────────────────── */}
       <div className="shrink-0 flex justify-center items-end px-2 pt-2" style={{ height: '124px' }}>
-        <PatientFigure status={patient.status} flags={patient.flags} />
+        <PatientFigure status={patient.status} flags={patient.flags} rr={rr} />
       </div>
 
       {/* ── Characters row ─────────────────────────────────── */}
@@ -274,8 +482,10 @@ export default function ScenePanel({ patient, simCase, eventLog, coachingLog }: 
         {/* Doctor + coaching bubble */}
         <div className="flex flex-col items-center gap-1 shrink-0">
           {coachVisible && latestCoach && (
-            <div className={`rounded-lg border text-xs leading-snug px-2 py-1.5 shadow-lg animate-fade-in ${toneStyle.border} ${toneStyle.bg} ${toneStyle.text}`}
-              style={{ maxWidth: 148, minWidth: 80 }}>
+            <div
+              className={`rounded-lg border text-xs leading-snug px-2 py-1.5 shadow-lg animate-bubble-in ${toneStyle.border} ${toneStyle.bg} ${toneStyle.text}`}
+              style={{ maxWidth: 148, minWidth: 80 }}
+            >
               <div className="flex items-center gap-1 mb-0.5">
                 <div className={`w-1.5 h-1.5 rounded-full shrink-0 ${toneStyle.dot}`} />
                 <span className="font-semibold text-[10px] uppercase tracking-wide opacity-70">
@@ -285,15 +495,18 @@ export default function ScenePanel({ patient, simCase, eventLog, coachingLog }: 
               <div>{latestCoach.text.length > 80 ? latestCoach.text.slice(0, 77) + '…' : latestCoach.text}</div>
             </div>
           )}
-          <DoctorAvatar />
-          <span className="text-[9px] text-slate-600">Doctor</span>
+          <DoctorAvatar mood={doctorMood} />
+          <span className="text-[9px] text-slate-600">
+            {acting ? '⏱ ordering…' : 'Doctor'}
+          </span>
         </div>
 
-        {/* Nurse + speech bubble */}
+        {/* Nurse + speech bubble (real or ambient) */}
         <div className="flex flex-col items-center gap-1 shrink-0 flex-1 min-w-0">
-          {nurseVisible && latestNurse && (
+          {showNurseBubble && nurseBubbleText && (
             <SpeechBubble
-              text={latestNurse.text.replace(/^[^:]+:\s*"?/, '').replace(/"$/, '')}
+              key={nurseBubbleText}
+              text={nurseBubbleText}
               colorClass="bg-indigo-950/80 border-indigo-700/60 text-indigo-200"
               maxWidth={148}
             />
@@ -302,17 +515,18 @@ export default function ScenePanel({ patient, simCase, eventLog, coachingLog }: 
           <span className="text-[9px] text-slate-600">Nurse Jenna</span>
         </div>
 
-        {/* Family + speech bubble (only when messages have fired) */}
+        {/* Family — only when messages have fired */}
         {latestFamily && (
           <div className="flex flex-col items-center gap-1 shrink-0">
             {familyVisible && (
               <SpeechBubble
+                key={latestFamily.text}
                 text={latestFamily.text.replace(/^[^:()]+\([^)]*\):\s*"?/, '').replace(/"$/, '') || latestFamily.text}
                 colorClass="bg-amber-950/80 border-amber-700/60 text-amber-200"
                 maxWidth={130}
               />
             )}
-            <FamilyAvatar />
+            <FamilyAvatar improving={isImproving} />
             <span className="text-[9px] text-slate-600">Family</span>
           </div>
         )}
